@@ -3,8 +3,9 @@ import React, { useReducer, useEffect, useRef } from "react";
 /* ---- online multiplayer bindings (inert unless the shell provides them) ---- */
 const __BH_INERT_NET = { role:"off", seat:0, status:"", room:null, snap:null, snapV:0, roster:[],
   names:["","","",""], namesV:0, target:100, full:false, myInitials:"", playerCount:0, downSeats:[],
-  isSeatDown:()=>false, prefillCode:"", savedSession:null,
-  setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, send(){}, broadcastState(){} };
+  isSeatDown:()=>false, prefillCode:"", savedSession:null, lobbyChat:[], roomChat:[],
+  setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, closeRoom(){},
+  sendLobbyChat(){}, sendRoomChat(){}, send(){}, broadcastState(){} };
 const useBankheadNet = (typeof window!=="undefined" && window.useBankheadNet) || (()=>__BH_INERT_NET);
 const OnlineBar     = (typeof window!=="undefined" && window.OnlineBar)     || (()=>null);
 const OnlineScreens = (typeof window!=="undefined" && window.OnlineScreens) || (()=>null);
@@ -1730,6 +1731,7 @@ export default function App(){
   const net = useBankheadNet({
     onAction:(a)=>apply(a),
     onResume:(state,tgt)=>{ dispatch({type:"__SYNC__", state}); if(tgt!=null) setTarget(tgt); },
+    onGoSolo:()=>dispatch({type:"TO_SETUP"}),
   });
   netRef.current = net;
   const online = net.role!=="off";
@@ -1819,7 +1821,7 @@ export default function App(){
     dispatch({type:"TO_SETUP"}); setSel([]);
   };
 
-  if(net.role!=="off" && s.mode!=="play"){
+  if(net.role==="lobby" || (net.role!=="off" && s.mode!=="play")){
     return <OnlineScreens net={net} onStart={startOnline}/>;
   }
 
