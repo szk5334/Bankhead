@@ -1,12 +1,13 @@
 import React, { useReducer, useEffect, useRef } from "react";
 
-/* ---- online multiplayer bindings ----------------------------------------
-   Inert inside a normal artifact/build; the GitHub Pages shell sets
-   window.useBankheadNet + window.OnlineBar and everything below activates. */
-const __BH_INERT_NET = { role:"off", seat:0, status:"", room:null, snap:null, snapV:0, peers:0,
-  connect(){}, send(){}, broadcastState(){}, hostGame(){} };
+/* ---- online multiplayer bindings (inert unless the shell provides them) ---- */
+const __BH_INERT_NET = { role:"off", seat:0, status:"", room:null, snap:null, snapV:0, roster:[],
+  names:["","","",""], namesV:0, target:100, full:false, myInitials:"", playerCount:0, downSeats:[],
+  isSeatDown:()=>false, prefillCode:"", savedSession:null,
+  setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, send(){}, broadcastState(){} };
 const useBankheadNet = (typeof window!=="undefined" && window.useBankheadNet) || (()=>__BH_INERT_NET);
-const OnlineBar = (typeof window!=="undefined" && window.OnlineBar) || (()=>null);
+const OnlineBar     = (typeof window!=="undefined" && window.OnlineBar)     || (()=>null);
+const OnlineScreens = (typeof window!=="undefined" && window.OnlineScreens) || (()=>null);
 
 /* =======================================================================
    BANKHEAD — single pile · wilds are 2, 6, A
@@ -772,7 +773,7 @@ function progress(s){
 }
 
 function reducer(state,a){
-  if(a.type==="__SYNC__") return a.state;   // guests adopt the host snapshot wholesale
+  if(a.type==="__SYNC__") return a.state;
   switch(a.type){
     case "SET_N":{
       const n=a.n; const brains=["human"];
@@ -1726,21 +1727,36 @@ export default function App(){
   },[]);
 
   // ---- online sync (inert unless a host/guest role is active) ----
-  const net = useBankheadNet({ onAction:(a)=>apply(a) });
+  const net = useBankheadNet({
+    onAction:(a)=>apply(a),
+    onResume:(state,tgt)=>{ dispatch({type:"__SYNC__", state}); if(tgt!=null) setTarget(tgt); },
+  });
   netRef.current = net;
   const online = net.role!=="off";
   const mySeat = net.seat;
-  useEffect(()=>{ if(net.role==="host" && s.mode==="play") net.broadcastState(s, seatNames); },[s, seatNames, net.role]);
+  useEffect(()=>{ if(net.role==="host" && s.mode==="play") net.broadcastState(s, net.names, target); },[s, net.names, net.role, target]);
   useEffect(()=>{ if(net.role==="guest" && net.snap) dispatch({type:"__SYNC__", state:net.snap}); },[net.snapV]); // eslint-disable-line
+  useEffect(()=>{ if(online && net.names){ setSeatNames(net.names.map(x=>x||"")); } },[net.namesV, online]); // eslint-disable-line
+  useEffect(()=>{ if(net.role==="guest" && net.target!=null) setTarget(net.target); },[net.target, net.role]);
+  const startOnline = React.useCallback((tgt, size)=>{
+    const pc = Math.max(2, net.playerCount||2);
+    const N = Math.max(pc, Math.min(4, size||pc));
+    const brains = Array.from({length:N},(_,i)=> i<pc ? "human" : BRAIN_ORDER[(i-pc)%BRAIN_ORDER.length]);
+    setTarget(tgt);
+    apply({type:"RESUME", n:N, brains, scores:Array(N).fill(0)});
+  },[net.playerCount]);
 
-  // bot auto-play (never fires for a human seat)
+  // bot auto-play — and covers a human seat whose player is momentarily disconnected
   useEffect(()=>{
-    if(netRef.current && netRef.current.role==="guest") return;   // bots run on host/offline only
+    if(netRef.current && netRef.current.role==="guest") return;   // guests never simulate
     if(s.mode!=="play"||s.phase!=="play") return;
-    if(s.brains[s.current]==="human") return;
+    const nrole = netRef.current && netRef.current.role;
+    const down = nrole==="host" && netRef.current.isSeatDown && netRef.current.isSeatDown(s.current);
+    if(s.brains[s.current]==="human" && !down) return;   // a present human holds this seat
     const answering = s.pendingBanker!==null && s.pendingBanker!==s.current && isBank(situation(s.pile));
-    const delay = answering?460:640;
-    timer.current=setTimeout(()=>{ apply(botAction(s)); }, delay);
+    const delay = down ? 2500 : (answering?460:640);
+    const bs = (s.brains[s.current]==="human") ? {...s, brains:s.brains.map((b,i)=> i===s.current ? "vault" : b)} : s;
+    timer.current=setTimeout(()=>{ apply(botAction(bs)); }, delay);
     return ()=>clearTimeout(timer.current);
   },[s]);
 
@@ -1803,18 +1819,8 @@ export default function App(){
     dispatch({type:"TO_SETUP"}); setSel([]);
   };
 
-  if(net.role==="guest" && s.mode!=="play"){
-    return (
-      <div className="bh" data-theme={theme} style={{minHeight:"100vh",background:"var(--bg)",padding:14,display:"flex",flexDirection:"column"}}>
-        <style>{THEME_CSS}</style>
-        <OnlineBar net={net}/>
-        <div style={{margin:"auto",textAlign:"center",opacity:.85}}>
-          <div className="wordmark" style={{marginBottom:10}}>BANKHEAD</div>
-          <div className="lbl2">{net.status || "connecting\u2026"}</div>
-          <div className="lbl2" style={{marginTop:6}}>waiting for the host to start\u2026</div>
-        </div>
-      </div>
-    );
+  if(net.role!=="off" && s.mode!=="play"){
+    return <OnlineScreens net={net} onStart={startOnline}/>;
   }
 
   if(s.mode==="setup"){

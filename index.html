@@ -10,9 +10,7 @@
     #boot{font:13px/1.5 system-ui,monospace;padding:18px;opacity:.7;}
   </style>
 
-  <!-- ============================================================= -->
-  <!-- 1) LIBRARIES (loaded from CDN in the player's browser)         -->
-  <!-- ============================================================= -->
+  <!-- 1) LIBRARIES -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
@@ -21,271 +19,452 @@
 <body>
   <div id="root"><div id="boot">loading BANKHEAD…</div></div>
 
-  <!-- ============================================================= -->
-  <!-- 2) CONFIG + NETWORK LAYER  (plain JS — runs immediately)       -->
-  <!--    >>> PASTE YOUR TWO SUPABASE VALUES BELOW <<<                -->
-  <!-- ============================================================= -->
+  <!-- 2) CONFIG + NETWORK LAYER (plain JS) -->
   <script>
   (function () {
-    // --- your Supabase project, from Dashboard > Connect (or Settings > API Keys) ---
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
 
-    // room code from the invite link (#room=XXXX) => guest auto-joins
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
 
     var configured = SUPABASE_URL.indexOf("PASTE_") === -1 && SUPABASE_KEY.indexOf("PASTE_") === -1;
     window.bhClient = (configured && window.supabase)
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-      : null;
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // -------------------------------------------------------------
-    // useBankheadNet(opts) — authoritative-host sync over one channel
-    //   role: 'off' | 'host' | 'guest'
-    //   host runs the real game; guests display a per-seat REDACTED snapshot
-    //   and relay their moves back to the host.
-    // -------------------------------------------------------------
+    // ---- small localStorage helpers -------------------------------------
+    function LS() { try { return window.localStorage; } catch (e) { return null; } }
+    function jset(k, v) { var s = LS(); if (s) try { s.setItem(k, JSON.stringify(v)); } catch (e) {} }
+    function jget(k) { var s = LS(); if (!s) return null; try { return JSON.parse(s.getItem(k) || "null"); } catch (e) { return null; } }
+    function sset(k, v) { var s = LS(); if (s) try { s.setItem(k, v); } catch (e) {} }
+    function sget(k) { var s = LS(); if (!s) return null; try { return s.getItem(k); } catch (e) { return null; } }
+    var FRESH = 6 * 3600e3; // sessions valid 6h
+
+    function genCode() {
+      var A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = "";
+      for (var i = 0; i < 4; i++) s += A[Math.floor(Math.random() * A.length)];
+      return s;
+    }
+    var GAME_MOVES = ["PLAY", "PASS_BANK", "PICKUP", "DISCARD_DOWN"];
+
+    // strip every hand except forSeat to counts, and hide the stock order
+    function redact(state, forSeat) {
+      if (!state || !state.players) return state;
+      function fake(n) { var a = []; for (var i = 0; i < n; i++) a.push({ id: 0, rank: "?", suit: "?", back: true }); return a; }
+      var players = state.players.map(function (p, i) {
+        if (i === forSeat) return p;
+        var c = {}; for (var k in p) c[k] = p[k]; c.hand = fake((p.hand || []).length); return c;
+      });
+      var out = {}; for (var k in state) out[k] = state[k];
+      out.players = players; out.stock = fake((state.stock || []).length);
+      return out;
+    }
+
+    // =====================================================================
+    // useBankheadNet — lobby, presence (disconnect/reconnect), roster, sync
+    // =====================================================================
     window.useBankheadNet = function useBankheadNet(opts) {
-      var R = window.React;
-      var useState = R.useState, useEffect = R.useEffect, useRef = R.useRef, useCallback = R.useCallback;
+      var R = window.React, useState = R.useState, useEffect = R.useEffect, useRef = R.useRef, useCallback = R.useCallback;
 
-      var s0 = useState("off"),   role = s0[0],   setRole = s0[1];
-      var s1 = useState(0),       seat = s1[0],   setSeat = s1[1];
-      var s2 = useState(""),      status = s2[0], setStatus = s2[1];
-      var s3 = useState(null),    room = s3[0],   setRoom = s3[1];
-      var s4 = useState(null),    snap = s4[0],   setSnap = s4[1];
-      var s5 = useState(0),       snapV = s5[0],  setSnapV = s5[1];
-      var s6 = useState(0),       peers = s6[0],  setPeers = s6[1];
-
-      var optsRef = useRef(opts); optsRef.current = opts;
-      var chanRef = useRef(null);
-      var roleRef = useRef("off");
-      var seatRef = useRef(0);
-      var cidRef  = useRef(Math.random().toString(36).slice(2, 10));
-      var ownersRef = useRef({ bySeat: {}, byCid: {} });
-      var lastFullRef = useRef(null);
-      var lastNamesRef = useRef(null);
-      var joinTimerRef = useRef(null);
-
-      function setRoleX(r){ roleRef.current = r; setRole(r); }
-      function setSeatX(k){ seatRef.current = k; setSeat(k); }
-
-      // strip every seat except `forSeat` to face-down counts, and hide the stock order
-      function redact(state, forSeat) {
-        if (!state || !state.players) return state;
-        var fake = function (len) {
-          var a = []; for (var i = 0; i < len; i++) a.push({ id: 0, rank: "?", suit: "?", back: true }); return a;
-        };
-        var players = state.players.map(function (p, i) {
-          if (i === forSeat) return p;
-          var copy = {}; for (var k in p) copy[k] = p[k];
-          copy.hand = fake((p.hand || []).length);
-          return copy;
-        });
-        var out = {}; for (var k in state) out[k] = state[k];
-        out.players = players;
-        out.stock = fake((state.stock || []).length);   // don't leak upcoming draws
-        return out;
+      // persistent client id (stable identity for reconnection)
+      var cidRef = useRef(null);
+      if (!cidRef.current) {
+        var c = sget("bh_cid");
+        if (!c) { c = Math.random().toString(36).slice(2, 10); sset("bh_cid", c); }
+        cidRef.current = c;
       }
 
-      var broadcastState = useCallback(function (full, names) {
-        var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
-        lastFullRef.current = full; lastNamesRef.current = names;
-        var seats = ownersRef.current.bySeat;
-        Object.keys(seats).forEach(function (k) {
-          var sn = +k; if (sn === 0) return;
-          ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redact(full, sn), names: names } });
+      var configured = !!window.bhClient;
+      var A = useState(configured ? "lobby" : "off"), role = A[0], setRole = A[1];
+      var B = useState(configured ? -1 : 0), seat = B[0], setSeat = B[1];
+      var C = useState(""), status = C[0], setStatus = C[1];
+      var D = useState(null), room = D[0], setRoom = D[1];
+      var E = useState(null), snap = E[0], setSnap = E[1];
+      var F = useState(0), snapV = F[0], setSnapV = F[1];
+      var G = useState([]), roster = G[0], setRoster = G[1];
+      var H = useState(false), full = H[0], setFull = H[1];
+      var I = useState((sget("bh_initials") || "").slice(0, 3)), myInitials = I[0], setInits = I[1];
+      var J = useState(["", "", "", ""]), names = J[0], setNames = J[1];
+      var K = useState(0), namesV = K[0], setNamesV = K[1];
+      var L = useState(100), target = L[0], setTargetSt = L[1];
+      var M = useState([]), downSeats = M[0], setDownSeats = M[1];
+
+      var chanRef = useRef(null), roleRef = useRef(role), seatRef = useRef(seat),
+          fullRef = useRef(false), initRef = useRef(myInitials), downRef = useRef([]),
+          ownersRef = useRef({ bySeat: {}, byCid: {} }),
+          lastFullRef = useRef(null), lastTargetRef = useRef(100), retryRef = useRef(null);
+      function RL(r) { roleRef.current = r; setRole(r); }
+      function SL(k) { seatRef.current = k; setSeat(k); }
+
+      var savedSession = useRef(undefined);
+      if (savedSession.current === undefined) {
+        var v = jget("bh_session"); savedSession.current = (v && Date.now() - v.ts < FRESH) ? v : null;
+      }
+
+      function saveSession(o) { jset("bh_session", o); savedSession.current = o; }
+      function clearSession() { var s = LS(); if (s) try { s.removeItem("bh_session"); } catch (e) {} savedSession.current = null; }
+
+      function namesFrom(r) { var a = ["", "", "", ""]; (r || []).forEach(function (x) { if (x.seat < 4) a[x.seat] = x.initials || ""; }); return a; }
+      function applyRoster(r, tgt) {
+        setRoster(r); setNames(namesFrom(r)); setNamesV(function (n) { return n + 1; });
+        if (tgt != null) { setTargetSt(tgt); lastTargetRef.current = tgt; }
+      }
+
+      // ---------- HOST helpers ----------
+      function currentRoster() {
+        var o = ownersRef.current.bySeat, arr = [];
+        Object.keys(o).forEach(function (k) {
+          var st = +k, info = o[st];
+          arr.push({ seat: st, initials: info.initials, connected: info.connected !== false, isHost: st === 0 });
         });
-      }, []);
+        arr.sort(function (a, b) { return a.seat - b.seat; });
+        return arr;
+      }
+      function broadcastRoster() {
+        var ch = chanRef.current; if (!ch) return;
+        var r = currentRoster();
+        applyRoster(r, lastTargetRef.current);
+        var down = r.filter(function (x) { return !x.connected; }).map(function (x) { return x.seat; });
+        downRef.current = down; setDownSeats(down);
+        ch.send({ type: "broadcast", event: "roster", payload: { roster: r, target: lastTargetRef.current } });
+      }
+      function refreshPresence() {
+        var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
+        var st = ch.presenceState(), present = {}; Object.keys(st).forEach(function (key) {
+          (st[key] || []).forEach(function (p) { if (p && p.cid) present[p.cid] = true; });
+        });
+        var o = ownersRef.current.bySeat;
+        Object.keys(o).forEach(function (k) {
+          var seatN = +k; if (seatN === 0) { o[seatN].connected = true; return; }
+          o[seatN].connected = !!present[o[seatN].cid];
+        });
+        broadcastRoster();
+      }
 
       var send = useCallback(function (action) {
         var ch = chanRef.current; if (!ch) return;
         ch.send({ type: "broadcast", event: "action", payload: { cid: cidRef.current, action: action } });
       }, []);
 
-      var connect = useCallback(function (asRole, code) {
-        var client = window.bhClient;
-        if (!client) { setStatus("add your Supabase keys in index.html"); return; }
-        code = code || (Math.random().toString(36).slice(2, 5) + Math.random().toString(36).slice(2, 5)).toUpperCase();
-        var ch = client.channel("bankhead-" + code, { config: { broadcast: { self: false } } });
-        chanRef.current = ch; setRoom(code); setRoleX(asRole);
-
-        if (asRole === "host") {
-          ownersRef.current = { bySeat: { 0: cidRef.current }, byCid: {} };
-
-          ch.on("broadcast", { event: "join" }, function (msg) {
-            var cid = msg.payload.cid, o = ownersRef.current, assigned = o.byCid[cid];
-            if (assigned == null) {
-              for (var k = 1; k <= 3; k++) { if (o.bySeat[k] == null) { assigned = k; break; } }
-              if (assigned == null) { ch.send({ type: "broadcast", event: "full", payload: { cid: cid } }); return; }
-              o.bySeat[assigned] = cid; o.byCid[cid] = assigned;
-              setPeers(Object.keys(o.byCid).length);
-            }
-            ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: assigned } });
-            if (lastFullRef.current) {
-              ch.send({ type: "broadcast", event: "snap",
-                payload: { seat: assigned, state: redact(lastFullRef.current, assigned), names: lastNamesRef.current } });
-            }
-          });
-
-          ch.on("broadcast", { event: "action" }, function (msg) {
-            var p = msg.payload, owner = ownersRef.current.byCid[p.cid];
-            if (owner == null) return;
-            var a = p.action || {};
-            if (["PLAY", "PASS_BANK", "PICKUP", "DISCARD_DOWN"].indexOf(a.type) === -1) return; // moves only
-            if (a.player != null && a.player !== owner) return;                                  // own seat only
-            if (optsRef.current && optsRef.current.onAction) optsRef.current.onAction(a, owner);
-          });
-
-          ch.subscribe(function (st) { setStatus(st === "SUBSCRIBED" ? ("hosting · room " + code) : st); });
-        } else {
-          ch.on("broadcast", { event: "seat" }, function (msg) {
-            if (msg.payload.cid === cidRef.current) {
-              setSeatX(msg.payload.seat); setStatus("seated · #" + msg.payload.seat);
-              if (joinTimerRef.current) { clearInterval(joinTimerRef.current); joinTimerRef.current = null; }
-            }
-          });
-          ch.on("broadcast", { event: "full" }, function (msg) {
-            if (msg.payload.cid === cidRef.current) setStatus("room is full");
-          });
-          ch.on("broadcast", { event: "snap" }, function (msg) {
-            if (seatRef.current >= 1 && msg.payload.seat === seatRef.current) {
-              setSnap(msg.payload.state); setSnapV(function (v) { return v + 1; });
-            }
-          });
-          ch.subscribe(function (st) {
-            if (st === "SUBSCRIBED") {
-              setStatus("joining…");
-              var announce = function () { ch.send({ type: "broadcast", event: "join", payload: { cid: cidRef.current } }); };
-              announce();
-              // retry until the host (which may join later) seats us
-              joinTimerRef.current = setInterval(function () {
-                if (seatRef.current >= 1) { clearInterval(joinTimerRef.current); joinTimerRef.current = null; return; }
-                announce();
-              }, 2000);
-            } else { setStatus(st); }
-          });
-        }
+      var broadcastState = useCallback(function (full, nm, tgt) {
+        var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
+        lastFullRef.current = full; if (tgt != null) lastTargetRef.current = tgt;
+        jset("bh_host_state", { room: chanRef.current._bhCode, state: full, target: lastTargetRef.current });
+        var seats = ownersRef.current.bySeat;
+        Object.keys(seats).forEach(function (k) {
+          var sn = +k; if (sn === 0) return;
+          ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redact(full, sn), target: lastTargetRef.current } });
+        });
       }, []);
 
-      // guest auto-join if the link carried a room code
-      useEffect(function () { if (window.BH_ROOM) connect("guest", window.BH_ROOM); }, []);
+      function wireHost(ch) {
+        ch.on("broadcast", { event: "join" }, function (msg) {
+          var p = msg.payload, o = ownersRef.current, cid = p.cid, ini = (p.initials || "").slice(0, 3).toUpperCase();
+          var st = o.byCid[cid];
+          if (st == null) {
+            for (var k = 1; k <= 3; k++) { if (!o.bySeat[k]) { st = k; break; } }
+            if (st == null) { ch.send({ type: "broadcast", event: "full", payload: { cid: cid } }); return; }
+            o.bySeat[st] = { cid: cid, initials: ini, connected: true }; o.byCid[cid] = st;
+          } else { o.bySeat[st].connected = true; if (ini) o.bySeat[st].initials = ini; }
+          ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: st } });
+          broadcastRoster();
+          if (lastFullRef.current) ch.send({ type: "broadcast", event: "snap", payload: { seat: st, state: redact(lastFullRef.current, st), target: lastTargetRef.current } });
+        });
+        ch.on("broadcast", { event: "action" }, function (msg) {
+          var p = msg.payload, owner = ownersRef.current.byCid[p.cid]; if (owner == null) return;
+          var a = p.action || {};
+          if (GAME_MOVES.indexOf(a.type) === -1) return;
+          if (a.player != null && a.player !== owner) return;
+          if (opts && opts.onAction) opts.onAction(a, owner);
+        });
+        ch.on("presence", { event: "sync" }, refreshPresence);
+        ch.on("presence", { event: "join" }, refreshPresence);
+        ch.on("presence", { event: "leave" }, refreshPresence);
+      }
+      function wireGuest(ch) {
+        ch.on("broadcast", { event: "seat" }, function (msg) {
+          if (msg.payload.cid !== cidRef.current) return;
+          SL(msg.payload.seat); setFull(false); fullRef.current = false;
+          setStatus("seated · #" + msg.payload.seat);
+          try { ch.track({ cid: cidRef.current, initials: initRef.current, seat: msg.payload.seat, isHost: false }); } catch (e) {}
+          saveSession({ role: "guest", room: chanRef.current._bhCode, initials: initRef.current, ts: Date.now() });
+          if (retryRef.current) { clearInterval(retryRef.current); retryRef.current = null; }
+        });
+        ch.on("broadcast", { event: "full" }, function (msg) {
+          if (msg.payload.cid !== cidRef.current) return;
+          setFull(true); fullRef.current = true; setStatus("that room is full");
+          if (retryRef.current) { clearInterval(retryRef.current); retryRef.current = null; }
+        });
+        ch.on("broadcast", { event: "roster" }, function (msg) { applyRoster(msg.payload.roster, msg.payload.target); });
+        ch.on("broadcast", { event: "snap" }, function (msg) {
+          if (seatRef.current >= 1 && msg.payload.seat === seatRef.current) {
+            setSnap(msg.payload.state); setSnapV(function (v) { return v + 1; });
+            if (msg.payload.target != null) setTargetSt(msg.payload.target);
+          }
+        });
+      }
+
+      var setInitials = useCallback(function (v) {
+        v = (v || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
+        initRef.current = v; setInits(v); sset("bh_initials", v);
+      }, []);
+
+      var hostGame = useCallback(function () {
+        var client = window.bhClient; if (!client) { setStatus("add your Supabase keys in index.html"); return; }
+        var code = genCode();
+        var ch = client.channel("bankhead-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+        ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("host"); SL(0); setFull(false);
+        ownersRef.current = { bySeat: { 0: { cid: cidRef.current, initials: initRef.current, connected: true } }, byCid: {} };
+        ownersRef.current.byCid[cidRef.current] = 0;
+        wireHost(ch);
+        ch.subscribe(function (st) {
+          if (st === "SUBSCRIBED") {
+            setStatus("hosting · " + code);
+            try { ch.track({ cid: cidRef.current, initials: initRef.current, seat: 0, isHost: true }); } catch (e) {}
+            broadcastRoster();
+          } else setStatus(st);
+        });
+        saveSession({ role: "host", room: code, initials: initRef.current, ts: Date.now() });
+      }, []);
+
+      var joinGame = useCallback(function (code) {
+        var client = window.bhClient; if (!client) { setStatus("add your Supabase keys in index.html"); return; }
+        code = (code || "").toUpperCase(); if (!code) return;
+        var ch = client.channel("bankhead-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+        ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("guest"); SL(-1); setFull(false); fullRef.current = false;
+        wireGuest(ch);
+        ch.subscribe(function (st) {
+          if (st === "SUBSCRIBED") {
+            setStatus("joining…");
+            try { ch.track({ cid: cidRef.current, initials: initRef.current, seat: -1, isHost: false }); } catch (e) {}
+            var announce = function () { ch.send({ type: "broadcast", event: "join", payload: { cid: cidRef.current, initials: initRef.current } }); };
+            announce();
+            retryRef.current = setInterval(function () {
+              if (seatRef.current >= 1 || fullRef.current) { clearInterval(retryRef.current); retryRef.current = null; return; }
+              announce();
+            }, 2000);
+          } else setStatus(st);
+        });
+      }, []);
+
+      var rejoin = useCallback(function () {
+        var s = savedSession.current; if (!s) return;
+        setInitials(s.initials || "");
+        if (s.role === "host") {
+          // best-effort host resume: rehost same code, re-adopt saved state
+          var client = window.bhClient; if (!client) return;
+          var ch = client.channel("bankhead-" + s.room, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+          ch._bhCode = s.room; chanRef.current = ch; setRoom(s.room); RL("host"); SL(0);
+          ownersRef.current = { bySeat: { 0: { cid: cidRef.current, initials: s.initials, connected: true } }, byCid: {} };
+          ownersRef.current.byCid[cidRef.current] = 0;
+          wireHost(ch);
+          var hs = jget("bh_host_state");
+          ch.subscribe(function (st) {
+            if (st === "SUBSCRIBED") {
+              setStatus("resumed hosting · " + s.room);
+              try { ch.track({ cid: cidRef.current, initials: s.initials, seat: 0, isHost: true }); } catch (e) {}
+              if (hs && hs.room === s.room && opts && opts.onResume) { lastFullRef.current = hs.state; lastTargetRef.current = hs.target || 100; opts.onResume(hs.state, hs.target || 100); }
+              broadcastRoster();
+            } else setStatus(st);
+          });
+        } else { joinGame(s.room); }
+      }, []);
+
+      var goSolo = useCallback(function () { RL("off"); SL(0); setStatus(""); }, []);
+      var backToLobby = useCallback(function () {
+        var ch = chanRef.current; if (ch) { try { ch.unsubscribe(); } catch (e) {} chanRef.current = null; }
+        clearSession(); RL("lobby"); SL(-1); setRoom(null); setRoster([]); setSnap(null); setFull(false); setStatus("");
+      }, []);
+
+      // guest auto-prefill code from an invite link (does not auto-join; sets it in the lobby)
+      useEffect(function () { if (window.BH_ROOM && role === "lobby") setStatus("invite code ready: " + window.BH_ROOM); }, []);
+
+      var isSeatDown = useCallback(function (k) { return downRef.current.indexOf(k) !== -1; }, []);
+      var playerCount = roster.filter(function (r) { return r.connected; }).length;
 
       return {
-        role: role, seat: seat, status: status, room: room,
-        snap: snap, snapV: snapV, peers: peers,
-        connect: connect, send: send, broadcastState: broadcastState,
-        hostGame: function () { connect("host"); }
+        role: role, seat: seat, status: status, room: room, snap: snap, snapV: snapV,
+        roster: roster, names: names, namesV: namesV, target: target, full: full,
+        myInitials: myInitials, playerCount: playerCount, downSeats: downSeats, isSeatDown: isSeatDown,
+        prefillCode: window.BH_ROOM || "",
+        savedSession: savedSession.current,
+        setInitials: setInitials, hostGame: hostGame, joinGame: joinGame, rejoin: rejoin,
+        goSolo: goSolo, backToLobby: backToLobby, send: send, broadcastState: broadcastState
       };
     };
 
-    // -------------------------------------------------------------
-    // <OnlineBar net={net}/> — thin status strip atop the game
-    // -------------------------------------------------------------
-    window.OnlineBar = function OnlineBar(props) {
-      var net = props.net, R = window.React, h = R.createElement;
-      var st = R.useState(false), copied = st[0], setCopied = st[1];
-      var link = net.room ? (location.origin + location.pathname + "#room=" + net.room) : "";
-      function copy() {
-        if (!link || !navigator.clipboard) return;
-        navigator.clipboard.writeText(link).then(function () { setCopied(true); setTimeout(function () { setCopied(false); }, 1400); });
-      }
-      var bar = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
-        padding: "6px 10px", marginBottom: 8, borderRadius: 8,
-        background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.16)",
-        fontFamily: "var(--mono, ui-monospace, monospace)", fontSize: 11, color: "var(--fg, #eee)" };
-      var btn = { cursor: "pointer", padding: "3px 9px", borderRadius: 6,
-        border: "1px solid rgba(255,255,255,.3)", background: "transparent", color: "inherit", font: "inherit" };
+    // =====================================================================
+    // UI: lobby / host-panel / guest-wait  +  in-game bar
+    // =====================================================================
+    var mono = "var(--mono, ui-monospace, monospace)";
+    function box(extra) {
+      var s = { minHeight: "100vh", background: "var(--bg,#0b0b0e)", color: "var(--fg,#eee)",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        padding: 20, fontFamily: mono, boxSizing: "border-box" };
+      for (var k in (extra || {})) s[k] = extra[k]; return s;
+    }
+    var card = { width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", gap: 10 };
+    var inp = { width: "100%", padding: "10px 12px", fontFamily: mono, fontSize: 16, letterSpacing: 2,
+      textTransform: "uppercase", background: "rgba(255,255,255,.06)", color: "inherit",
+      border: "1px solid rgba(255,255,255,.25)", borderRadius: 8, boxSizing: "border-box", textAlign: "center" };
+    var bp = { padding: "11px 14px", fontFamily: mono, fontSize: 14, borderRadius: 8, cursor: "pointer",
+      border: "1px solid rgba(255,255,255,.3)", background: "rgba(255,255,255,.10)", color: "inherit" };
+    var bg = { padding: "8px 12px", fontFamily: mono, fontSize: 12, borderRadius: 8, cursor: "pointer",
+      border: "1px solid rgba(255,255,255,.18)", background: "transparent", color: "inherit", opacity: .85 };
+    var lbl = { fontSize: 11, opacity: .6, letterSpacing: ".05em", textTransform: "uppercase" };
 
-      if (net.role === "off") {
-        return h("div", { style: bar },
-          h("span", { style: { opacity: .7 } }, "local hot-seat"),
-          h("button", { style: btn, onClick: net.hostGame }, "\uD83C\uDF10 host online game"));
+    function copyLink(net) {
+      var link = location.origin + location.pathname + "#room=" + net.room;
+      return React.createElement("button", { style: bg, onClick: function () {
+        if (navigator.clipboard) navigator.clipboard.writeText(link);
+      } }, "copy invite link");
+    }
+    function rosterList(net) {
+      var h = React.createElement;
+      if (!net.roster.length) return h("div", { style: { opacity: .5, fontSize: 12 } }, "no players yet");
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: 4 } },
+        net.roster.map(function (r) {
+          return h("div", { key: r.seat, style: { display: "flex", alignItems: "center", gap: 8, fontSize: 13 } },
+            h("span", { style: { width: 8, height: 8, borderRadius: 8, background: r.connected ? "#39d353" : "#e5534b" } }),
+            h("b", null, r.initials || "?"),
+            h("span", { style: { opacity: .5, fontSize: 11 } }, r.isHost ? "host" : ("seat #" + r.seat), r.connected ? "" : " · reconnecting"));
+        }));
+    }
+    function Seg(props) {
+      var h = React.createElement;
+      return h("div", { style: { display: "flex", gap: 6 } }, props.opts.map(function (o) {
+        return h("button", { key: String(o.v), onClick: function () { props.onPick(o.v); },
+          style: Object.assign({}, bg, props.val === o.v ? { background: "rgba(255,255,255,.22)", opacity: 1 } : {}) }, o.l);
+      }));
+    }
+
+    window.OnlineScreens = function OnlineScreens(props) {
+      var net = props.net, h = React.createElement;
+      var cs = React.useState(net.prefillCode || ""), code = cs[0], setCode = cs[1];
+      var ts = React.useState(100), tgt = ts[0], setTgt = ts[1];
+      var zs = React.useState(0), size = zs[0], setSize = zs[1];
+      var initials = net.myInitials || "";
+      var initInput = h("input", { value: initials, maxLength: 3, placeholder: "ABC", inputMode: "text",
+        onChange: function (e) { net.setInitials(e.target.value); }, style: inp });
+
+      if (net.role === "lobby") {
+        return h("div", { style: box() }, h("div", { style: card },
+          h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".14em", textAlign: "center" } }, "BANKHEAD"),
+          h("div", { style: lbl }, "your initials"),
+          initInput,
+          h("button", { style: bp, disabled: initials.length < 3, onClick: net.hostGame }, "host a new game"),
+          h("div", { style: { textAlign: "center", opacity: .4, fontSize: 12 } }, "— or —"),
+          h("div", { style: { display: "flex", gap: 6 } },
+            h("input", { value: code, maxLength: 6, placeholder: "CODE",
+              onChange: function (e) { setCode(e.target.value.toUpperCase()); }, style: Object.assign({}, inp, { flex: 1 }) }),
+            h("button", { style: bp, disabled: initials.length < 3 || !code, onClick: function () { net.joinGame(code); } }, "join")),
+          net.full ? h("div", { style: { color: "#e5534b", fontSize: 12, textAlign: "center" } }, "that room is full")
+                   : (net.status ? h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, net.status) : null),
+          net.savedSession ? h("button", { style: bg, onClick: net.rejoin },
+            "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
+          h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)")
+        ));
       }
+
       if (net.role === "host") {
-        return h("div", { style: bar },
-          h("span", null, "\uD83C\uDF10 HOST · room ", h("b", null, net.room || "")),
-          h("span", { style: { opacity: .7 } }, (net.peers || 0) + " joined"),
-          h("button", { style: btn, onClick: copy }, copied ? "copied!" : "copy invite link"),
-          h("span", { style: { opacity: .6 } }, net.status || ""));
+        var N = Math.max(size, net.playerCount || 2);
+        var sizeOpts = []; for (var i = Math.max(2, net.playerCount || 2); i <= 4; i++) sizeOpts.push({ v: i, l: String(i) });
+        return h("div", { style: box() }, h("div", { style: card },
+          h("div", { style: { fontSize: 20, fontWeight: 800, textAlign: "center" } }, "hosting · " + net.room),
+          copyLink(net),
+          h("div", { style: lbl }, "players (" + net.playerCount + ")"),
+          rosterList(net),
+          h("div", { style: lbl }, "table size (extra seats are bots)"),
+          h(Seg, { val: N, opts: sizeOpts, onPick: setSize }),
+          h("div", { style: lbl }, "play to"),
+          h(Seg, { val: tgt, opts: [{ v: 100, l: "100" }, { v: 200, l: "200" }, { v: 0, l: "free" }], onPick: setTgt }),
+          h("button", { style: bp, disabled: net.playerCount < 2, onClick: function () { props.onStart(tgt, N); } },
+            net.playerCount < 2 ? "waiting for players…" : "start game"),
+          h("div", { style: { opacity: .5, fontSize: 11, textAlign: "center" } }, "players can join with the code until you start"),
+          h("button", { style: bg, onClick: net.backToLobby }, "cancel")
+        ));
       }
+
+      // guest, pre-start
+      return h("div", { style: box() }, h("div", { style: card },
+        h("div", { style: { fontSize: 20, fontWeight: 800, textAlign: "center" } }, "room " + net.room),
+        net.full ? h("div", { style: { color: "#e5534b", textAlign: "center" } }, "that room is full")
+                 : h("div", { style: { opacity: .8, fontSize: 13, textAlign: "center" } },
+                     net.seat >= 1 ? ("you're in — seat #" + net.seat + " · " + (net.myInitials || "")) : (net.status || "joining…")),
+        rosterList(net),
+        net.full ? null : h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, "waiting for the host to start…"),
+        h("button", { style: bg, onClick: net.backToLobby }, "leave")
+      ));
+    };
+
+    window.OnlineBar = function OnlineBar(props) {
+      var net = props.net, h = React.createElement;
+      var bar = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "6px 10px",
+        marginBottom: 8, borderRadius: 8, background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.16)",
+        fontFamily: mono, fontSize: 11, color: "var(--fg,#eee)" };
+      var btn = { cursor: "pointer", padding: "3px 9px", borderRadius: 6, border: "1px solid rgba(255,255,255,.3)", background: "transparent", color: "inherit", font: "inherit" };
+      if (net.role === "off") {
+        return h("div", { style: bar }, h("span", { style: { opacity: .7 } }, "solo"),
+          h("button", { style: btn, onClick: net.backToLobby }, "\u2302 lobby"));
+      }
+      var dots = net.roster.map(function (r) {
+        return h("span", { key: r.seat, style: { display: "inline-flex", alignItems: "center", gap: 3, opacity: r.connected ? 1 : .5 } },
+          h("span", { style: { width: 7, height: 7, borderRadius: 7, background: r.connected ? "#39d353" : "#e5534b" } }),
+          (r.initials || "?") + (r.connected ? "" : "\u2026"));
+      });
       return h("div", { style: bar },
-        h("span", null, "\uD83C\uDF10 seat #" + net.seat),
-        h("span", { style: { opacity: .7 } }, net.status || "connecting…"));
+        h("b", null, "\uD83C\uDF10 " + (net.role === "host" ? "HOST" : "seat #" + net.seat) + " · " + net.room),
+        h("span", { style: { display: "inline-flex", gap: 8, flexWrap: "wrap" } }, dots),
+        net.role === "host" ? h("button", { style: btn, onClick: function () {
+          if (navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + "#room=" + net.room);
+        } }, "invite") : null);
     };
   })();
   </script>
 
-  <!-- ============================================================= -->
-  <!-- 3) THE GAME  (drop-in: your unmodified artifact export)        -->
-  <!--    The file keeps its `import React` / `export default` so it   -->
-  <!--    still runs inside Claude. Here we rewrite those three lines  -->
-  <!--    at load time and mount it. No hand edits to the game file.   -->
-  <!-- ============================================================= -->
+  <!-- 3) THE GAME (drop-in artifact export; rewritten + mounted at load) -->
   <script>
   (function () {
     var boot = document.getElementById("boot");
     function fail(msg) { if (boot) boot.textContent = msg; console.error("[BANKHEAD]", msg); }
     function loadScript(src) {
       return new Promise(function (res, rej) {
-        var s = document.createElement("script");
-        s.src = src; s.onload = res;
+        var s = document.createElement("script"); s.src = src; s.onload = res;
         s.onerror = function () { rej(new Error("could not load " + src)); };
         document.head.appendChild(s);
       });
     }
-    // make sure the libraries are actually present (the <head> tags are best-effort)
     async function ensureLibs() {
-      if (!window.React)     await loadScript("https://unpkg.com/react@18/umd/react.production.min.js");
-      if (!window.ReactDOM)  await loadScript("https://unpkg.com/react-dom@18/umd/react-dom.production.min.js");
-      if (!window.Babel)     await loadScript("https://unpkg.com/@babel/standalone/babel.min.js");
-      if (!window.supabase)  await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
+      if (!window.React)    await loadScript("https://unpkg.com/react@18/umd/react.production.min.js");
+      if (!window.ReactDOM) await loadScript("https://unpkg.com/react-dom@18/umd/react-dom.production.min.js");
+      if (!window.Babel)    await loadScript("https://unpkg.com/@babel/standalone/babel.min.js");
+      if (!window.supabase) await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
     }
-
     (async function () {
       try {
         await ensureLibs();
         if (!window.React || !window.ReactDOM || !window.Babel)
           throw new Error("core libraries unavailable (offline or a CDN is blocked)");
-
         var res = await fetch("bankhead.jsx", { cache: "no-cache" });
         if (!res.ok) throw new Error("couldn't fetch bankhead.jsx (" + res.status + ")");
         var code = await res.text();
-
-        // (1) React import -> destructure from the global UMD React
-        code = code.replace(
-          /^[ \t]*import\s+React\s*,?\s*(\{[^}]*\})?\s*from\s*["']react["'];?[ \t]*$/m,
-          function (_m, named) { return named ? ("const " + named + " = React;") : "/* React (global) */"; }
-        );
-        // strip any other bare imports (none expected in BANKHEAD; warn if found)
+        code = code.replace(/^[ \t]*import\s+React\s*,?\s*(\{[^}]*\})?\s*from\s*["']react["'];?[ \t]*$/m,
+          function (_m, named) { return named ? ("const " + named + " = React;") : "/* React (global) */"; });
         code = code.replace(/^[ \t]*import\s+[^\n]*from\s*["'][^"']+["'];?[ \t]*$/mg, function (m) {
-          console.warn("[BANKHEAD] dropped unresolved import:", m.trim()); return "";
-        });
-        // (2) drop `export default`, remembering the component name (default App)
+          console.warn("[BANKHEAD] dropped unresolved import:", m.trim()); return ""; });
         var comp = "App";
-        code = code.replace(/export\s+default\s+function\s+([A-Za-z0-9_$]+)\s*\(/,
-          function (_m, name) { comp = name; return "function " + name + "("; });
+        code = code.replace(/export\s+default\s+function\s+([A-Za-z0-9_$]+)\s*\(/, function (_m, name) { comp = name; return "function " + name + "("; });
         code = code.replace(/export\s+default\s+/, "");
-        // (3) expose the component (do NOT mount inside the injected script)
         code += "\n;window.__BANKHEAD_APP__ = " + comp + ";\n";
-
-        // compile JSX and run it in global scope
-        // classic runtime => React.createElement, and NO injected `import react/jsx-runtime`
         var out = Babel.transform(code, { presets: [["react", { runtime: "classic" }]], filename: "bankhead.jsx" }).code;
-        var el = document.createElement("script");
-        el.textContent = out;
-        document.body.appendChild(el);
-
-        // (4) mount from HERE, where React/ReactDOM are guaranteed loaded
+        var el = document.createElement("script"); el.textContent = out; document.body.appendChild(el);
         var App = window.__BANKHEAD_APP__;
         if (!App) throw new Error("game did not define its component");
         var root = document.getElementById("root");
         if (ReactDOM.createRoot) ReactDOM.createRoot(root).render(React.createElement(App));
-        else ReactDOM.render(React.createElement(App), root);   // React 17 fallback
+        else ReactDOM.render(React.createElement(App), root);
       } catch (e) {
-        fail("BANKHEAD failed to load: " + e.message +
-          (location.protocol === "file:" ? "  (serve via http / GitHub Pages, not file://)" : ""));
+        fail("BANKHEAD failed to load: " + e.message + (location.protocol === "file:" ? "  (serve via http / GitHub Pages, not file://)" : ""));
       }
     })();
   })();
