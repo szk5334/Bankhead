@@ -1075,7 +1075,7 @@ function HumanSide({s,seat,sel,setSel,dispatch,handSort,setHandSort,seatNames}){
       <div className="hintline">
         {active && <>
           <button className={"tag"+(showCounts?" on":"")} onClick={()=>setShowCounts(v=>!v)}>Card Counting</button>
-          <button className="tag" onClick={askCounter}>help</button>
+          <button className="tag" onClick={askCounter}>suggest</button>
           {hint && <span className="htxt">{hint.text}</span>}
         </>}
       </div>
@@ -1827,11 +1827,11 @@ export default function App(){
   };
 
   if(net.role==="spectate"){
-    return <SpectatorView net={net}/>;
+    return <div className="bh" data-theme={theme}><style>{THEME_CSS}</style><SpectatorView net={net}/></div>;
   }
 
   if(net.role==="lobby" || (net.role!=="off" && s.mode!=="play")){
-    return <OnlineScreens net={net} onStart={startOnline}/>;
+    return <div className="bh" data-theme={theme}><style>{THEME_CSS}</style><OnlineScreens net={net} onStart={startOnline}/></div>;
   }
 
   if(s.mode==="setup"){

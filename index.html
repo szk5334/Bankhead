@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r4</div></div>
+  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r5</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS)
        Transport = Supabase Realtime broadcast + presence ONLY.
@@ -27,7 +27,7 @@
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
-    window.BH_BUILD = "lobby-r4";
+    window.BH_BUILD = "lobby-r5";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -447,26 +447,32 @@
     // UI
     // =====================================================================
     var mono = "var(--mono, ui-monospace, monospace)";
+    var GRN = "var(--green,#4fc47a)", RED = "var(--red,#ed7464)", INK = "var(--ink,#f2e8ce)", DIM = "var(--dim,#9a8f63)",
+        LINE = "var(--line,rgba(212,175,55,.42))", LINE2 = "var(--line2,rgba(212,175,55,.20))", PLAYINK = "var(--playink,#0d3322)",
+        GOLD = "var(--purple,#e2c068)";
     function box(extra) {
-      var s = { minHeight: "100vh", background: "var(--bg,#0b0b0e)", color: "var(--fg,#eee)",
+      var s = { minHeight: "100vh", background: "var(--bg,#0f3b2b)", color: INK,
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
-        padding: 20, fontFamily: mono, boxSizing: "border-box", gap: 12 };
+        padding: 16, fontFamily: mono, boxSizing: "border-box", gap: 12 };
       for (var k in (extra || {})) s[k] = extra[k]; return s;
     }
-    var card = { width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", gap: 10 };
+    var card = { width: "100%", maxWidth: 360, display: "flex", flexDirection: "column", gap: 10,
+      padding: "14px 14px 16px", boxSizing: "border-box", border: "1px solid " + LINE, background: "rgba(0,0,0,.14)" };
     var inp = { width: "100%", padding: "10px 12px", fontFamily: mono, fontSize: 16, letterSpacing: 2,
-      textTransform: "uppercase", background: "rgba(255,255,255,.06)", color: "inherit",
-      border: "1px solid rgba(255,255,255,.25)", borderRadius: 8, boxSizing: "border-box", textAlign: "center" };
+      textTransform: "uppercase", background: "rgba(0,0,0,.22)", color: INK,
+      border: "1px solid " + LINE, borderRadius: 0, boxSizing: "border-box", textAlign: "center" };
     var chatInp = { width: "100%", padding: "9px 11px", fontFamily: mono, fontSize: 14, letterSpacing: 0,
-      textTransform: "none", background: "rgba(255,255,255,.06)", color: "inherit",
-      border: "1px solid rgba(255,255,255,.25)", borderRadius: 8, boxSizing: "border-box", textAlign: "left" };
-    var bp = { padding: "11px 14px", fontFamily: mono, fontSize: 14, borderRadius: 8, cursor: "pointer",
-      border: "1px solid rgba(255,255,255,.3)", background: "rgba(255,255,255,.10)", color: "inherit" };
-    var bg = { padding: "8px 12px", fontFamily: mono, fontSize: 12, borderRadius: 8, cursor: "pointer",
-      border: "1px solid rgba(255,255,255,.18)", background: "transparent", color: "inherit", opacity: .85 };
-    var lbl = { fontSize: 11, opacity: .6, letterSpacing: ".05em", textTransform: "uppercase" };
+      textTransform: "none", background: "rgba(0,0,0,.22)", color: INK,
+      border: "1px solid " + LINE, borderRadius: 0, boxSizing: "border-box", textAlign: "left" };
+    var bp = { padding: "11px 14px", fontFamily: mono, fontSize: 12.5, borderRadius: 0, cursor: "pointer",
+      letterSpacing: ".09em", textTransform: "uppercase", fontWeight: 700,
+      border: "1px solid " + GRN, background: GRN, color: PLAYINK };
+    var bg = { padding: "8px 12px", fontFamily: mono, fontSize: 11, borderRadius: 0, cursor: "pointer",
+      letterSpacing: ".08em", textTransform: "uppercase",
+      border: "1px solid " + LINE, background: "transparent", color: DIM };
+    var lbl = { fontSize: 9, letterSpacing: ".18em", textTransform: "uppercase", color: DIM, fontWeight: 700, fontFamily: mono };
     var chatList = { maxHeight: 150, overflowY: "auto", padding: "6px 8px", display: "flex", flexDirection: "column", gap: 2,
-      background: "rgba(0,0,0,.22)", border: "1px solid rgba(255,255,255,.12)", borderRadius: 8 };
+      background: "rgba(0,0,0,.22)", border: "1px solid " + LINE2, borderRadius: 0 };
 
     function ChatBox(props) {
       var h = React.createElement, st = React.useState(""), txt = st[0], setTxt = st[1], listRef = React.useRef(null);
@@ -505,7 +511,7 @@
       return h("div", { style: { display: "flex", flexDirection: "column", gap: 4 } },
         net.roster.map(function (r) {
           return h("div", { key: r.seat, style: { display: "flex", alignItems: "center", gap: 8, fontSize: 13 } },
-            h("span", { style: { width: 8, height: 8, borderRadius: 8, background: r.connected ? "#39d353" : "#e5534b" } }),
+            h("span", { style: { width: 8, height: 8, borderRadius: 8, background: r.connected ? GRN : RED } }),
             h("b", null, r.initials || "?"),
             h("span", { style: { opacity: .5, fontSize: 11 } }, (r.isHost ? "host" : "seat #" + r.seat) + (r.connected ? "" : " · reconnecting")));
         }));
@@ -514,7 +520,7 @@
       var h = React.createElement;
       return h("div", { style: { display: "flex", gap: 6 } }, props.opts.map(function (o) {
         return h("button", { key: String(o.v), onClick: function () { props.onPick(o.v); },
-          style: Object.assign({}, bg, props.val === o.v ? { background: "rgba(255,255,255,.22)", opacity: 1 } : {}) }, o.l);
+          style: Object.assign({}, bg, props.val === o.v ? { background: GRN, color: PLAYINK, border: "1px solid " + GRN } : {}) }, o.l);
       }));
     }
     function section(title, body) {
@@ -579,10 +585,10 @@
       if (net.role === "lobby") {
         return h("div", { style: box() },
           h("div", { style: card },
-            h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".14em", textAlign: "center" } }, "BANKHEAD"),
+            h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".22em", textAlign: "center", color: GOLD } }, "BANKHEAD"),
             h("div", { style: lbl }, "your initials"),
             initInput,
-            net.prefillCode ? h("div", { style: { padding: "8px 10px", borderRadius: 8, background: "rgba(57,211,83,.10)", border: "1px solid rgba(57,211,83,.4)", fontSize: 12, textAlign: "center" } },
+            net.prefillCode ? h("div", { style: { padding: "8px 10px", background: "rgba(79,196,122,.12)", border: "1px solid " + GRN, fontSize: 12, textAlign: "center", color: INK } },
               "invited to room ", h("b", null, net.prefillCode),
               h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), disabled: initials.length < 3, onClick: function () { net.joinGame(net.prefillCode); } }, initials.length < 3 ? "enter initials to join" : "join room " + net.prefillCode)) : null,
             h("button", { style: bp, disabled: initials.length < 3, onClick: net.hostGame }, "host a new game"),
@@ -591,7 +597,7 @@
               h("input", { value: code, maxLength: 6, placeholder: "CODE",
                 onChange: function (e) { setCode(e.target.value.toUpperCase()); }, style: Object.assign({}, inp, { flex: 1 }) }),
               h("button", { style: bp, disabled: initials.length < 3 || !code, onClick: function () { net.joinGame(code); } }, "join")),
-            net.full ? h("div", { style: { color: "#e5534b", fontSize: 12, textAlign: "center" } }, "that room is full")
+            net.full ? h("div", { style: { color: RED, fontSize: 12, textAlign: "center" } }, "that room is full")
                      : (net.status ? h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, net.status) : null),
             net.savedSession ? h("button", { style: bg, onClick: net.rejoin }, "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
             h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)"),
@@ -625,7 +631,7 @@
       return h("div", { style: box() },
         h("div", { style: card },
           h("div", { style: { fontSize: 20, fontWeight: 800, textAlign: "center" } }, "room " + net.room),
-          net.full ? h("div", { style: { color: "#e5534b", textAlign: "center" } }, "that room is full")
+          net.full ? h("div", { style: { color: RED, textAlign: "center" } }, "that room is full")
                    : h("div", { style: { opacity: .8, fontSize: 13, textAlign: "center" } },
                        net.seat >= 1 ? ("you're in — seat #" + net.seat + " · " + (net.myInitials || "")) : (net.status || "joining…")),
           rosterList(net),
@@ -640,9 +646,9 @@
       var seenRef = React.useRef(0);
       React.useEffect(function () { if (open) seenRef.current = net.roomChat.length; }, [open, net.roomChat.length]);
       var bar = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "6px 10px",
-        marginBottom: 8, borderRadius: 8, background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.16)",
-        fontFamily: mono, fontSize: 11, color: "var(--fg,#eee)" };
-      var btn = { cursor: "pointer", padding: "3px 9px", borderRadius: 6, border: "1px solid rgba(255,255,255,.3)", background: "transparent", color: "inherit", font: "inherit" };
+        marginBottom: 8, borderRadius: 0, background: "rgba(0,0,0,.28)", border: "1px solid " + LINE,
+        fontFamily: mono, fontSize: 11, color: INK };
+      var btn = { cursor: "pointer", padding: "3px 9px", borderRadius: 0, border: "1px solid " + LINE, background: "transparent", color: DIM, font: "inherit", letterSpacing: ".06em" };
       if (net.role === "off") {
         return h("div", { style: bar }, h("span", { style: { opacity: .7 } }, "solo"),
           h("button", { style: btn, onClick: net.backToLobby }, "\u2302 lobby"));
@@ -650,12 +656,12 @@
       var unread = open ? 0 : Math.max(0, net.roomChat.length - seenRef.current);
       var dots = net.roster.map(function (r) {
         return h("span", { key: r.seat, style: { display: "inline-flex", alignItems: "center", gap: 3, opacity: r.connected ? 1 : .5 } },
-          h("span", { style: { width: 7, height: 7, borderRadius: 7, background: r.connected ? "#39d353" : "#e5534b" } }),
+          h("span", { style: { width: 7, height: 7, borderRadius: 7, background: r.connected ? GRN : RED } }),
           (r.initials || "?") + (r.connected ? "" : "\u2026"));
       });
       var sheet = { position: "fixed", left: 0, right: 0, bottom: 0, margin: "0 auto", maxWidth: 420, boxSizing: "border-box",
-        background: "var(--bg,#0b0b0e)", borderTop: "1px solid rgba(255,255,255,.22)", padding: 12, zIndex: 9999,
-        boxShadow: "0 -8px 24px rgba(0,0,0,.5)", fontFamily: mono, color: "var(--fg,#eee)" };
+        background: "var(--bg,#0f3b2b)", borderTop: "1px solid " + LINE, padding: 12, zIndex: 9999,
+        boxShadow: "0 -8px 24px rgba(0,0,0,.5)", fontFamily: mono, color: INK };
       return h(React.Fragment, null,
         h("div", { style: bar },
           h("b", null, "\uD83C\uDF10 " + (net.role === "host" ? "HOST" : "seat #" + net.seat) + " · " + net.room),
@@ -663,7 +669,7 @@
           net.role === "host" ? h("button", { style: btn, onClick: function () {
             if (navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + "#room=" + net.room);
           } }, "invite") : null,
-          h("button", { style: btn, onClick: function () { setOpen(!open); } }, "\uD83D\uDCAC" + (unread ? " " + unread : ""))),
+          h("button", { style: btn, onClick: function () { setOpen(!open); } }, "\uD83D\uDCAC chat" + (unread ? " " + unread : ""))),
         open ? h("div", { style: sheet },
           h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
             h("b", { style: { fontSize: 12 } }, "room chat · " + net.room),
