@@ -17,13 +17,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading BANKHEAD…</div></div>
+  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r1</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS) -->
   <script>
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
+    window.BH_BUILD = "lobby-r1";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -362,7 +363,8 @@
                    : (net.status ? h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, net.status) : null),
           net.savedSession ? h("button", { style: bg, onClick: net.rejoin },
             "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
-          h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)")
+          h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)"),
+          h("div", { style: { opacity: .35, fontSize: 10, textAlign: "center", marginTop: 4 } }, "build " + (window.BH_BUILD || "?"))
         ));
       }
 
