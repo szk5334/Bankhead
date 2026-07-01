@@ -563,19 +563,22 @@ function botChooseResponse(s, pi, prof){
 /* =======================================================================
    STATE
    ===================================================================== */
-function freshRound(scores, n, brains){
+function freshRound(scores, n, brains, names){
   const decks=decksFor(n);
   const deck=makeDeck(decks);
   const players=[];
   for(let i=0;i<n;i++) players.push({hand:deck.splice(0,handSize(n))});
   const royalCard = deck.length ? deck.pop() : null;   // bottom of stock, flipped face-up: the POTENTIAL royal suit
+  const nm=(names||Array(n).fill("")).slice(0,n);
+  const op0=nm[0] || (brains[0]==="human" ? "You" : PROFILES[brains[0]].name);
+  const openLine = op0==="You" ? "New round dealt. You open." : `New round dealt. ${op0} opens.`;
   return { mode:"play", n, brains:[...brains], decks, players, stock:deck, pile:[],
     scores:[...scores], roundScore:Array(n).fill(0), current:0, phase:"play",
     pendingBanker:null, lastBank:null, banked:Array.from({length:n},()=>[]),
     lastCardBy:Array(n).fill(null), royalSuit:null, royalCard, royalActivated:false, roundBreak:Array.from({length:n},()=>({})),
     stall:0, prevBanked:0, prevMinHand:handSize(n), prevStockLow:Infinity, discarded:[],
-    roundStartedAt:null, roundEndedAt:null,
-    log:["New round dealt. You open."] };
+    roundStartedAt:null, roundEndedAt:null, names:nm,
+    log:[openLine] };
 }
 const SETUP = { mode:"setup", n:4, brains:["human","vault","gremlin","bolt"], counts:["human","vault","gremlin","bolt"].map(defaultMem) };
 
@@ -613,7 +616,7 @@ function humanMetrics(s, seat){
   const handPenalty = scoreBank(s.players[seat].hand);                 // what my current hand would cost me right now
   return {total, gone, suit, crown, nextName:who(s,next), nextHand, shortestOpp, U, bankRead, royalCard, myRoyalCardSuit, handPenalty};
 }
-const who=(s,pi)=> pi===0 ? "You" : (s.brains[pi]==="human" ? `Player ${pi+1}` : PROFILES[s.brains[pi]].name);
+const who=(s,pi)=>{ const nm=s.names&&s.names[pi]; if(nm) return nm; return s.brains[pi]==="human" ? (pi===0?"You":`Player ${pi+1}`) : PROFILES[s.brains[pi]].name; };
 // display identity for any seat — humans get their own glyph/colour so the table reads cleanly
 const HUMAN_DISPLAY = { glyph:"☻", color:"var(--cyan)",
   blurb:"A person plays this seat on the same device — their hand stays hidden from everyone else until it's their turn." };
@@ -806,8 +809,8 @@ function reducer(state,a){
       const counts=[...(state.counts||[])]; counts[a.seat]={...countCfg(state,a.seat), n:a.n};
       return {...state, counts};
     }
-    case "START": return {...freshRound(a.scores||Array(state.n).fill(0), state.n, state.brains), counts:[...(state.counts||[])], tune:[...(state.tune||[])]};
-    case "RESUME": return {...freshRound(a.scores||Array(a.n).fill(0), a.n, a.brains), counts:a.brains.map(defaultMem), tune:[]};
+    case "START": return {...freshRound(a.scores||Array(state.n).fill(0), state.n, state.brains, a.names), counts:[...(state.counts||[])], tune:[...(state.tune||[])]};
+    case "RESUME": return {...freshRound(a.scores||Array(a.n).fill(0), a.n, a.brains, a.names), counts:a.brains.map(defaultMem), tune:[]};
     case "PLAY": {const s=playCards(clone(state),a.player,a.cardIds); progress(s); return s;}
     case "PASS_BANK": {const s=passBank(clone(state),a.player); progress(s); return s;}
     case "PICKUP": {const s=pickUp(clone(state),a.player); progress(s); return s;}
@@ -1374,8 +1377,9 @@ function Setup({s,dispatch,seatNames,setSeatNames,target,setTarget,profiles,onSh
 
         <button style={{...btn("gold"),marginTop:4,fontSize:15,padding:"11px 14px"}} onClick={()=>{
           const init=Array(s.n).fill(0);
+          const nm=Array.from({length:s.n},(_,j)=> s.brains[j]==="human" ? (cleanInitials(seatNames[j]||"")||"") : "");
           for(let j=0;j<s.n;j++){ if(s.brains[j]==="human"){ const ini=cleanInitials(seatNames[j]); if(ini && profiles[ini]) init[j]=profiles[ini].total||0; } }
-          dispatch({type:"START", scores:init});
+          dispatch({type:"START", scores:init, names:nm});
         }}>
           deal the table ▸
         </button>
@@ -1745,7 +1749,7 @@ export default function App(){
     const N = Math.max(pc, Math.min(4, size||pc));
     const brains = Array.from({length:N},(_,i)=> i<pc ? "human" : BRAIN_ORDER[(i-pc)%BRAIN_ORDER.length]);
     setTarget(tgt);
-    apply({type:"RESUME", n:N, brains, scores:Array(N).fill(0)});
+    apply({type:"RESUME", n:N, brains, scores:Array(N).fill(0), names:(net.names||[]).slice(0,N)});
   },[net.playerCount]);
 
   // bot auto-play — and covers a human seat whose player is momentarily disconnected
@@ -1789,7 +1793,7 @@ export default function App(){
     const names=Array(4).fill(""); (c.names||[]).forEach((v,i)=>{ if(i<4) names[i]=cleanInitials(v); });
     setSeatNames(names); setTarget(c.target||0);
     recordedRef.current=null;
-    apply({type:"RESUME", scores:c.scores, n:c.n, brains:c.brains});
+    apply({type:"RESUME", scores:c.scores, n:c.n, brains:c.brains, names:c.names});
     setSel([]);
   };
   const discardCampaign=()=>{ saveCampaign(null); setCampaign(null); };

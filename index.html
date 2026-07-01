@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r2</div></div>
+  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r3</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS)
        Transport = Supabase Realtime broadcast + presence ONLY.
@@ -27,7 +27,7 @@
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
-    window.BH_BUILD = "lobby-r2";
+    window.BH_BUILD = "lobby-r3";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -93,6 +93,7 @@
       var M = useState([]), downSeats = M[0], setDownSeats = M[1];
       var N = useState([]), lobbyChat = N[0], setLobbyChat = N[1];
       var O = useState([]), roomChat = O[0], setRoomChat = O[1];
+      var P = useState(false), hostStarted = P[0], setHostStarted = P[1];
 
       var chanRef = useRef(null), lobbyChanRef = useRef(null), roleRef = useRef(role), seatRef = useRef(seat),
           fullRef = useRef(false), initRef = useRef(myInitials), downRef = useRef([]),
@@ -172,7 +173,7 @@
 
       var broadcastState = useCallback(function (full, nm, tgt) {
         var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
-        startedRef.current = true;
+        if (!startedRef.current) { startedRef.current = true; setHostStarted(true); }
         lastFullRef.current = full; if (tgt != null) lastTargetRef.current = tgt;
         jset("bh_host_state", { room: ch._bhCode, state: full, target: lastTargetRef.current, ts: Date.now() });
         var seats = ownersRef.current.bySeat;
@@ -204,6 +205,13 @@
         });
         ch.on("broadcast", { event: "chat" }, function (msg) {
           var p = msg.payload; pushChat(setRoomChat, { id: ++seqRef.current, from: p.from, seat: p.seat, text: p.text, ts: p.ts, me: false });
+        });
+        ch.on("broadcast", { event: "bye" }, function (msg) {
+          var cid = msg.payload && msg.payload.cid; if (!cid) return;
+          var o = ownersRef.current, st = o.byCid[cid]; if (st == null) return;
+          if (!startedRef.current) { delete o.bySeat[st]; delete o.byCid[cid]; }
+          else if (o.bySeat[st]) { o.bySeat[st].connected = false; }
+          broadcastRoster();
         });
         ch.on("presence", { event: "sync" }, refreshPresence);
         ch.on("presence", { event: "join" }, refreshPresence);
@@ -323,13 +331,14 @@
       var goSolo = useCallback(function () { if (opts && opts.onGoSolo) opts.onGoSolo(); RL("off"); SL(0); setStatus(""); }, []);
       var backToLobby = useCallback(function () {
         if (roleRef.current === "host") { closeRoom(); return; }
+        var lc = chanRef.current; if (lc) { try { lc.send({ type: "broadcast", event: "bye", payload: { cid: cidRef.current } }); } catch (e) {} }
         clearSession(); teardownRoom(); RL("lobby"); SL(-1); setFull(false); setStatus("");
       }, []);
 
       // ---- lobby chat channel: joined only while on the lobby screen ----
       useEffect(function () {
         if (!configured) return;
-        if (role === "lobby") {
+        if (role === "lobby" || (role === "host" && !hostStarted)) {
           if (!lobbyChanRef.current) {
             var ch = window.bhClient.channel("bankhead-lobby", { config: { broadcast: { self: false } } });
             ch.on("broadcast", { event: "chat" }, function (msg) {
@@ -342,11 +351,12 @@
           try { window.bhClient.removeChannel(lobbyChanRef.current); } catch (e) {}
           lobbyChanRef.current = null;
         }
-      }, [role]);
+      }, [role, hostStarted]);
 
       // best-effort: shed Realtime state if the tab is closed
       useEffect(function () {
         function bye() {
+          try { if (chanRef.current && roleRef.current === "guest") chanRef.current.send({ type: "broadcast", event: "bye", payload: { cid: cidRef.current } }); } catch (e) {}
           try { if (chanRef.current) window.bhClient.removeChannel(chanRef.current); } catch (e) {}
           try { if (lobbyChanRef.current) window.bhClient.removeChannel(lobbyChanRef.current); } catch (e) {}
         }
@@ -411,6 +421,15 @@
             onChange: function (e) { setTxt(e.target.value); },
             onKeyDown: function (e) { if (e.key === "Enter") submit(); } }),
           h("button", { style: bp, onClick: submit }, "send")));
+    }
+
+    function ChatTabs(props) {
+      var h = React.createElement, ts = React.useState("lobby"), tab = ts[0], setTab = ts[1];
+      function tb(id, label) { return h("button", { onClick: function () { setTab(id); }, style: Object.assign({}, bg, tab === id ? { background: "rgba(255,255,255,.22)", opacity: 1 } : {}) }, label); }
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: 8 } },
+        h("div", { style: { display: "flex", gap: 6 } }, tb("lobby", "lobby chat"), tb("room", "room chat")),
+        tab === "lobby" ? h(ChatBox, { messages: props.net.lobbyChat, onSend: props.net.sendLobbyChat })
+                        : h(ChatBox, { messages: props.net.roomChat, onSend: props.net.sendRoomChat }));
     }
 
     function copyLink(net) {
@@ -485,7 +504,7 @@
             h("button", { style: bp, disabled: net.playerCount < 2, onClick: function () { props.onStart(tgt, Nn); } },
               net.playerCount < 2 ? "waiting for players…" : "start game"),
             h("button", { style: bg, onClick: net.backToLobby }, "leave (close room)")),
-          section("room chat", h(ChatBox, { messages: net.roomChat, onSend: net.sendRoomChat })));
+          h("div", { style: card }, h(ChatTabs, { net: net })));
       }
 
       // guest, pre-start
