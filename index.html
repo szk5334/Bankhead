@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0b0b0e" />
+  <title>BANKHEAD</title>
+  <style>
+    html,body{margin:0;padding:0;background:#0b0b0e;color:#eee;-webkit-text-size-adjust:100%;}
+    #boot{font:13px/1.5 system-ui,monospace;padding:18px;opacity:.7;}
+  </style>
+
+  <!-- ============================================================= -->
+  <!-- 1) LIBRARIES (loaded from CDN in the player's browser)         -->
+  <!-- ============================================================= -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="root"><div id="boot">loading BANKHEAD…</div></div>
+
+  <!-- ============================================================= -->
+  <!-- 2) CONFIG + NETWORK LAYER  (plain JS — runs immediately)       -->
+  <!--    >>> PASTE YOUR TWO SUPABASE VALUES BELOW <<<                -->
+  <!-- ============================================================= -->
+  <script>
+  (function () {
+    // --- your Supabase project, from Dashboard > Connect (or Settings > API Keys) ---
+    var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
+    var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
+
+    // room code from the invite link (#room=XXXX) => guest auto-joins
+    var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
+    window.BH_ROOM = m ? m[1].toUpperCase() : null;
+
+    var configured = SUPABASE_URL.indexOf("PASTE_") === -1 && SUPABASE_KEY.indexOf("PASTE_") === -1;
+    window.bhClient = (configured && window.supabase)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      : null;
+
+    // -------------------------------------------------------------
+    // useBankheadNet(opts) — authoritative-host sync over one channel
+    //   role: 'off' | 'host' | 'guest'
+    //   host runs the real game; guests display a per-seat REDACTED snapshot
+    //   and relay their moves back to the host.
+    // -------------------------------------------------------------
+    window.useBankheadNet = function useBankheadNet(opts) {
+      var R = window.React;
+      var useState = R.useState, useEffect = R.useEffect, useRef = R.useRef, useCallback = R.useCallback;
+
+      var s0 = useState("off"),   role = s0[0],   setRole = s0[1];
+      var s1 = useState(0),       seat = s1[0],   setSeat = s1[1];
+      var s2 = useState(""),      status = s2[0], setStatus = s2[1];
+      var s3 = useState(null),    room = s3[0],   setRoom = s3[1];
+      var s4 = useState(null),    snap = s4[0],   setSnap = s4[1];
+      var s5 = useState(0),       snapV = s5[0],  setSnapV = s5[1];
+      var s6 = useState(0),       peers = s6[0],  setPeers = s6[1];
+
+      var optsRef = useRef(opts); optsRef.current = opts;
+      var chanRef = useRef(null);
+      var roleRef = useRef("off");
+      var seatRef = useRef(0);
+      var cidRef  = useRef(Math.random().toString(36).slice(2, 10));
+      var ownersRef = useRef({ bySeat: {}, byCid: {} });
+      var lastFullRef = useRef(null);
+      var lastNamesRef = useRef(null);
+      var joinTimerRef = useRef(null);
+
+      function setRoleX(r){ roleRef.current = r; setRole(r); }
+      function setSeatX(k){ seatRef.current = k; setSeat(k); }
+
+      // strip every seat except `forSeat` to face-down counts, and hide the stock order
+      function redact(state, forSeat) {
+        if (!state || !state.players) return state;
+        var fake = function (len) {
+          var a = []; for (var i = 0; i < len; i++) a.push({ id: 0, rank: "?", suit: "?", back: true }); return a;
+        };
+        var players = state.players.map(function (p, i) {
+          if (i === forSeat) return p;
+          var copy = {}; for (var k in p) copy[k] = p[k];
+          copy.hand = fake((p.hand || []).length);
+          return copy;
+        });
+        var out = {}; for (var k in state) out[k] = state[k];
+        out.players = players;
+        out.stock = fake((state.stock || []).length);   // don't leak upcoming draws
+        return out;
+      }
+
+      var broadcastState = useCallback(function (full, names) {
+        var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
+        lastFullRef.current = full; lastNamesRef.current = names;
+        var seats = ownersRef.current.bySeat;
+        Object.keys(seats).forEach(function (k) {
+          var sn = +k; if (sn === 0) return;
+          ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redact(full, sn), names: names } });
+        });
+      }, []);
+
+      var send = useCallback(function (action) {
+        var ch = chanRef.current; if (!ch) return;
+        ch.send({ type: "broadcast", event: "action", payload: { cid: cidRef.current, action: action } });
+      }, []);
+
+      var connect = useCallback(function (asRole, code) {
+        var client = window.bhClient;
+        if (!client) { setStatus("add your Supabase keys in index.html"); return; }
+        code = code || (Math.random().toString(36).slice(2, 5) + Math.random().toString(36).slice(2, 5)).toUpperCase();
+        var ch = client.channel("bankhead-" + code, { config: { broadcast: { self: false } } });
+        chanRef.current = ch; setRoom(code); setRoleX(asRole);
+
+        if (asRole === "host") {
+          ownersRef.current = { bySeat: { 0: cidRef.current }, byCid: {} };
+
+          ch.on("broadcast", { event: "join" }, function (msg) {
+            var cid = msg.payload.cid, o = ownersRef.current, assigned = o.byCid[cid];
+            if (assigned == null) {
+              for (var k = 1; k <= 3; k++) { if (o.bySeat[k] == null) { assigned = k; break; } }
+              if (assigned == null) { ch.send({ type: "broadcast", event: "full", payload: { cid: cid } }); return; }
+              o.bySeat[assigned] = cid; o.byCid[cid] = assigned;
+              setPeers(Object.keys(o.byCid).length);
+            }
+            ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: assigned } });
+            if (lastFullRef.current) {
+              ch.send({ type: "broadcast", event: "snap",
+                payload: { seat: assigned, state: redact(lastFullRef.current, assigned), names: lastNamesRef.current } });
+            }
+          });
+
+          ch.on("broadcast", { event: "action" }, function (msg) {
+            var p = msg.payload, owner = ownersRef.current.byCid[p.cid];
+            if (owner == null) return;
+            var a = p.action || {};
+            if (["PLAY", "PASS_BANK", "PICKUP", "DISCARD_DOWN"].indexOf(a.type) === -1) return; // moves only
+            if (a.player != null && a.player !== owner) return;                                  // own seat only
+            if (optsRef.current && optsRef.current.onAction) optsRef.current.onAction(a, owner);
+          });
+
+          ch.subscribe(function (st) { setStatus(st === "SUBSCRIBED" ? ("hosting · room " + code) : st); });
+        } else {
+          ch.on("broadcast", { event: "seat" }, function (msg) {
+            if (msg.payload.cid === cidRef.current) {
+              setSeatX(msg.payload.seat); setStatus("seated · #" + msg.payload.seat);
+              if (joinTimerRef.current) { clearInterval(joinTimerRef.current); joinTimerRef.current = null; }
+            }
+          });
+          ch.on("broadcast", { event: "full" }, function (msg) {
+            if (msg.payload.cid === cidRef.current) setStatus("room is full");
+          });
+          ch.on("broadcast", { event: "snap" }, function (msg) {
+            if (seatRef.current >= 1 && msg.payload.seat === seatRef.current) {
+              setSnap(msg.payload.state); setSnapV(function (v) { return v + 1; });
+            }
+          });
+          ch.subscribe(function (st) {
+            if (st === "SUBSCRIBED") {
+              setStatus("joining…");
+              var announce = function () { ch.send({ type: "broadcast", event: "join", payload: { cid: cidRef.current } }); };
+              announce();
+              // retry until the host (which may join later) seats us
+              joinTimerRef.current = setInterval(function () {
+                if (seatRef.current >= 1) { clearInterval(joinTimerRef.current); joinTimerRef.current = null; return; }
+                announce();
+              }, 2000);
+            } else { setStatus(st); }
+          });
+        }
+      }, []);
+
+      // guest auto-join if the link carried a room code
+      useEffect(function () { if (window.BH_ROOM) connect("guest", window.BH_ROOM); }, []);
+
+      return {
+        role: role, seat: seat, status: status, room: room,
+        snap: snap, snapV: snapV, peers: peers,
+        connect: connect, send: send, broadcastState: broadcastState,
+        hostGame: function () { connect("host"); }
+      };
+    };
+
+    // -------------------------------------------------------------
+    // <OnlineBar net={net}/> — thin status strip atop the game
+    // -------------------------------------------------------------
+    window.OnlineBar = function OnlineBar(props) {
+      var net = props.net, R = window.React, h = R.createElement;
+      var st = R.useState(false), copied = st[0], setCopied = st[1];
+      var link = net.room ? (location.origin + location.pathname + "#room=" + net.room) : "";
+      function copy() {
+        if (!link || !navigator.clipboard) return;
+        navigator.clipboard.writeText(link).then(function () { setCopied(true); setTimeout(function () { setCopied(false); }, 1400); });
+      }
+      var bar = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
+        padding: "6px 10px", marginBottom: 8, borderRadius: 8,
+        background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.16)",
+        fontFamily: "var(--mono, ui-monospace, monospace)", fontSize: 11, color: "var(--fg, #eee)" };
+      var btn = { cursor: "pointer", padding: "3px 9px", borderRadius: 6,
+        border: "1px solid rgba(255,255,255,.3)", background: "transparent", color: "inherit", font: "inherit" };
+
+      if (net.role === "off") {
+        return h("div", { style: bar },
+          h("span", { style: { opacity: .7 } }, "local hot-seat"),
+          h("button", { style: btn, onClick: net.hostGame }, "\uD83C\uDF10 host online game"));
+      }
+      if (net.role === "host") {
+        return h("div", { style: bar },
+          h("span", null, "\uD83C\uDF10 HOST · room ", h("b", null, net.room || "")),
+          h("span", { style: { opacity: .7 } }, (net.peers || 0) + " joined"),
+          h("button", { style: btn, onClick: copy }, copied ? "copied!" : "copy invite link"),
+          h("span", { style: { opacity: .6 } }, net.status || ""));
+      }
+      return h("div", { style: bar },
+        h("span", null, "\uD83C\uDF10 seat #" + net.seat),
+        h("span", { style: { opacity: .7 } }, net.status || "connecting…"));
+    };
+  })();
+  </script>
+
+  <!-- ============================================================= -->
+  <!-- 3) THE GAME  (drop-in: your unmodified artifact export)        -->
+  <!--    The file keeps its `import React` / `export default` so it   -->
+  <!--    still runs inside Claude. Here we rewrite those three lines  -->
+  <!--    at load time and mount it. No hand edits to the game file.   -->
+  <!-- ============================================================= -->
+  <script>
+  (function () {
+    var boot = document.getElementById("boot");
+    function fail(msg) { if (boot) boot.textContent = msg; console.error("[BANKHEAD]", msg); }
+    function loadScript(src) {
+      return new Promise(function (res, rej) {
+        var s = document.createElement("script");
+        s.src = src; s.onload = res;
+        s.onerror = function () { rej(new Error("could not load " + src)); };
+        document.head.appendChild(s);
+      });
+    }
+    // make sure the libraries are actually present (the <head> tags are best-effort)
+    async function ensureLibs() {
+      if (!window.React)     await loadScript("https://unpkg.com/react@18/umd/react.production.min.js");
+      if (!window.ReactDOM)  await loadScript("https://unpkg.com/react-dom@18/umd/react-dom.production.min.js");
+      if (!window.Babel)     await loadScript("https://unpkg.com/@babel/standalone/babel.min.js");
+      if (!window.supabase)  await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
+    }
+
+    (async function () {
+      try {
+        await ensureLibs();
+        if (!window.React || !window.ReactDOM || !window.Babel)
+          throw new Error("core libraries unavailable (offline or a CDN is blocked)");
+
+        var res = await fetch("bankhead.jsx", { cache: "no-cache" });
+        if (!res.ok) throw new Error("couldn't fetch bankhead.jsx (" + res.status + ")");
+        var code = await res.text();
+
+        // (1) React import -> destructure from the global UMD React
+        code = code.replace(
+          /^[ \t]*import\s+React\s*,?\s*(\{[^}]*\})?\s*from\s*["']react["'];?[ \t]*$/m,
+          function (_m, named) { return named ? ("const " + named + " = React;") : "/* React (global) */"; }
+        );
+        // strip any other bare imports (none expected in BANKHEAD; warn if found)
+        code = code.replace(/^[ \t]*import\s+[^\n]*from\s*["'][^"']+["'];?[ \t]*$/mg, function (m) {
+          console.warn("[BANKHEAD] dropped unresolved import:", m.trim()); return "";
+        });
+        // (2) drop `export default`, remembering the component name (default App)
+        var comp = "App";
+        code = code.replace(/export\s+default\s+function\s+([A-Za-z0-9_$]+)\s*\(/,
+          function (_m, name) { comp = name; return "function " + name + "("; });
+        code = code.replace(/export\s+default\s+/, "");
+        // (3) expose the component (do NOT mount inside the injected script)
+        code += "\n;window.__BANKHEAD_APP__ = " + comp + ";\n";
+
+        // compile JSX and run it in global scope
+        // classic runtime => React.createElement, and NO injected `import react/jsx-runtime`
+        var out = Babel.transform(code, { presets: [["react", { runtime: "classic" }]], filename: "bankhead.jsx" }).code;
+        var el = document.createElement("script");
+        el.textContent = out;
+        document.body.appendChild(el);
+
+        // (4) mount from HERE, where React/ReactDOM are guaranteed loaded
+        var App = window.__BANKHEAD_APP__;
+        if (!App) throw new Error("game did not define its component");
+        var root = document.getElementById("root");
+        if (ReactDOM.createRoot) ReactDOM.createRoot(root).render(React.createElement(App));
+        else ReactDOM.render(React.createElement(App), root);   // React 17 fallback
+      } catch (e) {
+        fail("BANKHEAD failed to load: " + e.message +
+          (location.protocol === "file:" ? "  (serve via http / GitHub Pages, not file://)" : ""));
+      }
+    })();
+  })();
+  </script>
+</body>
+</html>
