@@ -3,12 +3,13 @@ import React, { useReducer, useEffect, useRef } from "react";
 /* ---- online multiplayer bindings (inert unless the shell provides them) ---- */
 const __BH_INERT_NET = { role:"off", seat:0, status:"", room:null, snap:null, snapV:0, roster:[],
   names:["","","",""], namesV:0, target:100, full:false, myInitials:"", playerCount:0, downSeats:[],
-  isSeatDown:()=>false, prefillCode:"", savedSession:null, lobbyChat:[], roomChat:[],
-  setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, closeRoom(){},
+  isSeatDown:()=>false, prefillCode:"", savedSession:null, lobbyChat:[], roomChat:[], games:[], highScores:[], pub:null, pubV:0,
+  setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, closeRoom(){}, spectate(){},
   sendLobbyChat(){}, sendRoomChat(){}, send(){}, broadcastState(){} };
 const useBankheadNet = (typeof window!=="undefined" && window.useBankheadNet) || (()=>__BH_INERT_NET);
 const OnlineBar     = (typeof window!=="undefined" && window.OnlineBar)     || (()=>null);
 const OnlineScreens = (typeof window!=="undefined" && window.OnlineScreens) || (()=>null);
+const SpectatorView = (typeof window!=="undefined" && window.SpectatorView) || (()=>null);
 
 /* =======================================================================
    BANKHEAD — single pile · wilds are 2, 6, A
@@ -1824,6 +1825,10 @@ export default function App(){
     saveCampaign(null); setCampaign(null);
     dispatch({type:"TO_SETUP"}); setSel([]);
   };
+
+  if(net.role==="spectate"){
+    return <SpectatorView net={net}/>;
+  }
 
   if(net.role==="lobby" || (net.role!=="off" && s.mode!=="play")){
     return <OnlineScreens net={net} onStart={startOnline}/>;

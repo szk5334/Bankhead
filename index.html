@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r3</div></div>
+  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r4</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS)
        Transport = Supabase Realtime broadcast + presence ONLY.
@@ -27,7 +27,7 @@
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
-    window.BH_BUILD = "lobby-r3";
+    window.BH_BUILD = "lobby-r4";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -94,11 +94,16 @@
       var N = useState([]), lobbyChat = N[0], setLobbyChat = N[1];
       var O = useState([]), roomChat = O[0], setRoomChat = O[1];
       var P = useState(false), hostStarted = P[0], setHostStarted = P[1];
+      var Q = useState([]), games = Q[0], setGames = Q[1];
+      var S = useState([]), highScores = S[0], setHighScores = S[1];
+      var T = useState(null), pub = T[0], setPub = T[1];
+      var U = useState(0), pubV = U[0], setPubV = U[1];
 
       var chanRef = useRef(null), lobbyChanRef = useRef(null), roleRef = useRef(role), seatRef = useRef(seat),
           fullRef = useRef(false), initRef = useRef(myInitials), downRef = useRef([]),
           ownersRef = useRef({ bySeat: {}, byCid: {} }), lastFullRef = useRef(null), lastTargetRef = useRef(100),
-          retryRef = useRef(null), startedRef = useRef(false), hostCidRef = useRef(null), seqRef = useRef(0);
+          retryRef = useRef(null), startedRef = useRef(false), hostCidRef = useRef(null), seqRef = useRef(0),
+          discChanRef = useRef(null), playerCountRef = useRef(0), lastAdvRef = useRef(""), recordedRef = useRef(null);
       function RL(r) { roleRef.current = r; setRole(r); }
       function SL(k) { seatRef.current = k; setSeat(k); }
 
@@ -148,7 +153,9 @@
         applyRoster(r, lastTargetRef.current);
         var down = r.filter(function (x) { return !x.connected; }).map(function (x) { return x.seat; });
         downRef.current = down; setDownSeats(down);
+        playerCountRef.current = r.filter(function (x) { return x.connected; }).length;
         ch.send({ type: "broadcast", event: "roster", payload: { roster: r, target: lastTargetRef.current, hostCid: (ownersRef.current.bySeat[0] || {}).cid } });
+        advertise(false);
       }
       function refreshPresence() {
         var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
@@ -166,6 +173,27 @@
         broadcastRoster();
       }
 
+      // ---------- discovery advertising (presence on a shared channel; no DB) ----------
+      function advertise(force) {
+        var ch = discChanRef.current; if (!ch || roleRef.current !== "host") return;
+        var top = 0; try { top = Math.max.apply(null, (lastFullRef.current && lastFullRef.current.scores) || [0]); } catch (e) {}
+        var meta = { code: chanRef.current && chanRef.current._bhCode, host: initRef.current, count: playerCountRef.current, cap: 4, status: startedRef.current ? "running" : "pending", top: top };
+        var key = JSON.stringify(meta); if (!force && key === lastAdvRef.current) return; lastAdvRef.current = key;
+        try { ch.track(meta); } catch (e) {}
+      }
+      function readGames() {
+        var ch = discChanRef.current; if (!ch) return;
+        var st = ch.presenceState(), map = {};
+        Object.keys(st).forEach(function (key) { (st[key] || []).forEach(function (pp) { if (pp && pp.code) map[pp.code] = pp; }); });
+        setGames(Object.keys(map).map(function (k) { return map[k]; }));
+      }
+      function recordHigh(full, tgt) {
+        if (!tgt || tgt <= 0) return; var top = 0; try { top = Math.max.apply(null, full.scores || [0]); } catch (e) {}
+        if (top < tgt) return; var code = chanRef.current && chanRef.current._bhCode; if (recordedRef.current === code) return; recordedRef.current = code;
+        var list = jget("bh_highscores") || []; list.push({ code: code, top: top, host: initRef.current, ts: Date.now() });
+        list.sort(function (a, b) { return b.top - a.top; }); list = list.slice(0, 10); jset("bh_highscores", list); setHighScores(list);
+      }
+
       var send = useCallback(function (action) {
         var ch = chanRef.current; if (!ch) return;
         ch.send({ type: "broadcast", event: "action", payload: { cid: cidRef.current, action: action } });
@@ -181,6 +209,8 @@
           var sn = +k; if (sn === 0) return;
           ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redact(full, sn), target: lastTargetRef.current } });
         });
+        ch.send({ type: "broadcast", event: "pub", payload: { state: redact(full, -1), target: lastTargetRef.current } });
+        advertise(false); recordHigh(full, lastTargetRef.current);
       }, []);
 
       function wireHost(ch) {
@@ -260,6 +290,8 @@
       }
       var closeRoom = useCallback(function () {
         var ch = chanRef.current; if (ch) { try { ch.send({ type: "broadcast", event: "closed", payload: {} }); } catch (e) {} }
+        try { if (discChanRef.current) discChanRef.current.untrack(); } catch (e) {}
+        lastAdvRef.current = ""; recordedRef.current = null;
         clearSession(); teardownRoom(); RL("lobby"); SL(-1); setFull(false); setStatus("");
       }, []);
 
@@ -304,6 +336,15 @@
             }, 2000);
           } else setStatus(st);
         });
+      }, []);
+
+      var spectate = useCallback(function (code) {
+        var client = window.bhClient; if (!client) return; code = (code || "").toUpperCase(); if (!code) return;
+        var ch = client.channel("bankhead-" + code, { config: { broadcast: { self: false } } });
+        ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("spectate"); setPub(null);
+        ch.on("broadcast", { event: "pub" }, function (msg) { setPub(msg.payload.state); setPubV(function (v) { return v + 1; }); if (msg.payload.target != null) setTargetSt(msg.payload.target); });
+        ch.on("broadcast", { event: "closed" }, function () { teardownRoom(); RL("lobby"); setStatus("the game ended"); });
+        ch.subscribe(function (st) { setStatus(st === "SUBSCRIBED" ? ("spectating " + code) : st); });
       }, []);
 
       var rejoin = useCallback(function () {
@@ -353,12 +394,33 @@
         }
       }, [role, hostStarted]);
 
+      // ---- discovery channel: advertise your game (host) / read the lists (lobby) ----
+      useEffect(function () {
+        if (!configured) return;
+        if (role === "lobby" || role === "host") {
+          if (!discChanRef.current) {
+            var ch = window.bhClient.channel("bankhead-discovery", { config: { presence: { key: cidRef.current } } });
+            ch.on("presence", { event: "sync" }, readGames);
+            ch.on("presence", { event: "join" }, readGames);
+            ch.on("presence", { event: "leave" }, readGames);
+            ch.subscribe(function (st) { if (st === "SUBSCRIBED") { if (roleRef.current === "host") advertise(true); readGames(); } });
+            discChanRef.current = ch;
+          } else if (role === "host") { advertise(true); }
+        } else if (discChanRef.current) {
+          try { window.bhClient.removeChannel(discChanRef.current); } catch (e) {}
+          discChanRef.current = null; setGames([]);
+        }
+      }, [role]);
+
+      useEffect(function () { setHighScores(jget("bh_highscores") || []); }, []);
+
       // best-effort: shed Realtime state if the tab is closed
       useEffect(function () {
         function bye() {
           try { if (chanRef.current && roleRef.current === "guest") chanRef.current.send({ type: "broadcast", event: "bye", payload: { cid: cidRef.current } }); } catch (e) {}
           try { if (chanRef.current) window.bhClient.removeChannel(chanRef.current); } catch (e) {}
           try { if (lobbyChanRef.current) window.bhClient.removeChannel(lobbyChanRef.current); } catch (e) {}
+          try { if (discChanRef.current) window.bhClient.removeChannel(discChanRef.current); } catch (e) {}
         }
         window.addEventListener("beforeunload", bye);
         return function () { window.removeEventListener("beforeunload", bye); };
@@ -376,7 +438,8 @@
         prefillCode: window.BH_ROOM || "", savedSession: savedSession.current,
         lobbyChat: lobbyChat, roomChat: roomChat, sendLobbyChat: sendLobbyChat, sendRoomChat: sendRoomChat,
         setInitials: setInitials, hostGame: hostGame, joinGame: joinGame, rejoin: rejoin,
-        goSolo: goSolo, backToLobby: backToLobby, closeRoom: closeRoom, send: send, broadcastState: broadcastState
+        goSolo: goSolo, backToLobby: backToLobby, closeRoom: closeRoom, send: send, broadcastState: broadcastState,
+        games: games, highScores: highScores, pub: pub, pubV: pubV, spectate: spectate
       };
     };
 
@@ -459,6 +522,51 @@
         React.createElement("div", { style: lbl }, title), body);
     }
 
+    var SUITG = { S: "\u2660", H: "\u2665", D: "\u2666", C: "\u2663" };
+    function gamesList(net, status, ok) {
+      var h = React.createElement;
+      var list = (net.games || []).filter(function (g) { return g.status === status; });
+      if (!list.length) return h("div", { style: { opacity: .45, fontSize: 12 } }, "none right now");
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: 6 } }, list.map(function (g) {
+        return h("div", { key: g.code, style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 13 } },
+          h("span", null, h("b", null, g.code), " \u00b7 ", (g.host || "???"), h("span", { style: { opacity: .5 } }, "  " + g.count + "/" + g.cap + (status === "running" ? " \u00b7 top " + (g.top || 0) : ""))),
+          status === "pending"
+            ? h("button", { style: bg, disabled: !ok, onClick: function () { net.joinGame(g.code); } }, "join")
+            : h("button", { style: bg, disabled: !ok, onClick: function () { net.spectate(g.code); } }, "spectate"));
+      }));
+    }
+    function highList(net) {
+      var h = React.createElement, list = net.highScores || [];
+      if (!list.length) return h("div", { style: { opacity: .45, fontSize: 12 } }, "no games recorded yet");
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: 3 } }, list.map(function (g, i) {
+        return h("div", { key: i, style: { display: "flex", justifyContent: "space-between", fontSize: 12 } },
+          h("span", null, (i + 1) + ". " + (g.host || "???")), h("span", { style: { opacity: .7 } }, (g.top || 0) + " pts \u00b7 " + g.code));
+      }));
+    }
+    window.SpectatorView = function SpectatorView(props) {
+      var net = props.net, h = React.createElement, p = net.pub;
+      if (!p) return h("div", { style: box() }, h("div", { style: card },
+        h("div", { style: { textAlign: "center", opacity: .7 } }, net.status || "connecting to the game\u2026"),
+        h("button", { style: bg, onClick: net.backToLobby }, "back to lobby")));
+      var seats = [];
+      for (var i = 0; i < p.n; i++) {
+        var nm = (p.names && p.names[i]) || ("seat " + i);
+        var hand = (p.players[i] && p.players[i].hand) || [];
+        var banked = (p.banked && p.banked[i]) || [];
+        seats.push(h("div", { key: i, style: { display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0", opacity: i === p.current ? 1 : .65 } },
+          h("span", null, (i === p.current ? "\u25B8 " : "\u00a0\u00a0\u00a0") + nm),
+          h("span", { style: { opacity: .75 } }, "cards " + hand.length + " \u00b7 banked " + banked.length + " \u00b7 " + (p.scores[i] || 0) + "pts")));
+      }
+      var top = p.pile && p.pile.length ? p.pile[p.pile.length - 1] : null;
+      return h("div", { style: box() }, h("div", { style: card },
+        h("div", { style: { fontSize: 18, fontWeight: 800, textAlign: "center" } }, "spectating \u00b7 " + net.room),
+        h("div", { style: { fontSize: 12, textAlign: "center", opacity: .6 } }, "pile " + ((p.pile || []).length) + " \u00b7 stock " + ((p.stock || []).length) + (top ? (" \u00b7 top " + (top.rank || "?") + (SUITG[top.suit] || "")) : "")),
+        h("div", { style: { marginTop: 6 } }, seats),
+        h("div", { style: lbl }, "log (public)"),
+        h("div", { style: Object.assign({}, chatList, { maxHeight: 220 }) }, (p.log || []).map(function (l, idx) { return h("div", { key: idx, style: { fontSize: 11, opacity: idx < 3 ? 1 : .7 } }, l); })),
+        h("button", { style: bg, onClick: net.backToLobby }, "back to lobby")));
+    };
+
     window.OnlineScreens = function OnlineScreens(props) {
       var net = props.net, h = React.createElement;
       var cs = React.useState(net.prefillCode || ""), code = cs[0], setCode = cs[1];
@@ -474,6 +582,9 @@
             h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".14em", textAlign: "center" } }, "BANKHEAD"),
             h("div", { style: lbl }, "your initials"),
             initInput,
+            net.prefillCode ? h("div", { style: { padding: "8px 10px", borderRadius: 8, background: "rgba(57,211,83,.10)", border: "1px solid rgba(57,211,83,.4)", fontSize: 12, textAlign: "center" } },
+              "invited to room ", h("b", null, net.prefillCode),
+              h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), disabled: initials.length < 3, onClick: function () { net.joinGame(net.prefillCode); } }, initials.length < 3 ? "enter initials to join" : "join room " + net.prefillCode)) : null,
             h("button", { style: bp, disabled: initials.length < 3, onClick: net.hostGame }, "host a new game"),
             h("div", { style: { textAlign: "center", opacity: .4, fontSize: 12 } }, "— or —"),
             h("div", { style: { display: "flex", gap: 6 } },
@@ -485,6 +596,9 @@
             net.savedSession ? h("button", { style: bg, onClick: net.rejoin }, "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
             h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)"),
             h("div", { style: { opacity: .35, fontSize: 10, textAlign: "center", marginTop: 4 } }, "build " + (window.BH_BUILD || "?"))),
+          section("pending games", gamesList(net, "pending", initials.length >= 3)),
+          section("running games", gamesList(net, "running", initials.length >= 3)),
+          section("high scores \u00b7 this device", highList(net)),
           section("lobby chat", h(ChatBox, { messages: net.lobbyChat, onSend: net.sendLobbyChat })));
       }
 
