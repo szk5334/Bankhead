@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading BANKHEAD… · build lobby-r5</div></div>
+  <div id="root"><div id="boot">loading… · shell-r7</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS)
        Transport = Supabase Realtime broadcast + presence ONLY.
@@ -27,7 +27,7 @@
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
-    window.BH_BUILD = "lobby-r5";
+    window.BH_BUILD = "shell-r7";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -49,20 +49,18 @@
       for (var i = 0; i < 4; i++) s += A[Math.floor(Math.random() * A.length)];
       return s;
     }
-    var GAME_MOVES = ["PLAY", "PASS_BANK", "PICKUP", "DISCARD_DOWN"];
     var CHAT_CAP = 120;
 
-    function redact(state, forSeat) {
-      if (!state || !state.players) return state;
-      function fake(n) { var a = []; for (var i = 0; i < n; i++) a.push({ id: 0, rank: "?", suit: "?", back: true }); return a; }
-      var players = state.players.map(function (p, i) {
-        if (i === forSeat) return p;
-        var c = {}; for (var k in p) c[k] = p[k]; c.hand = fake((p.hand || []).length); return c;
-      });
-      var out = {}; for (var k in state) out[k] = state[k];
-      out.players = players; out.stock = fake((state.stock || []).length);
-      return out;
-    }
+    // ---- game adapter accessors: everything game-specific comes through window.GAME ----
+    function GADAPT() { return window.GAME || {}; }
+    function NS() { return GADAPT().id || "game"; }
+    function gameTitle() { return GADAPT().title || "GAME"; }
+    function gameMax() { return GADAPT().maxPlayers || 4; }
+    function redactFor(st, seat) { var g = GADAPT(); return g.redactFor ? g.redactFor(st, seat) : st; }        // per-seat private snapshot (opaque)
+    function publicView(st) { var g = GADAPT(); return g.publicView ? g.publicView(st) : { status: "", seats: [], pileTop: null, pileCount: 0, stockCount: 0, log: [] }; }
+    function actionOK(t) { var l = GADAPT().actionTypes || []; return l.indexOf(t) !== -1; }
+    function seatOf(a) { var g = GADAPT(); return g.seatOf ? g.seatOf(a) : a.player; }
+    function SK(k) { return NS() + "_" + k; }
 
     // =====================================================================
     // useBankheadNet
@@ -98,21 +96,24 @@
       var S = useState([]), highScores = S[0], setHighScores = S[1];
       var T = useState(null), pub = T[0], setPub = T[1];
       var U = useState(0), pubV = U[0], setPubV = U[1];
+      var V = useState([]), requests = V[0], setRequests = V[1];
+      var W = useState(null), pendingRoom = W[0], setPendingRoom = W[1];
 
       var chanRef = useRef(null), lobbyChanRef = useRef(null), roleRef = useRef(role), seatRef = useRef(seat),
           fullRef = useRef(false), initRef = useRef(myInitials), downRef = useRef([]),
           ownersRef = useRef({ bySeat: {}, byCid: {} }), lastFullRef = useRef(null), lastTargetRef = useRef(100),
           retryRef = useRef(null), startedRef = useRef(false), hostCidRef = useRef(null), seqRef = useRef(0),
-          discChanRef = useRef(null), playerCountRef = useRef(0), lastAdvRef = useRef(""), recordedRef = useRef(null);
+          discChanRef = useRef(null), playerCountRef = useRef(0), lastAdvRef = useRef(""), recordedRef = useRef(null),
+          requestsRef = useRef([]), pendingRoomRef = useRef(null);
       function RL(r) { roleRef.current = r; setRole(r); }
       function SL(k) { seatRef.current = k; setSeat(k); }
 
       var savedSession = useRef(undefined);
       if (savedSession.current === undefined) {
-        var v = jget("bh_session"); savedSession.current = (v && Date.now() - v.ts < FRESH) ? v : null;
+        var v = jget(SK("session")); savedSession.current = (v && Date.now() - v.ts < FRESH) ? v : null;
       }
-      function saveSession(o) { jset("bh_session", o); savedSession.current = o; }
-      function clearSession() { jdel("bh_session"); savedSession.current = null; }
+      function saveSession(o) { jset(SK("session"), o); savedSession.current = o; }
+      function clearSession() { jdel(SK("session")); savedSession.current = null; }
 
       function namesFrom(r) { var a = ["", "", "", ""]; (r || []).forEach(function (x) { if (x.seat < 4) a[x.seat] = x.initials || ""; }); return a; }
       function applyRoster(r, tgt) {
@@ -176,8 +177,8 @@
       // ---------- discovery advertising (presence on a shared channel; no DB) ----------
       function advertise(force) {
         var ch = discChanRef.current; if (!ch || roleRef.current !== "host") return;
-        var top = 0; try { top = Math.max.apply(null, (lastFullRef.current && lastFullRef.current.scores) || [0]); } catch (e) {}
-        var meta = { code: chanRef.current && chanRef.current._bhCode, host: initRef.current, count: playerCountRef.current, cap: 4, status: startedRef.current ? "running" : "pending", top: top };
+        var top = 0; try { var pv = lastFullRef.current ? publicView(lastFullRef.current) : null; if (pv) pv.seats.forEach(function (s2) { if (s2.score > top) top = s2.score; }); } catch (e) {}
+        var meta = { game: NS(), title: gameTitle(), code: chanRef.current && chanRef.current._bhCode, host: initRef.current, count: playerCountRef.current, cap: gameMax(), status: startedRef.current ? "running" : "pending", top: top };
         var key = JSON.stringify(meta); if (!force && key === lastAdvRef.current) return; lastAdvRef.current = key;
         try { ch.track(meta); } catch (e) {}
       }
@@ -188,10 +189,10 @@
         setGames(Object.keys(map).map(function (k) { return map[k]; }));
       }
       function recordHigh(full, tgt) {
-        if (!tgt || tgt <= 0) return; var top = 0; try { top = Math.max.apply(null, full.scores || [0]); } catch (e) {}
+        if (!tgt || tgt <= 0) return; var top = 0; try { publicView(full).seats.forEach(function (s2) { if (s2.score > top) top = s2.score; }); } catch (e) {}
         if (top < tgt) return; var code = chanRef.current && chanRef.current._bhCode; if (recordedRef.current === code) return; recordedRef.current = code;
-        var list = jget("bh_highscores") || []; list.push({ code: code, top: top, host: initRef.current, ts: Date.now() });
-        list.sort(function (a, b) { return b.top - a.top; }); list = list.slice(0, 10); jset("bh_highscores", list); setHighScores(list);
+        var list = jget(SK("highscores")) || []; list.push({ code: code, top: top, host: initRef.current, ts: Date.now() });
+        list.sort(function (a, b) { return b.top - a.top; }); list = list.slice(0, 10); jset(SK("highscores"), list); setHighScores(list);
       }
 
       var send = useCallback(function (action) {
@@ -203,34 +204,42 @@
         var ch = chanRef.current; if (!ch || roleRef.current !== "host") return;
         if (!startedRef.current) { startedRef.current = true; setHostStarted(true); }
         lastFullRef.current = full; if (tgt != null) lastTargetRef.current = tgt;
-        jset("bh_host_state", { room: ch._bhCode, state: full, target: lastTargetRef.current, ts: Date.now() });
+        jset(SK("host_state"), { room: ch._bhCode, state: full, target: lastTargetRef.current, ts: Date.now() });
         var seats = ownersRef.current.bySeat;
         Object.keys(seats).forEach(function (k) {
           var sn = +k; if (sn === 0) return;
-          ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redact(full, sn), target: lastTargetRef.current } });
+          ch.send({ type: "broadcast", event: "snap", payload: { seat: sn, state: redactFor(full, sn), target: lastTargetRef.current } });
         });
-        ch.send({ type: "broadcast", event: "pub", payload: { state: redact(full, -1), target: lastTargetRef.current } });
+        ch.send({ type: "broadcast", event: "pub", payload: { state: publicView(full), target: lastTargetRef.current } });
         advertise(false); recordHigh(full, lastTargetRef.current);
       }, []);
 
       function wireHost(ch) {
-        ch.on("broadcast", { event: "join" }, function (msg) {
+        ch.on("broadcast", { event: "request" }, function (msg) {
           var p = msg.payload, o = ownersRef.current, cid = p.cid, ini = (p.initials || "").slice(0, 3).toUpperCase();
           var st = o.byCid[cid];
-          if (st == null) {
-            for (var k = 1; k <= 3; k++) { if (!o.bySeat[k]) { st = k; break; } }
-            if (st == null) { ch.send({ type: "broadcast", event: "full", payload: { cid: cid } }); return; }
-            o.bySeat[st] = { cid: cid, initials: ini, connected: true }; o.byCid[cid] = st;
-          } else { o.bySeat[st].connected = true; if (ini) o.bySeat[st].initials = ini; }
-          ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: st } });
-          broadcastRoster();
-          if (lastFullRef.current) ch.send({ type: "broadcast", event: "snap", payload: { seat: st, state: redact(lastFullRef.current, st), target: lastTargetRef.current } });
+          if (st != null) { // already seated -> reconnect: resend seat + snapshot
+            o.bySeat[st].connected = true; if (ini) o.bySeat[st].initials = ini;
+            ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: st } });
+            broadcastRoster();
+            if (lastFullRef.current) ch.send({ type: "broadcast", event: "snap", payload: { seat: st, state: redactFor(lastFullRef.current, st), target: lastTargetRef.current } });
+            return;
+          }
+          var q = requestsRef.current, hit = false;
+          q.forEach(function (r) { if (r.cid === cid) { hit = true; if (ini) r.initials = ini; } });
+          if (!hit) q.push({ cid: cid, initials: ini });
+          setRequests(q.slice());
+        });
+        ch.on("broadcast", { event: "cancel" }, function (msg) {
+          var cid = msg.payload && msg.payload.cid;
+          requestsRef.current = requestsRef.current.filter(function (r) { return r.cid !== cid; });
+          setRequests(requestsRef.current.slice());
         });
         ch.on("broadcast", { event: "action" }, function (msg) {
           var p = msg.payload, owner = ownersRef.current.byCid[p.cid]; if (owner == null) return;
           var a = p.action || {};
-          if (GAME_MOVES.indexOf(a.type) === -1) return;
-          if (a.player != null && a.player !== owner) return;
+          if (!actionOK(a.type)) return;
+          var sof = seatOf(a); if (sof != null && sof !== owner) return;
           if (opts && opts.onAction) opts.onAction(a, owner);
         });
         ch.on("broadcast", { event: "chat" }, function (msg) {
@@ -250,15 +259,23 @@
       function wireGuest(ch) {
         ch.on("broadcast", { event: "seat" }, function (msg) {
           if (msg.payload.cid !== cidRef.current) return;
-          SL(msg.payload.seat); setFull(false); fullRef.current = false;
+          SL(msg.payload.seat); RL("guest"); pendingRoomRef.current = null; setPendingRoom(null); setFull(false); fullRef.current = false;
           setStatus("seated · #" + msg.payload.seat);
           try { ch.track({ cid: cidRef.current, initials: initRef.current, seat: msg.payload.seat, isHost: false }); } catch (e) {}
           saveSession({ role: "guest", room: ch._bhCode, initials: initRef.current, ts: Date.now() });
           if (retryRef.current) { clearInterval(retryRef.current); retryRef.current = null; }
         });
+        ch.on("broadcast", { event: "denied" }, function (msg) {
+          if (msg.payload.cid !== cidRef.current) return;
+          pendingRoomRef.current = null; setPendingRoom(null); teardownRoom(); setStatus("the host denied your request");
+        });
+        ch.on("broadcast", { event: "kicked" }, function (msg) {
+          if (msg.payload.cid !== cidRef.current) return;
+          pendingRoomRef.current = null; setPendingRoom(null); clearSession(); teardownRoom(); RL("lobby"); SL(-1); setStatus("you were removed from the game");
+        });
         ch.on("broadcast", { event: "full" }, function (msg) {
           if (msg.payload.cid !== cidRef.current) return;
-          setFull(true); fullRef.current = true; setStatus("that room is full");
+          setFull(true); fullRef.current = true; pendingRoomRef.current = null; setPendingRoom(null); teardownRoom(); setStatus("that room is full");
           if (retryRef.current) { clearInterval(retryRef.current); retryRef.current = null; }
         });
         ch.on("broadcast", { event: "roster" }, function (msg) { hostCidRef.current = msg.payload.hostCid || hostCidRef.current; applyRoster(msg.payload.roster, msg.payload.target); });
@@ -272,7 +289,7 @@
           var p = msg.payload; pushChat(setRoomChat, { id: ++seqRef.current, from: p.from, seat: p.seat, text: p.text, ts: p.ts, me: false });
         });
         ch.on("broadcast", { event: "closed" }, function () {
-          teardownRoom(); clearSession(); RL("lobby"); SL(-1); setFull(false); setStatus("the host closed the room");
+          pendingRoomRef.current = null; setPendingRoom(null); teardownRoom(); clearSession(); RL("lobby"); SL(-1); setFull(false); setStatus("the host closed the room");
         });
         ch.on("presence", { event: "leave" }, function (p) {
           var left = (p && p.leftPresences) || [];
@@ -295,6 +312,49 @@
         clearSession(); teardownRoom(); RL("lobby"); SL(-1); setFull(false); setStatus("");
       }, []);
 
+      function firstAvailableSeat() {
+        var o = ownersRef.current.bySeat;
+        if (!startedRef.current) { for (var k = 1; k <= 3; k++) { if (!o[k]) return k; } return null; }
+        var f = lastFullRef.current; if (!f) return null;
+        for (var i = 1; i < f.n; i++) { if (f.brains[i] !== "human" && !o[i]) return i; }
+        return null;
+      }
+      var availableSeats = useCallback(function () {
+        var o = ownersRef.current.bySeat, out = [];
+        if (!startedRef.current) { for (var k = 1; k <= 3; k++) { if (!o[k]) out.push(k); } return out; }
+        var f = lastFullRef.current; if (!f) return out;
+        for (var i = 1; i < f.n; i++) { if (f.brains[i] !== "human" && !o[i]) out.push(i); }
+        return out;
+      }, []);
+      var approveRequest = useCallback(function (cid, seat) {
+        var o = ownersRef.current, q = requestsRef.current, req = null;
+        q.forEach(function (r) { if (r.cid === cid) req = r; }); if (!req) return;
+        if (seat == null) seat = firstAvailableSeat(); if (seat == null) return;
+        var ini = (req.initials || "").slice(0, 3).toUpperCase();
+        o.bySeat[seat] = { cid: cid, initials: ini, connected: true }; o.byCid[cid] = seat;
+        if (startedRef.current && opts && opts.onSeatChange) opts.onSeatChange(seat, "human", ini);
+        requestsRef.current = q.filter(function (r) { return r.cid !== cid; }); setRequests(requestsRef.current.slice());
+        var ch = chanRef.current; if (ch) ch.send({ type: "broadcast", event: "seat", payload: { cid: cid, seat: seat } });
+        broadcastRoster();
+        if (startedRef.current && lastFullRef.current && ch) ch.send({ type: "broadcast", event: "snap", payload: { seat: seat, state: redactFor(lastFullRef.current, seat), target: lastTargetRef.current } });
+      }, []);
+      var denyRequest = useCallback(function (cid) {
+        requestsRef.current = requestsRef.current.filter(function (r) { return r.cid !== cid; }); setRequests(requestsRef.current.slice());
+        var ch = chanRef.current; if (ch) ch.send({ type: "broadcast", event: "denied", payload: { cid: cid } });
+      }, []);
+      var kickSeat = useCallback(function (seat) {
+        if (seat === 0) return; var o = ownersRef.current, info = o.bySeat[seat]; if (!info) return;
+        var cid = info.cid, ch = chanRef.current;
+        if (ch) ch.send({ type: "broadcast", event: "kicked", payload: { cid: cid } });
+        delete o.bySeat[seat]; delete o.byCid[cid];
+        if (startedRef.current && opts && opts.onSeatChange) opts.onSeatChange(seat, "vault", null);
+        broadcastRoster();
+      }, []);
+      var cancelRequest = useCallback(function () {
+        var ch = chanRef.current; if (ch) { try { ch.send({ type: "broadcast", event: "cancel", payload: { cid: cidRef.current } }); } catch (e) {} }
+        pendingRoomRef.current = null; setPendingRoom(null); teardownRoom(); setStatus("");
+      }, []);
+
       var setInitials = useCallback(function (v) {
         v = (v || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
         initRef.current = v; setInits(v); sset("bh_initials", v);
@@ -303,7 +363,7 @@
       var hostGame = useCallback(function () {
         var client = window.bhClient; if (!client) { setStatus("add your Supabase keys in index.html"); return; }
         var code = genCode();
-        var ch = client.channel("bankhead-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+        var ch = client.channel(NS() + "-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
         ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("host"); SL(0); setFull(false); startedRef.current = false; setRoomChat([]);
         ownersRef.current = { bySeat: { 0: { cid: cidRef.current, initials: initRef.current, connected: true } }, byCid: {} };
         ownersRef.current.byCid[cidRef.current] = 0;
@@ -318,20 +378,22 @@
         saveSession({ role: "host", room: code, initials: initRef.current, ts: Date.now() });
       }, []);
 
-      var joinGame = useCallback(function (code) {
+      var joinGame = useCallback(function (code) {   // request to join; the host approves and seats you
         var client = window.bhClient; if (!client) { setStatus("add your Supabase keys in index.html"); return; }
         code = (code || "").toUpperCase(); if (!code) return;
-        var ch = client.channel("bankhead-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
-        ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("guest"); SL(-1); setFull(false); fullRef.current = false; setRoomChat([]);
+        if (pendingRoomRef.current) return;   // one pending request at a time
+        var ch = client.channel(NS() + "-" + code, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+        ch._bhCode = code; chanRef.current = ch; setRoom(code); setFull(false); fullRef.current = false; setRoomChat([]);
+        pendingRoomRef.current = code; setPendingRoom(code);
         wireGuest(ch);
         ch.subscribe(function (st) {
           if (st === "SUBSCRIBED") {
-            setStatus("joining…");
+            setStatus("requested to join " + code + " — waiting for the host");
             try { ch.track({ cid: cidRef.current, initials: initRef.current, seat: -1, isHost: false }); } catch (e) {}
-            var announce = function () { ch.send({ type: "broadcast", event: "join", payload: { cid: cidRef.current, initials: initRef.current } }); };
+            var announce = function () { ch.send({ type: "broadcast", event: "request", payload: { cid: cidRef.current, initials: initRef.current } }); };
             announce();
             retryRef.current = setInterval(function () {
-              if (seatRef.current >= 1 || fullRef.current) { clearInterval(retryRef.current); retryRef.current = null; return; }
+              if (seatRef.current >= 1 || fullRef.current || !pendingRoomRef.current) { clearInterval(retryRef.current); retryRef.current = null; return; }
               announce();
             }, 2000);
           } else setStatus(st);
@@ -340,7 +402,7 @@
 
       var spectate = useCallback(function (code) {
         var client = window.bhClient; if (!client) return; code = (code || "").toUpperCase(); if (!code) return;
-        var ch = client.channel("bankhead-" + code, { config: { broadcast: { self: false } } });
+        var ch = client.channel(NS() + "-" + code, { config: { broadcast: { self: false } } });
         ch._bhCode = code; chanRef.current = ch; setRoom(code); RL("spectate"); setPub(null);
         ch.on("broadcast", { event: "pub" }, function (msg) { setPub(msg.payload.state); setPubV(function (v) { return v + 1; }); if (msg.payload.target != null) setTargetSt(msg.payload.target); });
         ch.on("broadcast", { event: "closed" }, function () { teardownRoom(); RL("lobby"); setStatus("the game ended"); });
@@ -357,7 +419,7 @@
           ownersRef.current = { bySeat: { 0: { cid: cidRef.current, initials: s.initials, connected: true } }, byCid: {} };
           ownersRef.current.byCid[cidRef.current] = 0;
           wireHost(ch);
-          var hs = jget("bh_host_state");
+          var hs = jget(SK("host_state"));
           ch.subscribe(function (st) {
             if (st === "SUBSCRIBED") {
               setStatus("resumed hosting · " + s.room);
@@ -381,7 +443,7 @@
         if (!configured) return;
         if (role === "lobby" || (role === "host" && !hostStarted)) {
           if (!lobbyChanRef.current) {
-            var ch = window.bhClient.channel("bankhead-lobby", { config: { broadcast: { self: false } } });
+            var ch = window.bhClient.channel(NS() + "-lobby", { config: { broadcast: { self: false } } });
             ch.on("broadcast", { event: "chat" }, function (msg) {
               var p = msg.payload; pushChat(setLobbyChat, { id: ++seqRef.current, from: p.from, text: p.text, ts: p.ts, me: false });
             });
@@ -399,7 +461,7 @@
         if (!configured) return;
         if (role === "lobby" || role === "host") {
           if (!discChanRef.current) {
-            var ch = window.bhClient.channel("bankhead-discovery", { config: { presence: { key: cidRef.current } } });
+            var ch = window.bhClient.channel(NS() + "-discovery", { config: { presence: { key: cidRef.current } } });
             ch.on("presence", { event: "sync" }, readGames);
             ch.on("presence", { event: "join" }, readGames);
             ch.on("presence", { event: "leave" }, readGames);
@@ -412,7 +474,7 @@
         }
       }, [role]);
 
-      useEffect(function () { setHighScores(jget("bh_highscores") || []); }, []);
+      useEffect(function () { setHighScores(jget(SK("highscores")) || []); }, []);
 
       // best-effort: shed Realtime state if the tab is closed
       useEffect(function () {
@@ -439,7 +501,9 @@
         lobbyChat: lobbyChat, roomChat: roomChat, sendLobbyChat: sendLobbyChat, sendRoomChat: sendRoomChat,
         setInitials: setInitials, hostGame: hostGame, joinGame: joinGame, rejoin: rejoin,
         goSolo: goSolo, backToLobby: backToLobby, closeRoom: closeRoom, send: send, broadcastState: broadcastState,
-        games: games, highScores: highScores, pub: pub, pubV: pubV, spectate: spectate
+        games: games, highScores: highScores, pub: pub, pubV: pubV, spectate: spectate,
+        requests: requests, pendingRoom: pendingRoom, started: hostStarted, availableSeats: availableSeats,
+        approveRequest: approveRequest, denyRequest: denyRequest, kickSeat: kickSeat, cancelRequest: cancelRequest
       };
     };
 
@@ -554,25 +618,49 @@
       if (!p) return h("div", { style: box() }, h("div", { style: card },
         h("div", { style: { textAlign: "center", opacity: .7 } }, net.status || "connecting to the game\u2026"),
         h("button", { style: bg, onClick: net.backToLobby }, "back to lobby")));
-      var seats = [];
-      for (var i = 0; i < p.n; i++) {
-        var nm = (p.names && p.names[i]) || ("seat " + i);
-        var hand = (p.players[i] && p.players[i].hand) || [];
-        var banked = (p.banked && p.banked[i]) || [];
-        seats.push(h("div", { key: i, style: { display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0", opacity: i === p.current ? 1 : .65 } },
-          h("span", null, (i === p.current ? "\u25B8 " : "\u00a0\u00a0\u00a0") + nm),
-          h("span", { style: { opacity: .75 } }, "cards " + hand.length + " \u00b7 banked " + banked.length + " \u00b7 " + (p.scores[i] || 0) + "pts")));
-      }
-      var top = p.pile && p.pile.length ? p.pile[p.pile.length - 1] : null;
+      var seats = (p.seats || []).map(function (st, i) {
+        return h("div", { key: i, style: { display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0", opacity: st.turn ? 1 : .65 } },
+          h("span", null, (st.turn ? "\u25B8 " : "\u00a0\u00a0\u00a0") + (st.name || ("seat " + i))),
+          h("span", { style: { opacity: .75 } }, "cards " + st.handCount + (st.note ? " \u00b7 " + st.note : "") + " \u00b7 " + st.score + "pts"));
+      });
       return h("div", { style: box() }, h("div", { style: card },
-        h("div", { style: { fontSize: 18, fontWeight: 800, textAlign: "center" } }, "spectating \u00b7 " + net.room),
-        h("div", { style: { fontSize: 12, textAlign: "center", opacity: .6 } }, "pile " + ((p.pile || []).length) + " \u00b7 stock " + ((p.stock || []).length) + (top ? (" \u00b7 top " + (top.rank || "?") + (SUITG[top.suit] || "")) : "")),
+        h("div", { style: { fontSize: 18, fontWeight: 800, textAlign: "center", color: GOLD } }, gameTitle()),
+        h("div", { style: { fontSize: 12, textAlign: "center", opacity: .7 } }, "spectating \u00b7 " + net.room + (p.status ? " \u00b7 " + p.status : "")),
+        h("div", { style: { fontSize: 12, textAlign: "center", opacity: .6 } }, "pile " + (p.pileCount || 0) + " \u00b7 stock " + (p.stockCount || 0) + (p.pileTop ? (" \u00b7 top " + p.pileTop) : "")),
         h("div", { style: { marginTop: 6 } }, seats),
         h("div", { style: lbl }, "log (public)"),
         h("div", { style: Object.assign({}, chatList, { maxHeight: 220 }) }, (p.log || []).map(function (l, idx) { return h("div", { key: idx, style: { fontSize: 11, opacity: idx < 3 ? 1 : .7 } }, l); })),
         h("button", { style: bg, onClick: net.backToLobby }, "back to lobby")));
     };
 
+    function HostManage(props) {
+      var net = props.net, h = React.createElement;
+      var avail = net.availableSeats ? net.availableSeats() : [];
+      var reqs = net.requests || [];
+      var reqRows = reqs.length ? reqs.map(function (r) {
+        var actions;
+        if (!net.started) actions = h("button", { style: bg, onClick: function () { net.approveRequest(r.cid, null); } }, "approve");
+        else if (avail.length) actions = h("span", { style: { display: "inline-flex", gap: 4, flexWrap: "wrap" } }, avail.map(function (sN) {
+          return h("button", { key: sN, style: bg, onClick: function () { net.approveRequest(r.cid, sN); } }, "seat #" + sN);
+        }));
+        else actions = h("span", { style: { opacity: .6, fontSize: 11 } }, "table full");
+        return h("div", { key: r.cid, style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 13, flexWrap: "wrap" } },
+          h("b", null, r.initials || "???"),
+          h("span", { style: { display: "inline-flex", gap: 4, alignItems: "center", flexWrap: "wrap" } }, actions,
+            h("button", { style: bg, onClick: function () { net.denyRequest(r.cid); } }, "deny")));
+      }) : [h("div", { key: "none", style: { opacity: .45, fontSize: 12 } }, "no requests")];
+      var kickRows = (net.roster || []).filter(function (x) { return !x.isHost; }).map(function (x) {
+        return h("div", { key: x.seat, style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 13 } },
+          h("span", null, h("span", { style: { display: "inline-block", width: 8, height: 8, borderRadius: 8, marginRight: 6, background: x.connected ? GRN : RED } }),
+            h("b", null, x.initials || "?"), h("span", { style: { opacity: .5, fontSize: 11 } }, "  seat #" + x.seat + (x.connected ? "" : " \u00b7 reconnecting"))),
+          h("button", { style: bg, onClick: function () { net.kickSeat(x.seat); } }, "kick"));
+      });
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: 8 } },
+        h("div", { style: lbl }, "requests" + (reqs.length ? " (" + reqs.length + ")" : "")),
+        h("div", { style: { display: "flex", flexDirection: "column", gap: 5 } }, reqRows),
+        kickRows.length ? h("div", { style: lbl }, "seated players") : null,
+        kickRows.length ? h("div", { style: { display: "flex", flexDirection: "column", gap: 5 } }, kickRows) : null);
+    }
     window.OnlineScreens = function OnlineScreens(props) {
       var net = props.net, h = React.createElement;
       var cs = React.useState(net.prefillCode || ""), code = cs[0], setCode = cs[1];
@@ -585,25 +673,28 @@
       if (net.role === "lobby") {
         return h("div", { style: box() },
           h("div", { style: card },
-            h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".22em", textAlign: "center", color: GOLD } }, "BANKHEAD"),
+            h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".22em", textAlign: "center", color: GOLD } }, gameTitle()),
             h("div", { style: lbl }, "your initials"),
             initInput,
+            net.pendingRoom ? h("div", { style: { padding: "8px 10px", background: "rgba(226,192,104,.12)", border: "1px solid " + GOLD, fontSize: 12, textAlign: "center", color: INK } },
+              "requested to join ", h("b", null, net.pendingRoom), " \u2014 waiting for the host",
+              h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), onClick: net.cancelRequest }, "cancel request")) : null,
             net.prefillCode ? h("div", { style: { padding: "8px 10px", background: "rgba(79,196,122,.12)", border: "1px solid " + GRN, fontSize: 12, textAlign: "center", color: INK } },
               "invited to room ", h("b", null, net.prefillCode),
-              h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), disabled: initials.length < 3, onClick: function () { net.joinGame(net.prefillCode); } }, initials.length < 3 ? "enter initials to join" : "join room " + net.prefillCode)) : null,
-            h("button", { style: bp, disabled: initials.length < 3, onClick: net.hostGame }, "host a new game"),
+              h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), disabled: initials.length < 3 || !!net.pendingRoom, onClick: function () { net.joinGame(net.prefillCode); } }, initials.length < 3 ? "enter initials to join" : "join room " + net.prefillCode)) : null,
+            h("button", { style: bp, disabled: initials.length < 3 || !!net.pendingRoom, onClick: net.hostGame }, "host a new game"),
             h("div", { style: { textAlign: "center", opacity: .4, fontSize: 12 } }, "— or —"),
             h("div", { style: { display: "flex", gap: 6 } },
               h("input", { value: code, maxLength: 6, placeholder: "CODE",
                 onChange: function (e) { setCode(e.target.value.toUpperCase()); }, style: Object.assign({}, inp, { flex: 1 }) }),
-              h("button", { style: bp, disabled: initials.length < 3 || !code, onClick: function () { net.joinGame(code); } }, "join")),
+              h("button", { style: bp, disabled: initials.length < 3 || !code || !!net.pendingRoom, onClick: function () { net.joinGame(code); } }, "join")),
             net.full ? h("div", { style: { color: RED, fontSize: 12, textAlign: "center" } }, "that room is full")
                      : (net.status ? h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, net.status) : null),
             net.savedSession ? h("button", { style: bg, onClick: net.rejoin }, "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
             h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)"),
             h("div", { style: { opacity: .35, fontSize: 10, textAlign: "center", marginTop: 4 } }, "build " + (window.BH_BUILD || "?"))),
-          section("pending games", gamesList(net, "pending", initials.length >= 3)),
-          section("running games", gamesList(net, "running", initials.length >= 3)),
+          section("pending games", gamesList(net, "pending", initials.length >= 3 && !net.pendingRoom)),
+          section("running games", gamesList(net, "running", initials.length >= 3 && !net.pendingRoom)),
           section("high scores \u00b7 this device", highList(net)),
           section("lobby chat", h(ChatBox, { messages: net.lobbyChat, onSend: net.sendLobbyChat })));
       }
@@ -615,8 +706,7 @@
           h("div", { style: card },
             h("div", { style: { fontSize: 20, fontWeight: 800, textAlign: "center" } }, "hosting · " + net.room),
             copyLink(net),
-            h("div", { style: lbl }, "players (" + net.playerCount + ")"),
-            rosterList(net),
+            h(HostManage, { net: net }),
             h("div", { style: lbl }, "seats (extra become bots)"),
             h(Seg, { val: Nn, opts: sizeOpts, onPick: setSize }),
             h("div", { style: lbl }, "play to"),
@@ -643,6 +733,7 @@
     window.OnlineBar = function OnlineBar(props) {
       var net = props.net, h = React.createElement;
       var op = React.useState(false), open = op[0], setOpen = op[1];
+      var mp = React.useState(false), mopen = mp[0], setMopen = mp[1];
       var seenRef = React.useRef(0);
       React.useEffect(function () { if (open) seenRef.current = net.roomChat.length; }, [open, net.roomChat.length]);
       var bar = { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "6px 10px",
@@ -669,13 +760,24 @@
           net.role === "host" ? h("button", { style: btn, onClick: function () {
             if (navigator.clipboard) navigator.clipboard.writeText(location.origin + location.pathname + "#room=" + net.room);
           } }, "invite") : null,
-          h("button", { style: btn, onClick: function () { setOpen(!open); } }, "\uD83D\uDCAC chat" + (unread ? " " + unread : ""))),
+          net.role === "host" ? h("button", { style: btn, onClick: function () { setMopen(!mopen); setOpen(false); } }, "\u2699 manage" + (net.requests && net.requests.length ? " " + net.requests.length : "")) : null,
+          h("button", { style: btn, onClick: function () { setOpen(!open); setMopen(false); } }, "\uD83D\uDCAC chat" + (unread ? " " + unread : ""))),
         open ? h("div", { style: sheet },
           h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
             h("b", { style: { fontSize: 12 } }, "room chat · " + net.room),
             h("button", { style: btn, onClick: function () { setOpen(false); } }, "close")),
-          h(ChatBox, { messages: net.roomChat, onSend: net.sendRoomChat })) : null);
+          h(ChatBox, { messages: net.roomChat, onSend: net.sendRoomChat })) : null,
+        mopen && net.role === "host" ? h("div", { style: sheet },
+          h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
+            h("b", { style: { fontSize: 12 } }, "host controls · " + net.room),
+            h("button", { style: btn, onClick: function () { setMopen(false); } }, "close")),
+          h(HostManage, { net: net })) : null);
     };
+
+    // ---- generic framework aliases (new games bind to these names) ----
+    window.useGameNet = window.useGameNet || window.useBankheadNet;
+    window.LobbyScreens = window.LobbyScreens || window.OnlineScreens;
+    window.GameBar = window.GameBar || window.OnlineBar;
   })();
   </script>
 
@@ -702,8 +804,9 @@
         await ensureLibs();
         if (!window.React || !window.ReactDOM || !window.Babel)
           throw new Error("core libraries unavailable (offline or a CDN is blocked)");
-        var res = await fetch("bankhead.jsx", { cache: "no-cache" });
-        if (!res.ok) throw new Error("couldn't fetch bankhead.jsx (" + res.status + ")");
+        var GAME_FILE = "bankhead.jsx"; var qm = (location.search || "").match(/[?&]game=([A-Za-z0-9_.-]+)/); if (qm) GAME_FILE = /\.jsx?$/.test(qm[1]) ? qm[1] : qm[1] + ".jsx";
+        var res = await fetch(GAME_FILE, { cache: "no-cache" });
+        if (!res.ok) throw new Error("couldn't fetch " + GAME_FILE + " (" + res.status + ")");
         var code = await res.text();
         code = code.replace(/^[ \t]*import\s+React\s*,?\s*(\{[^}]*\})?\s*from\s*["']react["'];?[ \t]*$/m,
           function (_m, named) { return named ? ("const " + named + " = React;") : "/* React (global) */"; });
@@ -715,7 +818,7 @@
         code += "\n;window.__BANKHEAD_APP__ = " + comp + ";\n";
         var out = Babel.transform(code, { presets: [["react", { runtime: "classic" }]], filename: "bankhead.jsx" }).code;
         var el = document.createElement("script"); el.textContent = out; document.body.appendChild(el);
-        var App = window.__BANKHEAD_APP__;
+        var App = (window.GAME && window.GAME.App) || window.__BANKHEAD_APP__;
         if (!App) throw new Error("game did not define its component");
         var root = document.getElementById("root");
         if (ReactDOM.createRoot) ReactDOM.createRoot(root).render(React.createElement(App));

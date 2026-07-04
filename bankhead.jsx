@@ -4,11 +4,13 @@ import React, { useReducer, useEffect, useRef } from "react";
 const __BH_INERT_NET = { role:"off", seat:0, status:"", room:null, snap:null, snapV:0, roster:[],
   names:["","","",""], namesV:0, target:100, full:false, myInitials:"", playerCount:0, downSeats:[],
   isSeatDown:()=>false, prefillCode:"", savedSession:null, lobbyChat:[], roomChat:[], games:[], highScores:[], pub:null, pubV:0,
+  requests:[], pendingRoom:null, started:false, availableSeats:()=>[],
   setInitials(){}, hostGame(){}, joinGame(){}, rejoin(){}, goSolo(){}, backToLobby(){}, closeRoom(){}, spectate(){},
+  approveRequest(){}, denyRequest(){}, kickSeat(){}, cancelRequest(){},
   sendLobbyChat(){}, sendRoomChat(){}, send(){}, broadcastState(){} };
-const useBankheadNet = (typeof window!=="undefined" && window.useBankheadNet) || (()=>__BH_INERT_NET);
-const OnlineBar     = (typeof window!=="undefined" && window.OnlineBar)     || (()=>null);
-const OnlineScreens = (typeof window!=="undefined" && window.OnlineScreens) || (()=>null);
+const useBankheadNet = (typeof window!=="undefined" && (window.useGameNet || window.useBankheadNet)) || (()=>__BH_INERT_NET);
+const OnlineBar     = (typeof window!=="undefined" && (window.GameBar || window.OnlineBar)) || (()=>null);
+const OnlineScreens = (typeof window!=="undefined" && (window.LobbyScreens || window.OnlineScreens)) || (()=>null);
 const SpectatorView = (typeof window!=="undefined" && window.SpectatorView) || (()=>null);
 
 /* =======================================================================
@@ -812,6 +814,12 @@ function reducer(state,a){
     }
     case "START": return {...freshRound(a.scores||Array(state.n).fill(0), state.n, state.brains, a.names), counts:[...(state.counts||[])], tune:[...(state.tune||[])]};
     case "RESUME": return {...freshRound(a.scores||Array(a.n).fill(0), a.n, a.brains, a.names), counts:a.brains.map(defaultMem), tune:[]};
+    case "SET_BRAIN_LIVE": {
+      const brains=state.brains.map((b,i)=> i===a.seat ? a.brain : b);
+      const names=(state.names||Array(state.n).fill("")).slice(); if(a.seat<names.length) names[a.seat]=a.name!=null?a.name:"";
+      const counts=(state.counts||[]).slice(); counts[a.seat]=defaultMem(a.brain);
+      return {...state, brains, names, counts};
+    }
     case "PLAY": {const s=playCards(clone(state),a.player,a.cardIds); progress(s); return s;}
     case "PASS_BANK": {const s=passBank(clone(state),a.player); progress(s); return s;}
     case "PICKUP": {const s=pickUp(clone(state),a.player); progress(s); return s;}
@@ -1737,6 +1745,7 @@ export default function App(){
     onAction:(a)=>apply(a),
     onResume:(state,tgt)=>{ dispatch({type:"__SYNC__", state}); if(tgt!=null) setTarget(tgt); },
     onGoSolo:()=>dispatch({type:"TO_SETUP"}),
+    onSeatChange:(seat,brain,name)=>dispatch({type:"SET_BRAIN_LIVE", seat, brain, name:(name!=null?name:"")}),
   });
   netRef.current = net;
   const online = net.role!=="off";
@@ -2028,4 +2037,61 @@ export default function App(){
       </div>}
     </div>
   );
+}
+
+/* =======================================================================
+   GAME ADAPTER — the standard contract the multiplayer shell consumes.
+   Everything game-specific (state shape, redaction, public projection,
+   action allowlist) lives here; the shell stays game-agnostic.
+   See GAME_API.md for the full contract.
+   ===================================================================== */
+function redactFor(state, seat){
+  // Per-seat PRIVATE snapshot: keep `seat`'s hand real, reduce every other
+  // hand + the stock to face-down counts. Opaque to the shell (this game renders it).
+  if(!state || !state.players) return state;
+  function fake(n){ const a=[]; for(let i=0;i<n;i++) a.push({id:0,rank:"?",suit:"?",back:true}); return a; }
+  const players = state.players.map((p,i)=>{
+    if(i===seat) return p;
+    const c={}; for(const k in p) c[k]=p[k]; c.hand=fake((p.hand||[]).length); return c;
+  });
+  const out={}; for(const k in state) out[k]=state[k];
+  out.players=players; out.stock=fake((state.stock||[]).length);
+  return out;
+}
+function publicView(s){
+  // PUBLIC (spectator-safe) projection in the shell's STANDARD shape. No hidden info.
+  if(!s || !s.players) return { status:"", seats:[], pileTop:null, pileCount:0, stockCount:0, log:[] };
+  const seats=[];
+  for(let i=0;i<s.n;i++){
+    seats.push({
+      name: who(s,i),
+      handCount: (s.players[i].hand||[]).length,
+      score: (s.scores&&s.scores[i])||0,
+      turn: i===s.current,
+      note: "banked "+((s.banked&&s.banked[i]||[]).length),
+    });
+  }
+  const topCard = (s.pile&&s.pile.length) ? s.pile[s.pile.length-1] : null;
+  const turnName = (s.current!=null && s.players[s.current]) ? who(s,s.current) : "";
+  return {
+    status: turnName ? (turnName+" to act") : "",
+    seats,
+    pileTop: topCard ? label(topCard) : null,
+    pileCount: (s.pile||[]).length,
+    stockCount: (s.stock||[]).length,
+    log: s.log||[],
+  };
+}
+if (typeof window !== "undefined") {
+  window.GAME = {
+    id: "bankhead",
+    title: "BANKHEAD",
+    minPlayers: 2,
+    maxPlayers: 4,
+    App: App,
+    redactFor: redactFor,
+    publicView: publicView,
+    actionTypes: ["PLAY","PASS_BANK","PICKUP","DISCARD_DOWN"],
+    seatOf: (a)=>a.player,
+  };
 }
