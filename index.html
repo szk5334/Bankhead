@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"><div id="boot">loading… · shell-r7</div></div>
+  <div id="root"><div id="boot">loading… · shell-r8</div></div>
 
   <!-- 2) CONFIG + NETWORK LAYER (plain JS)
        Transport = Supabase Realtime broadcast + presence ONLY.
@@ -27,7 +27,7 @@
   (function () {
     var SUPABASE_URL = "https://gmvdjsvdlbmbfdflkxnc.supabase.co";
     var SUPABASE_KEY = "sb_publishable_ibcK-ijGK14Up4MR258Pvw_X8xnT4zE";
-    window.BH_BUILD = "shell-r7";
+    window.BH_BUILD = "shell-r8";
 
     var m = (location.hash || "").match(/room=([A-Za-z0-9]+)/);
     window.BH_ROOM = m ? m[1].toUpperCase() : null;
@@ -663,7 +663,7 @@
     }
     window.OnlineScreens = function OnlineScreens(props) {
       var net = props.net, h = React.createElement;
-      var cs = React.useState(net.prefillCode || ""), code = cs[0], setCode = cs[1];
+      var cs = React.useState(""), code = cs[0], setCode = cs[1];
       var ts = React.useState(100), tgt = ts[0], setTgt = ts[1];
       var zs = React.useState(0), size = zs[0], setSize = zs[1];
       var initials = net.myInitials || "";
@@ -671,31 +671,33 @@
         onChange: function (e) { net.setInitials(e.target.value); }, style: inp });
 
       if (net.role === "lobby") {
+        var pend = (net.games || []).filter(function (g) { return g.status === "pending"; });
+        var run = (net.games || []).filter(function (g) { return g.status === "running"; });
+        var ready = initials.length >= 3, busy = !!net.pendingRoom, joinOK = ready && !busy;
         return h("div", { style: box() },
           h("div", { style: card },
             h("div", { style: { fontSize: 26, fontWeight: 800, letterSpacing: ".22em", textAlign: "center", color: GOLD } }, gameTitle()),
             h("div", { style: lbl }, "your initials"),
             initInput,
-            net.pendingRoom ? h("div", { style: { padding: "8px 10px", background: "rgba(226,192,104,.12)", border: "1px solid " + GOLD, fontSize: 12, textAlign: "center", color: INK } },
+            busy ? h("div", { style: { padding: "8px 10px", background: "rgba(226,192,104,.12)", border: "1px solid " + GOLD, fontSize: 12, textAlign: "center", color: INK } },
               "requested to join ", h("b", null, net.pendingRoom), " \u2014 waiting for the host",
               h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), onClick: net.cancelRequest }, "cancel request")) : null,
-            net.prefillCode ? h("div", { style: { padding: "8px 10px", background: "rgba(79,196,122,.12)", border: "1px solid " + GRN, fontSize: 12, textAlign: "center", color: INK } },
-              "invited to room ", h("b", null, net.prefillCode),
-              h("button", { style: Object.assign({}, bg, { marginTop: 6, display: "block", width: "100%" }), disabled: initials.length < 3 || !!net.pendingRoom, onClick: function () { net.joinGame(net.prefillCode); } }, initials.length < 3 ? "enter initials to join" : "join room " + net.prefillCode)) : null,
-            h("button", { style: bp, disabled: initials.length < 3 || !!net.pendingRoom, onClick: net.hostGame }, "host a new game"),
-            h("div", { style: { textAlign: "center", opacity: .4, fontSize: 12 } }, "— or —"),
+            (net.prefillCode && !busy) ? h("div", { style: { padding: "8px 10px", background: "rgba(79,196,122,.12)", border: "1px solid " + GRN, fontSize: 12, textAlign: "center", color: INK } },
+              "you were invited to ", h("b", null, net.prefillCode),
+              h("button", { style: Object.assign({}, bp, { marginTop: 6, display: "block", width: "100%" }), disabled: !joinOK, onClick: function () { net.joinGame(net.prefillCode); } }, ready ? ("join " + net.prefillCode) : "enter initials to join")) : null,
+            h("button", { style: bp, disabled: !ready || busy, onClick: net.hostGame }, "host new game"),
             h("div", { style: { display: "flex", gap: 6 } },
-              h("input", { value: code, maxLength: 6, placeholder: "CODE",
-                onChange: function (e) { setCode(e.target.value.toUpperCase()); }, style: Object.assign({}, inp, { flex: 1 }) }),
-              h("button", { style: bp, disabled: initials.length < 3 || !code || !!net.pendingRoom, onClick: function () { net.joinGame(code); } }, "join")),
-            net.full ? h("div", { style: { color: RED, fontSize: 12, textAlign: "center" } }, "that room is full")
-                     : (net.status ? h("div", { style: { opacity: .6, fontSize: 12, textAlign: "center" } }, net.status) : null),
-            net.savedSession ? h("button", { style: bg, onClick: net.rejoin }, "rejoin room " + net.savedSession.room + " as " + net.savedSession.initials) : null,
-            h("button", { style: bg, onClick: net.goSolo }, "play solo (vs bots)"),
-            h("div", { style: { opacity: .35, fontSize: 10, textAlign: "center", marginTop: 4 } }, "build " + (window.BH_BUILD || "?"))),
-          section("pending games", gamesList(net, "pending", initials.length >= 3 && !net.pendingRoom)),
-          section("running games", gamesList(net, "running", initials.length >= 3 && !net.pendingRoom)),
-          section("high scores \u00b7 this device", highList(net)),
+              h("input", { value: code, maxLength: 6, placeholder: "join by code", onChange: function (e) { setCode(e.target.value.toUpperCase()); }, style: Object.assign({}, inp, { flex: 1, letterSpacing: 1 }) }),
+              h("button", { style: bg, disabled: !joinOK || !code, onClick: function () { net.joinGame(code); } }, "join")),
+            (net.full && !busy) ? h("div", { style: { color: RED, fontSize: 12, textAlign: "center" } }, "that room is full") : null,
+            (!busy && !net.full && net.status) ? h("div", { style: { opacity: .6, fontSize: 11, textAlign: "center" } }, net.status) : null,
+            h("div", { style: { display: "flex", gap: 6 } },
+              h("button", { style: Object.assign({}, bg, { flex: 1 }), onClick: net.goSolo }, "play solo"),
+              net.savedSession ? h("button", { style: Object.assign({}, bg, { flex: 1 }), onClick: net.rejoin }, "rejoin " + net.savedSession.room) : null),
+            h("div", { style: { opacity: .35, fontSize: 10, textAlign: "center", marginTop: 2 } }, "build " + (window.BH_BUILD || "?"))),
+          pend.length ? section("open tables", gamesList(net, "pending", joinOK)) : null,
+          run.length ? section("in progress", gamesList(net, "running", ready)) : null,
+          (net.highScores && net.highScores.length) ? section("top scores \u00b7 this device", highList(net)) : null,
           section("lobby chat", h(ChatBox, { messages: net.lobbyChat, onSend: net.sendLobbyChat })));
       }
 
@@ -704,8 +706,8 @@
         var sizeOpts = []; for (var i = Math.max(2, net.playerCount || 2); i <= 4; i++) sizeOpts.push({ v: i, l: String(i) });
         return h("div", { style: box() },
           h("div", { style: card },
-            h("div", { style: { fontSize: 20, fontWeight: 800, textAlign: "center" } }, "hosting · " + net.room),
-            copyLink(net),
+            h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" } },
+              h("div", { style: { fontSize: 20, fontWeight: 800 } }, "hosting · " + net.room), copyLink(net)),
             h(HostManage, { net: net }),
             h("div", { style: lbl }, "seats (extra become bots)"),
             h(Seg, { val: Nn, opts: sizeOpts, onPick: setSize }),
@@ -713,7 +715,7 @@
             h(Seg, { val: tgt, opts: [{ v: 100, l: "100" }, { v: 200, l: "200" }, { v: 0, l: "free" }], onPick: setTgt }),
             h("button", { style: bp, disabled: net.playerCount < 2, onClick: function () { props.onStart(tgt, Nn); } },
               net.playerCount < 2 ? "waiting for players…" : "start game"),
-            h("button", { style: bg, onClick: net.backToLobby }, "leave (close room)")),
+            h("button", { style: bg, onClick: net.backToLobby }, "close room")),
           h("div", { style: card }, h(ChatTabs, { net: net })));
       }
 
