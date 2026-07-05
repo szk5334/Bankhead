@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0b0b0e" />
-  <title>BANKHEAD</title>
+  <title>Card Table</title>
   <style>
     html,body{margin:0;padding:0;background:#0b0b0e;color:#eee;-webkit-text-size-adjust:100%;}
     #boot{font:13px/1.5 system-ui,monospace;padding:18px;opacity:.7;}
@@ -414,7 +414,7 @@
         setInitials(s.initials || "");
         if (s.role === "host") {
           var client = window.bhClient; if (!client) return;
-          var ch = client.channel("bankhead-" + s.room, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
+          var ch = client.channel(NS() + "-" + s.room, { config: { presence: { key: cidRef.current }, broadcast: { self: false } } });
           ch._bhCode = s.room; chanRef.current = ch; setRoom(s.room); RL("host"); SL(0); setRoomChat([]);
           ownersRef.current = { bySeat: { 0: { cid: cidRef.current, initials: s.initials, connected: true } }, byCid: {} };
           ownersRef.current.byCid[cidRef.current] = 0;
@@ -801,12 +801,52 @@
       if (!window.Babel)    await loadScript("https://unpkg.com/@babel/standalone/babel.min.js");
       if (!window.supabase) await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
     }
+    /* ---- GAME REGISTRY — add one entry per game (file must sit beside index.html) ---- */
+    var GAMES = [
+      { file: "bridge.jsx",   title: "BRIDGE",   players: "4 players \u00b7 partnership",
+        blurb: "Standard contract bridge with a full SAYC bidding tutor, rubber scoring, and a teaching mode that explains every suggested call and card." },
+      { file: "bankhead.jsx", title: "BANKHEAD", players: "2\u20134 players",
+        blurb: "A fast, bluff-heavy climbing card game \u2014 a Shithead descendant with wild ranks, banking, and a bench of AI archetypes." }
+    ];
+    function escHtml(x){ return String(x).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+    function showLauncher() {
+      document.title = "Card Table";
+      var cards = GAMES.map(function (g) {
+        return '<a class="ghcard" href="?game=' + encodeURIComponent(g.file) + '">' +
+                 '<div class="ghtitle">' + escHtml(g.title) + '</div>' +
+                 '<div class="ghmeta">' + escHtml(g.players) + '</div>' +
+                 '<div class="ghblurb">' + escHtml(g.blurb) + '</div>' +
+                 '<div class="ghplay">Play \u2192</div>' +
+               '</a>';
+      }).join("");
+      document.getElementById("root").innerHTML =
+        '<style>' +
+        '.gh{max-width:520px;margin:0 auto;padding:34px 18px 60px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}' +
+        '.ghhead{font-size:22px;font-weight:700;letter-spacing:.36em;padding-left:.36em;background:linear-gradient(92deg,#ed7464,#e2c068 50%,#67cdbb);-webkit-background-clip:text;background-clip:text;color:transparent;}' +
+        '.ghsub{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#9a8f63;margin:8px 0 22px;}' +
+        '.ghcard{display:block;text-decoration:none;color:#f2e8ce;border:1px solid rgba(212,175,55,.42);padding:15px 16px;margin-bottom:12px;background:rgba(212,175,55,.05);transition:background .12s,border-color .12s;}' +
+        '.ghcard:hover{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.7);}' +
+        '.ghtitle{font-size:16px;font-weight:700;letter-spacing:.18em;}' +
+        '.ghmeta{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#e2c068;margin:5px 0 8px;}' +
+        '.ghblurb{font-size:11.5px;line-height:1.55;color:#c9bd94;}' +
+        '.ghplay{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#67cdbb;margin-top:10px;font-weight:700;}' +
+        '.ghfoot{font-size:10px;color:#6d6547;margin-top:20px;line-height:1.6;}' +
+        '</style>' +
+        '<div class="gh">' +
+          '<div class="ghhead">CARD TABLE</div>' +
+          '<div class="ghsub">choose a game</div>' +
+          cards +
+          '<div class="ghfoot">Each game runs in its own namespace. Bookmark a game with its <b>?game=</b> link.</div>' +
+        '</div>';
+    }
     (async function () {
+      var qm = (location.search || "").match(/[?&]game=([A-Za-z0-9_.-]+)/);
+      if (!qm) { showLauncher(); return; }              // no ?game= → show the launcher
+      var GAME_FILE = /\.jsx?$/.test(qm[1]) ? qm[1] : qm[1] + ".jsx";
       try {
         await ensureLibs();
         if (!window.React || !window.ReactDOM || !window.Babel)
           throw new Error("core libraries unavailable (offline or a CDN is blocked)");
-        var GAME_FILE = "bankhead.jsx"; var qm = (location.search || "").match(/[?&]game=([A-Za-z0-9_.-]+)/); if (qm) GAME_FILE = /\.jsx?$/.test(qm[1]) ? qm[1] : qm[1] + ".jsx";
         var res = await fetch(GAME_FILE, { cache: "no-cache" });
         if (!res.ok) throw new Error("couldn't fetch " + GAME_FILE + " (" + res.status + ")");
         var code = await res.text();
@@ -822,11 +862,12 @@
         var el = document.createElement("script"); el.textContent = out; document.body.appendChild(el);
         var App = (window.GAME && window.GAME.App) || window.__BANKHEAD_APP__;
         if (!App) throw new Error("game did not define its component");
+        try { document.title = (window.GAME && window.GAME.title) || GAME_FILE; } catch (e) {}
         var root = document.getElementById("root");
         if (ReactDOM.createRoot) ReactDOM.createRoot(root).render(React.createElement(App));
         else ReactDOM.render(React.createElement(App), root);
       } catch (e) {
-        fail("BANKHEAD failed to load: " + e.message + (location.protocol === "file:" ? "  (serve via http / GitHub Pages, not file://)" : ""));
+        fail("Failed to load " + GAME_FILE + ": " + e.message + (location.protocol === "file:" ? "  (serve via http / GitHub Pages, not file://)" : ""));
       }
     })();
   })();
