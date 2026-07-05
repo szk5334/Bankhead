@@ -1408,9 +1408,11 @@ function explainBid(hand, calls, dealer, seat, call){
   const partnerOpen = ctx.partnerBids && ctx.partnerBids[0];
 
   if(call.k==="P"){
-    if(nobodyBidYet || (!ctx.partnerOpened && !ctx.iOpened && !ctx.oppsBid)) return { code:"B_PASS_OPEN", hcp };
-    if(ctx.partnerOpened && !ctx.iOpened) return { code:"B_PASS_RESP", hcp };
-    return { code:"B_PASS_MIN" };
+    if(ctx.iOpened) return { code:"B_PASS_SETTLE", hcp };
+    if(nobodyBidYet) return { code: hcp<=11?"B_PASS_OPEN":"B_PASS_NEUTRAL", hcp };
+    if(ctx.openerSeat===ctx.partner) return { code: hcp<=7?"B_PASS_RESP":"B_PASS_NEUTRAL", hcp };
+    if(ctx.partnerOpened) return { code: hcp<=8?"B_PASS_ADVANCE":"B_PASS_NEUTRAL", hcp };
+    return { code: hcp<=12?"B_PASS_COMPETE":"B_PASS_NEUTRAL", hcp };
   }
   if(call.k==="D"){
     const lb=ctx.info.lastBid;
@@ -1455,8 +1457,11 @@ function explainBid(hand, calls, dealer, seat, call){
 const TEACH_DEFAULT = {
   bid: {
     B_PASS_OPEN:"With only {hcp} HCP you're below opening strength (about 12+). Pass.",
-    B_PASS_RESP:"Just {hcp} HCP — short of the ~6 needed to answer partner. Pass.",
-    B_PASS_MIN:"Nothing extra to show here — pass.",
+    B_PASS_RESP:"Partner opened, but {hcp} HCP opposite an opening bid isn't enough to look for game — so pass.",
+    B_PASS_ADVANCE:"Partner has competed into the opponents' auction; with {hcp} HCP you've no fit to raise or suit to show, so pass.",
+    B_PASS_COMPETE:"The opponents own this auction. With {hcp} HCP and no long suit worth an overcall (nor the shape for a takeout double), it's safer to pass than to act on nothing.",
+    B_PASS_SETTLE:"You've already described this hand, and there's no fit or extra strength to chase. Pass and let the contract rest where partner can place it.",
+    B_PASS_NEUTRAL:"This is a natural place to stop for your hand — pass rather than push the bidding any higher.",
     B_1NT:"{hcp} HCP and a balanced hand: 1NT pins your strength to a 15–17 range in one bid.",
     B_2NT:"{hcp} HCP, balanced — open 2NT (20–21).",
     B_3NT:"{hcp} HCP, balanced — open 3NT (25–27).",
