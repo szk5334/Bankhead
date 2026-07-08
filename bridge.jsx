@@ -80,7 +80,7 @@ const CURRICULUM = [
       drill: { pos: "resp-nt", note: "opposite 2NT/3NT" } },
     { id: "r-ntinterf", ch: 2, title: "Handling interference over 1NT",
       teach: "If they double, your conventional responses stay on. If they bid a suit, Stayman and transfers are off \u2014 bids become natural, and a cuebid of their suit substitutes for Stayman with game values.",
-      drill: null },
+      drill: { pos: "resp-1nt-interf", note: "systems off over their overcall \u2014 cuebid = Stayman" } },
   ]},
 
   /* ---- CH 3: ONE-LEVEL OPENING BIDS -------------------------------------- */
@@ -157,7 +157,7 @@ const CURRICULUM = [
       drill: { pos: "rp-rebid", note: "responder rebid after a reverse" } },
     { id: "rv-responder", ch: 7, title: "Reverses by responder",
       teach: "Responder reverses too: bidding a second suit higher than the first, at a level that crowds the auction, shows extra values and is forcing. It says 'we're going at least to game \u2014 keep describing.'",
-      drill: null },
+      drill: { pos: "resp-reverse", note: "reverse: higher second suit is game-forcing" } },
   ]},
 
   /* ---- CH 8: SUBSEQUENT BIDDING BY RESPONDER ----------------------------- */
@@ -235,7 +235,7 @@ const CURRICULUM = [
       drill: { pos: "compete", note: "5-5 lowest two suits" } },
     { id: "c-balancetwo", ch: 13, title: "Two-suiters in the balancing seat",
       teach: "In the passout seat these bids can be shaded, since partner's pass may hide values. But a balancing 2NT is not always Unusual \u2014 by common agreement it can be natural (19\u201321), so confirm the meaning with partner.",
-      drill: null },
+      drill: { kind: "concept", concept: "balance2nt" } },
   ]},
 
   /* ---- CH 14: OVERCALLING THEIR 1NT -------------------------------------- */
@@ -249,7 +249,7 @@ const CURRICULUM = [
   { id: "doubles", module: "Doubles & Redoubles", lessons: [
     { id: "d-penalty", ch: 15, title: "The penalty double",
       teach: "A double is for penalty when partner can't read it as takeout \u2014 typically over their game-level contracts, or when your side has clearly bid the hand and they've overreached. You expect to defeat the contract for a bigger score than bidding on.",
-      drill: null },
+      drill: { kind: "concept", concept: "penalty" } },
     { id: "d-takeout", ch: 15, title: "The takeout double",
       teach: "Opening values with shortness in their suit and support for the unbid suits \u2014 it asks partner to pick a suit. 12+ points; the more high cards you have, the less perfect the shape needs to be. Over a partscore, a double is takeout; over a game, it's penalty.",
       drill: { pos: "compete", note: "takeout shape" } },
@@ -261,7 +261,7 @@ const CURRICULUM = [
       drill: { pos: "resp-vs-dbl", note: "Jordan 2NT over their takeout double" } },
     { id: "d-leaddir", ch: 15, title: "Lead-directing doubles",
       teach: "Doubling a conventional bid (a Stayman 2\u2663, a transfer, a cuebid) asks partner to lead that suit rather than promising a set. Against a slam, a Lightner double demands an unusual lead \u2014 typically dummy's first-bid suit, not the obvious one.",
-      drill: null },
+      drill: { pos: "resp-lead-dbl", note: "double their convention to ask for that lead" } },
   ]},
 
   /* ---- CH 16: NEGATIVE DOUBLE -------------------------------------------- */
@@ -291,23 +291,23 @@ const CURRICULUM = [
       drill: { pos: "balance", note: "balancing 1NT (12-14)" } },
     { id: "b-resp", ch: 18, title: "Responding to partner's balance",
       teach: "Discount your hand \u2014 partner has borrowed values that may not be there. Don't drive to game as if partner acted directly; invite where you'd normally force, and pass where you'd normally invite.",
-      drill: null },
+      drill: { pos: "resp-balance", note: "responding to partner's balance \u2014 discount your hand" } },
   ]},
 
   /* ---- CH 19: SLAM BIDDING ----------------------------------------------- */
   { id: "slam", module: "Slam Bidding", lessons: [
     { id: "s-bw", ch: 19, title: "Blackwood 4NT",
-      teach: "4NT asks for aces: 5\u2663=0/4, 5\u2666=1, 5\u2665=2, 5\u2660=3. A follow-up 5NT asks for kings and guarantees the partnership holds all four aces. Use it to stay out of a slam missing two aces, not to bid one.",
-      drill: null },
+      teach: "4NT asks for aces: 5\u2663=0/4, 5\u2666=1, 5\u2665=2, 5\u2660=3. A follow-up 5NT asks for kings and guarantees the partnership holds all four aces. Use it to stay out of a slam missing two aces, not to bid one. (Drill: partner has asked \u2014 show your aces.)",
+      drill: { pos: "slam-bwresp", note: "partner bid Blackwood 4NT \u2014 show your aces" } },
     { id: "s-gerber", ch: 19, title: "Gerber & the Grand Slam Force",
-      teach: "4\u2663 over a natural notrump is Gerber (ace-asking). A jump to 5NT is the Grand Slam Force, asking partner to bid seven of the agreed suit holding two of the top three trump honors.",
-      drill: null },
+      teach: "4\u2663 over a natural notrump is Gerber (ace-asking): 4\u2666=0/4, 4\u2665=1, 4\u2660=2, 4NT=3. A jump to 5NT is the Grand Slam Force, asking partner to bid seven of the agreed suit holding two of the top three trump honors. (Drill: partner has asked \u2014 show your aces.)",
+      drill: { pos: "slam-gbresp", note: "partner bid Gerber 4\u2663 \u2014 show your aces" } },
     { id: "s-control", ch: 19, title: "Control bids (cuebidding)",
       teach: "Once a trump fit and slam interest are established, bid your cheapest first-round control (ace or void) up the line; second-round controls (kings, singletons) come on later rounds. Cuebidding pinpoints where your controls lie before committing with Blackwood.",
-      drill: null },
+      drill: { kind: "concept", concept: "controlseq" } },
     { id: "s-choose", ch: 19, title: "Choosing the slam method",
       teach: "Quantitative raises decide notrump slams by points; Blackwood checks for missing aces in suit slams; control bids handle hands where a specific unguarded suit \u2014 not the ace count \u2014 is the worry. Match the tool to the doubt.",
-      drill: null },
+      drill: { kind: "concept", concept: "slamtool" } },
   ]},
 
   /* ---- CH 20 + DEFENCE PDF: LEADS & CARDING ------------------------------ */
@@ -323,6 +323,40 @@ const CURRICULUM = [
       drill: null },
     { id: "d-strategy", ch: "D", title: "The four defensive strategies",
       teach: "Before the lead, pick a plan. Active: cash tricks fast before declarer pitches losers on a long suit. Passive (the default when unsure): give nothing away. Forcing: keep leading your long suit to make declarer ruff and lose trump control. Attacking trumps: lead trumps to kill dummy's ruffs, or build a trump trick.",
+      drill: { kind: "concept", concept: "defplan" } },
+  ]},
+
+  /* ---- PART 2 \u2014 DECLARER PLAY (from Bernard Magee, "Basic Techniques of Declarer Play") -- */
+  { id: "declplay", module: "Declarer Play: Making a Plan", lessons: [
+    { id: "dp-plan", ch: "M", title: "Make a plan (ATTITWDE)",
+      teach: "Before playing to trick one, make a plan. Fix your Aim (how many tricks the contract needs), count your Top tricks (sure winners), see how to Increase tricks by establishment, Worry about the defence (stoppers in notrump, losers in a suit), then Execute in the order that keeps your entries. A methodical plan turns a hard hand into a countable one.",
+      drill: null },
+    { id: "dp-top", ch: "M", title: "Counting top tricks",
+      teach: "A top trick is a winner you can cash immediately without giving up the lead. Combine the two hands suit by suit: a suit yields top tricks only for the unbroken run of highest cards you hold between them. Count these first \u2014 every other step in the plan is measured against this number.",
+      drill: { kind: "declcount", q: "toptricks" } },
+    { id: "dp-need", ch: "M", title: "How many tricks to develop",
+      teach: "Subtract your top tricks from the number the contract needs, and the gap is the job establishment has to do. In 3NT with seven top tricks you need two more \u2014 knowing the exact shortfall tells you how hard to work and which suit to attack.",
+      drill: { kind: "declcount", q: "needtricks" } },
+    { id: "dp-highcard", ch: "M", title: "Establishing with high cards",
+      teach: "When you hold a run of honours missing the top one \u2014 K-Q-J against the ace, or Q-J-10 against the ace and king \u2014 lead the suit to force out the defenders' guard. Once their high card is gone your honours are promoted into winners.",
+      drill: { kind: "concept", concept: "forceplay" } },
+    { id: "dp-length", ch: "M", title: "Establishing by length",
+      teach: "Extra winners hide in a long suit. After the defenders' cards in the suit are exhausted, your remaining low cards win by default. A four-card suit usually needs a friendly 3-3 break; a five-card suit is far more reliable. Length is the quiet engine of many notrump contracts.",
+      drill: null },
+    { id: "dp-finesse", ch: "M", title: "The finesse",
+      teach: "A finesse tries to win a trick with a card that isn't the highest, by leading toward a tenace such as A-Q and hoping the missing king lies favourably. It is roughly an even-money chance and it comes up on almost every hand \u2014 the workhorse way to manufacture a trick from cards that surround a defender's honour.",
+      drill: { kind: "concept", concept: "finesseplay" } },
+    { id: "dp-ruff", ch: "M", title: "Establishing by ruffing",
+      teach: "In a suit contract you can turn losers into winners by trumping them. The extra tricks come from ruffing in the SHORT trump hand \u2014 usually dummy \u2014 not the long one, because ruffing in the long hand only spends trumps you were going to make anyway.",
+      drill: null },
+    { id: "dp-method", ch: "M", title: "Which establishment method?",
+      teach: "Given a suit, name the tool: force out a high card (high cards), run the suit once it breaks (length), lead toward a tenace (finesse), or trump losers in the short hand (ruffing). Matching the method to the holding is the heart of the plan's 'increase tricks' step.",
+      drill: { kind: "concept", concept: "establishmethod" } },
+    { id: "dp-worry", ch: "M", title: "Worrying about the defence",
+      teach: "In notrump, count your stoppers \u2014 you need a way to halt the defenders' long suit before they cash it, and a hold-up can buy time. In a suit contract, count your losers instead and plan to ruff or discard them before you lose control. Building tricks is pointless if the defence cashes enough first.",
+      drill: null },
+    { id: "dp-execute", ch: "M", title: "Executing the plan",
+      teach: "Order matters. Keep entries to both hands, unblock high cards from the short holding, and develop your long suits while you still have the transportation to reach them. Many contracts fail not for lack of tricks but because declarer got stranded in the wrong hand.",
       drill: null },
   ]},
 ];
@@ -365,6 +399,242 @@ const DRILLABLE = CURRICULUM.flatMap((mod) =>
 
    South (the learner) is always seat 0. Partner = 2, LHO = 1, RHO = 3.
    ========================================================================== */
+
+/* ============================================================================
+   DECLARER-PLAY TECHNIQUE DRILLS  (single-suit double-dummy answer oracle)
+   ----------------------------------------------------------------------------
+   Inline-ready block for makeGenerator({ENG,AUC,BID,PLY}). Provides:
+     - SUIT_SOLVER: an exact single-suit double-dummy solver (the ANSWER ORACLE
+       for technique drills, exactly as topTricks() is the oracle for counting).
+     - Two curated, solver-VERIFIED banks (finesse, force) whose correct answer
+       is what SUIT_SOLVER computes; the Node harness re-derives & asserts them.
+     - Two CONCEPT builders (finesseplay, forceplay) that render through the
+       existing concept + DeclarerDummy UI path with ZERO UI changes.
+   Model (standard suit-combination convention, matches the Official Encyclopedia):
+   one suit in isolation; declarer has entries to both hands, chooses the leader
+   every trick and always regains the lead; both sides double-dummy; NT-style
+   (highest card wins). South = the hand that holds the tenace/sequence; North =
+   dummy. This is the same idealisation textbooks use to state suit-combo results.
+   ========================================================================== */
+function installDeclPlay({ ENG }) {
+  const RV = ENG.RANKVAL;                                   // ten is "10", NOT "T"
+  const ALLR = ["A","K","Q","J","10","9","8","7","6","5","4","3","2"];
+  const vv = (r) => RV[r];
+  const desc = (a) => a.slice().sort((x,y) => vv(y)-vv(x));
+  const asc  = (a) => a.slice().sort((x,y) => vv(x)-vv(y));
+  const lo   = (a) => asc(a)[0];
+
+  // ---------- exact double-dummy for one FIXED layout (memoized) ----------
+  const _memo = new Map();
+  const key = (S,N,W,E) => S.join("")+"|"+N.join("")+"|"+W.join("")+"|"+E.join("");
+  function ddLayout(S,N,W,E){
+    if(!S.length && !N.length) return 0;
+    const k = key(S,N,W,E); const h=_memo.get(k); if(h!==undefined) return h;
+    let best=-1;
+    const leaders=[]; if(S.length) leaders.push("S"); if(N.length) leaders.push("N");
+    for(const L of leaders){ const hand=(L==="S"?S:N);
+      for(const c of hand){ const v=playFixed(L,c,S,N,W,E); if(v>best) best=v; } }
+    _memo.set(k,best); return best;
+  }
+  // one trick from a fixed layout with a chosen (leader,card); defenders minimax, declarer max.
+  function playFixed(L,card,S,N,W,E){
+    const order = L==="N" ? ["N","E","S","W"] : ["S","W","N","E"];
+    const H={S,N,W,E}; const def2=order[1], d3=order[2], def4=order[3];
+    const opts2 = H[def2].length? H[def2] : [null];
+    let b2=Infinity;
+    for(const c2 of opts2){
+      const opts3 = H[d3].length? H[d3] : [null];
+      let b3=-Infinity;
+      for(const c3 of opts3){
+        const opts4 = H[def4].length? H[def4] : [null];
+        let b4=Infinity;
+        for(const c4 of opts4){
+          const played={[L]:card,[def2]:c2,[d3]:c3,[def4]:c4};
+          let w=null,bv=-1; for(const s of order){ const c=played[s]; if(c==null) continue; if(vv(c)>bv){bv=vv(c);w=s;} }
+          const won=(w==="S"||w==="N")?1:0;
+          const nS=S.slice(),nN=N.slice(),nW=W.slice(),nE=E.slice(),R={S:nS,N:nN,W:nW,E:nE};
+          const drop=(s,c)=>{ if(c!=null){ const i=R[s].indexOf(c); if(i>=0) R[s].splice(i,1); } };
+          drop(L,card); drop(def2,c2); drop(d3,c3); drop(def4,c4);
+          const val=won+ddLayout(nS,nN,nW,nE);
+          if(val<b4) b4=val;
+        }
+        if(b4>b3) b3=b4;
+      }
+      if(b3<b2) b2=b3;
+    }
+    return b2;
+  }
+  // ---------- a-priori split weights over the missing cards ----------
+  function comb(n,k){ if(k<0||k>n) return 0; k=Math.min(k,n-k); let r=1; for(let i=0;i<k;i++) r=r*(n-i)/(i+1); return Math.round(r); }
+  function partitions(missing){
+    const m=missing.length, out=[];
+    for(let mask=0; mask<(1<<m); mask++){
+      const W=[],Ee=[]; for(let i=0;i<m;i++){ (mask&(1<<i))? W.push(missing[i]) : Ee.push(missing[i]); }
+      out.push({ W:desc(W), E:desc(Ee), w:comb(26-m, 13-W.length) });   // a-priori vacant-space weight
+    }
+    return out;
+  }
+  // ---------- non-clairvoyant first action, exact continuation ----------
+  // third-hand rule captures real technique on round 1: "cheapest-win" = partner plays the
+  // lowest card that beats the current high (the finesse / rise-with-honour), else lowest.
+  function thirdCard(rule, hand, curHigh){
+    if(!hand.length) return null; const a=asc(hand);
+    if(rule==="low") return a[0];
+    const wins=a.filter(c=>vv(c)>curHigh); return wins.length? wins[0] : a[0];
+  }
+  function actionEV(S,N,action){
+    S=desc(S); N=desc(N);
+    const held=new Set([...S,...N]); const missing=ALLR.filter(r=>!held.has(r));
+    const parts=partitions(missing); let num=0, den=0;
+    for(const p of parts){ num += p.w*firstThenDD(S,N,p.W.slice(),p.E.slice(),action); den += p.w; }
+    return { ev:num/den };
+  }
+  function firstThenDD(S,N,W,E,action){
+    const L=action.from, card=action.card;
+    const order = L==="N" ? ["N","E","S","W"] : ["S","W","N","E"];
+    const H={S:S.slice(),N:N.slice(),W:W.slice(),E:E.slice()};
+    const def2=order[1], d3=order[2], def4=order[3];
+    const opts2 = H[def2].length? H[def2] : [null];
+    let b2=Infinity;
+    for(const c2 of opts2){
+      const curHigh=Math.max(vv(card), c2==null?-1:vv(c2));
+      const c3=thirdCard(action.third, H[d3], curHigh);
+      const opts4 = H[def4].length? H[def4] : [null];
+      let b4=Infinity;
+      for(const c4 of opts4){
+        const played={[L]:card,[def2]:c2,[d3]:c3,[def4]:c4};
+        let w=null,bv=-1; for(const s of order){ const c=played[s]; if(c==null) continue; if(vv(c)>bv){bv=vv(c);w=s;} }
+        const won=(w==="S"||w==="N")?1:0;
+        const nS=S.slice(),nN=N.slice(),nW=W.slice(),nE=E.slice(),R={S:nS,N:nN,W:nW,E:nE};
+        const drop=(s,c)=>{ if(c!=null){ const i=R[s].indexOf(c); if(i>=0) R[s].splice(i,1);} };
+        drop(L,card); drop(def2,c2); drop(d3,c3); drop(def4,c4);
+        const val=won+ddLayout(nS,nN,nW,nE);
+        if(val<b4) b4=val;
+      }
+      if(b4<b2) b2=b4;
+    }
+    return b2;
+  }
+  // Rank the standard first-actions for a South-tenace / North-dummy layout.
+  function rankActions(S,N){
+    S=desc(S); N=desc(N); const acts=[];
+    if(N.length) acts.push({ id:"finN", from:"N", card:lo(N), third:"cheapest-win" }); // lead low from dummy (the finesse)
+    if(S.length) acts.push({ id:"finS", from:"S", card:lo(S), third:"cheapest-win" });
+    if(S.length) acts.push({ id:"cashS",from:"S", card:desc(S)[0], third:"low" });      // cash top from hand
+    if(N.length) acts.push({ id:"cashN",from:"N", card:desc(N)[0], third:"low" });
+    return acts.map(a=>({ ...a, ev:actionEV(S,N,a).ev })).sort((x,y)=>y.ev-x.ev);
+  }
+  const SUIT_SOLVER = { ddLayout, actionEV, rankActions, partitions };
+
+  // ---------- solver-VERIFIED curated banks (ranks; South holds the honours) ----------
+  // Every finesse entry: SUIT_SOLVER's best action is "lead low from dummy" (finN) and it
+  // beats the best cash line by >= FIN_MARGIN. Every force entry: a solid sequence whose only
+  // line is to drive out the missing top honour(s). The harness asserts all of this.
+  const FIN_MARGIN = 0.30;
+  const FINESSE_BANK = [
+    { S:["A","Q"],            N:["6","4","3"] },
+    { S:["A","Q"],            N:["8","6","4","3"] },
+    { S:["K","J"],            N:["7","4","2"] },
+    { S:["A","J","10"],       N:["5","4","3"] },
+    { S:["A","J","10"],       N:["6","2"] },
+    { S:["A","J","10","9"],   N:["6","4","2"] },
+    { S:["A","Q","J"],        N:["6","5","4"] },
+  ];
+  const FORCE_BANK = [
+    { S:["K","Q","J"],        N:["4","3","2"] },
+    { S:["K","Q","J","10"],   N:["4","3","2"] },
+    { S:["Q","J","10"],       N:["5","4","3"] },
+    { S:["Q","J","10","9"],   N:["4","3","2"] },
+    { S:["Q","J","10","9"],   N:["6","5"] },
+  ];
+
+  // ---------- render helpers ----------
+  const GLY = { S:"\u2660", H:"\u2665", D:"\u2666", C:"\u2663" };
+  const shuffle = (a) => ENG.shuffle(a);
+  // build real card objects for ONE suit from a fresh deck (valid unique ids, ten = "10")
+  function suitCards(ranks, suit){
+    const deck = ENG.makeDeck();
+    return ranks.map(r => deck.find(c => c.suit===suit && c.rank===r));
+  }
+  const honourList = (ranks) => ranks.filter(r => vv(r) >= 11);          // J,Q,K,A
+  const joinHonours = (rs) => rs.join("\u2011");                        // non-breaking hyphen: A-Q
+  const andList = (rs, g) => rs.length===1 ? rs[0]+g : rs.slice(0,-1).map(r=>r+g).join(", ")+" and "+rs[rs.length-1]+g;
+
+  const SUITWORD = { S:"spades", H:"hearts", D:"diamonds", C:"clubs" };
+  const seqName = (ranks) => desc(ranks).join("\u2011");   // full holding, e.g. A-Q-J, Q-J-10
+  function pickSuit(){ return shuffle(["S","H","D","C"])[0]; }
+
+  function buildFinesse(entry){
+    const suit = pickSuit(), g = GLY[suit];
+    const declHand = suitCards(entry.S, suit);
+    const dummyHand = suitCards(entry.N, suit);
+    const ten = honourList(entry.S);
+    const held = new Set([...entry.S, ...entry.N]);
+    const missHon = ALLR.filter(r => vv(r)>=11 && vv(r)>vv(ten[ten.length-1]) && !held.has(r)); // honours above the tenace, out
+    const lowDummy = lo(entry.N);
+    const top = desc(entry.S)[0];
+    const correct = `Lead low from dummy (${lowDummy}${g}) toward your hand and finesse`;
+    const dCash   = `Cash your ${top}${g} from hand`;
+    const dWrong  = `Lead low from your hand toward dummy`;
+    const sit = missHon.length>1 ? "sit" : "sits";
+    const why =
+      `You hold the ${seqName(entry.S)} tenace in ${SUITWORD[suit]} opposite low cards. `+
+      `Lead low from dummy toward your hand: the defender on your right must commit before your honour, so if the missing `+
+      `${missHon.length?andList(missHon,g):"honour"} ${sit} in front of the tenace you score a trick you could never take by force \u2014 a finesse. `+
+      `Cashing a top honour, or leading from the strong hand, throws that extra trick away.`;
+    return {
+      declHand, dummyHand, contractLabel: null,
+      scenario: `One suit in isolation (you have free entries to both hands). Focus only on ${GLY[suit]}.`,
+      prompt: "What is your best play to maximise tricks in this suit?",
+      answerLabel: correct,
+      why,
+      choices: shuffle([
+        { label: correct, correct: true },
+        { label: dCash,   correct: false },
+        { label: dWrong,  correct: false },
+      ]),
+    };
+  }
+
+  function buildForce(entry){
+    const suit = pickSuit(), g = GLY[suit];
+    const declHand = suitCards(entry.S, suit);
+    const dummyHand = suitCards(entry.N, suit);
+    const top = desc(entry.S)[0];
+    const held = new Set([...entry.S, ...entry.N]);
+    const missTop = ALLR.filter(r => vv(r) > vv(top) && !held.has(r));   // top honours to drive out
+    const count = ddLayout(desc(entry.S), desc(entry.N),
+                           desc(ALLR.filter(r=>!held.has(r))), []);       // established count (all out cards onside is irrelevant for a pure sequence)
+    const dropVb  = missTop.length>1 ? "drop" : "drops";
+    const correct = `Lead the ${top}${g} to force out the ${andList(missTop,g)}`;
+    const dFin    = `Lead low toward the ${top}${g} and finesse`;
+    const dHope   = `Cash from the top and hope the ${andList(missTop,g)} ${dropVb}`;
+    const why =
+      `Your ${seqName(entry.S)} is a solid sequence in ${SUITWORD[suit]} missing only the ${andList(missTop,g)}. `+
+      `There is no tenace to finesse and the ${missTop.length>1?"honours":"honour"} won't fall to cashing, so lead the sequence and knock ${missTop.length>1?"them":"it"} out. `+
+      `Once ${missTop.length>1?"they are":"it is"} gone your remaining cards are all high \u2014 ${count} trick${count===1?"":"s"}.`;
+    return {
+      declHand, dummyHand, contractLabel: null,
+      scenario: `One suit in isolation (you have free entries to both hands). Focus only on ${g}.`,
+      prompt: "How do you develop the tricks you need in this suit?",
+      answerLabel: correct,
+      why,
+      choices: shuffle([
+        { label: correct, correct: true },
+        { label: dFin,    correct: false },
+        { label: dHope,   correct: false },
+      ]),
+    };
+  }
+
+  // CONCEPT builders keyed by concept name (spread into generateConcept's return)
+  const CONCEPT_EXTRA = {
+    finesseplay: () => buildFinesse(shuffle(FINESSE_BANK.slice())[0]),
+    forceplay:   () => buildForce(shuffle(FORCE_BANK.slice())[0]),
+  };
+
+  return { SUIT_SOLVER, FINESSE_BANK, FORCE_BANK, buildFinesse, buildForce, CONCEPT_EXTRA, FIN_MARGIN };
+}
 
 function makeGenerator({ ENG, AUC, BID, PLY }) {
   const PARTNER = 2, LHO = 1, RHO = 3, SOUTH = 0;
@@ -496,6 +766,18 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
         const before = new Set(ours.slice(0, -1).map(c => c.strain));
         return before.size === 3 && !before.has(pl.strain);
       } },
+    // partner opened 1NT, RHO overcalled a suit, South's first response (systems off).
+    "resp-1nt-interf": { dealer: PARTNER, reach: (p) =>
+        p.opener === PARTNER && p.partnerFirstBid &&
+        p.partnerFirstBid.level === 1 && p.partnerFirstBid.strain === "NT" &&
+        p.southBidCount === 0 && p.rhoLastBid && p.rhoLastBid.strain !== "NT" },
+    // partner opened one-of-a-suit, South responded a 1-level suit, opener rebid, South's
+    // 2nd bid — the spot for a responder reverse (higher second suit, game-forcing).
+    "resp-reverse": { dealer: PARTNER, reach: (p) =>
+        p.opener === PARTNER && p.partnerFirstBid &&
+        p.partnerFirstBid.level === 1 && p.partnerFirstBid.strain !== "NT" &&
+        p.southFirstBid && p.southFirstBid.level === 1 && p.southFirstBid.strain !== "NT" &&
+        p.southBidCount === 1 && p.partnerBidCount >= 2 },
   };
 
   // ---- per-lesson refinements so drills are on-concept, not just legal ----
@@ -545,7 +827,15 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
                      const ours = new Set(p.calls.filter(c => c.k === "B" && c.strain !== "NT" && (c.by === 0 || c.by === 2)).map(c => c.strain));
                      return ours.size === 3 && !ours.has(a.strain);
                    } },
-    "fsf-opener": { clean: true, answerOk: (a) => a.k === "B" } };
+    "fsf-opener": { clean: true, answerOk: (a) => a.k === "B" },
+    // over 1NT interference the teachable answer is the cuebid of the opponents' suit
+    "r-ntinterf": { answerOk: (a, ev, p) => a.k === "B" && p.rhoLastBid && a.strain === p.rhoLastBid.strain },
+    // responder reverse: partner opened a minor (so majors are unbid); answer is a 2-level
+    // bid of a suit ranking higher than South's first response
+    "rv-responder": { also: (p) => isMinor(p.partnerFirstBid.strain),
+        answerOk: (a, ev, p) => { const RK = { C:0, D:1, H:2, S:3 };
+          return a.k === "B" && a.level === 2 && a.strain !== "NT" &&
+                 p.southFirstBid && RK[a.strain] > RK[p.southFirstBid.strain]; } } };
 
   // ---- target(): does South's hand fit THIS lesson (not just this position)? ----
   // Keeps drills on-topic. Answer still comes from chooseBid regardless.
@@ -588,6 +878,12 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     "fsf-opener": () => true,
     "rn-slam": (e) => e.hcp >= 17,
     "or-2c": (e) => e.hcp >= 22,
+    // responding to partner's balance: a genuine "act or discount" decision needs some values
+    "b-resp": (e) => e.hcp >= 5 && e.hcp <= 15,
+    // 1NT-interference drill: a game-forcing hand with a 4-card major (no 5-card major) cuebids
+    "r-ntinterf": (e) => e.hcp >= 10 && (e.len.H === 4 || e.len.S === 4) && e.len.H < 5 && e.len.S < 5,
+    // responder reverse: a game-forcing 4-4 majors hand responds up the line, then reverses
+    "rv-responder": (e) => e.hcp >= 12 && e.hcp <= 15 && e.len.H >= 4 && e.len.S >= 4,
     // competitive
     "c-over1": (e) => e.hcp >= 8 && e.hcp <= 17,
     "c-over2": (e) => e.hcp >= 10 && e.hcp <= 17,
@@ -624,19 +920,24 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     for (let lvl = 1; lvl <= 7; lvl++) for (const st of ENG.STRAINS) push({ k: "B", level: lvl, strain: st });
 
     const answerKey = key(answer);
-    // score legal calls by proximity to the answer, prefer same strain / adjacent level
-    const av = answer.k === "B" ? AUC.bidVal(answer) : -1;
+    // Reference bid-value for proximity scoring. When the answer is a bid, anchor on it.
+    // When the answer is Pass/Double/Redouble there is no bid to anchor on, so anchor on
+    // the cheapest realistic action (one step above the last bid) — otherwise every bid
+    // scores flat and absurd overbids (7D vs a passed-out auction) slip in as distractors.
+    const lastV = AUC.bidVal(AUC.auctionInfo(calls, dealer).lastBid || { k: "B", level: 0, strain: "C" });
+    const av = answer.k === "B" ? AUC.bidVal(answer) : lastV + 5; // +5 ≈ one level up
     const scored = legal
       .filter((c) => key(c) !== answerKey)
       .map((c) => {
         let s = 0;
         if (c.k === "P") s = 2;
         else if (c.k === "D" || c.k === "R") s = 6;
-        else if (answer.k === "B") {
+        else {
           const d = Math.abs(AUC.bidVal(c) - av);
-          s = d <= 5 ? 1 : d <= 10 ? 3 : 8; // within a level / two levels
-          if (c.strain === answer.strain) s -= 1;
-        } else s = 4;
+          s = d <= 5 ? 1 : d <= 10 ? 3 : 8; // within a level / two levels of the anchor
+          if (answer.k === "B" && c.strain === answer.strain) s -= 1;
+          if (answer.k !== "B") s += 1; // slightly favour Pass/Dbl themselves as distractors
+        }
         return { c, s: s + Math.random() * 0.5 };
       })
       .sort((a, b) => a.s - b.s)
@@ -673,7 +974,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     const set = new Set([ans]);
     let d = 1;
     while (set.size < 5) { if (ans - d >= 0) set.add(ans - d); set.add(ans + d); d++; if (d > spread + 4) break; }
-    return ENG.shuffle(Array.from(set)).slice(0, 5).sort((a, b) => a - b);
+    return ENG.shuffle(Array.from(set)).slice(0, 5);   // shuffled — don't sort (that centers the answer)
   };
   function ruleOf20Sum(ev) {
     const L = [ev.len.S, ev.len.H, ev.len.D, ev.len.C].sort((a, b) => b - a);
@@ -701,7 +1002,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
         why: open
           ? `${ev.tp} total points${ev.tp < 13 ? `, and HCP + your two longest suits = ${ruleOf20Sum(ev)} (\u2265 20)` : ""} \u2014 worth an opening bid.`
           : `Only ${ev.tp} total points and HCP + two longest suits = ${ruleOf20Sum(ev)} (< 20) \u2014 pass.`,
-        choices: [{ label: "Open", correct: open }, { label: "Pass", correct: !open }],
+        choices: ENG.shuffle([{ label: "Open", correct: open }, { label: "Pass", correct: !open }]),
       };
     },
     shape: (ev) => {
@@ -710,7 +1011,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
         prompt: "Classify this hand's shape.",
         answerLabel: ans,
         why: `Distribution ${ev.shape.join("-")} \u2014 ${ans.toLowerCase()}.`,
-        choices: ["Balanced", "One-suiter", "Two-suiter", "Three-suiter"].map((l) => ({ label: l, correct: l === ans })),
+        choices: ENG.shuffle(["Balanced", "One-suiter", "Two-suiter", "Three-suiter"]).map((l) => ({ label: l, correct: l === ans })),
       };
     },
     qt: (ev) => {
@@ -722,7 +1023,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
         prompt: "How many quick tricks?",
         answerLabel: fmt(qt),
         why: `Quick tricks: AK=2, AQ=1\u00bd, A=1, KQ=1, Kx=\u00bd \u2014 this hand has ${fmt(qt)}.`,
-        choices: ENG.shuffle(Array.from(opts)).slice(0, 5).sort((a, b) => a - b).map((n) => ({ label: fmt(n), correct: n === qt })),
+        choices: ENG.shuffle(Array.from(opts)).slice(0, 5).map((n) => ({ label: fmt(n), correct: n === qt })),
       };
     },
   };
@@ -734,14 +1035,259 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     return { ok: true, kind: "eval", lesson: lesson.id, southHand: hand, ev, ...q(ev) };
   }
 
+  // ---- D2: declarer-play COUNT drills (deterministic; answer computed, not from a heuristic
+  // play engine). PLY plays declarer only mechanically, so a "correct card" can't be read off
+  // it — but "top tricks" is a pure function of the two hands. Verified against Bernard Magee's
+  // six worked examples + invariants (sum == total, per-suit <= longer holding). ----
+  const TT_ORDER = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"];
+  // Sure winners in ONE suit given each hand's ranks: the unbroken run of top cards you hold,
+  // capped by your longer holding; if that run drops every outstanding card, the whole longer
+  // holding runs (the "AJ543 opposite KQ92 = 5" case).
+  function topTricksSuit(declRanks, dummyRanks) {
+    const held = new Set([...declRanks, ...dummyRanks]);
+    const lenD = declRanks.length, lenN = dummyRanks.length;
+    const longer = Math.max(lenD, lenN);
+    if (longer === 0) return 0;
+    const oppCount = 13 - (lenD + lenN);
+    let solid = 0;
+    for (const r of TT_ORDER) { if (held.has(r)) solid++; else break; }
+    if (oppCount <= solid) return longer;   // your run exhausts the defenders -> long cards cash
+    return Math.min(solid, longer);
+  }
+  function topTricks(decl, dummy) {
+    const bySuit = (h) => { const b = { S: [], H: [], D: [], C: [] }; for (const c of h) b[c.suit].push(c.rank); return b; };
+    const d = bySuit(decl), n = bySuit(dummy);
+    let t = 0; const per = {};
+    for (const s of ["S", "H", "D", "C"]) { per[s] = topTricksSuit(d[s], n[s]); t += per[s]; }
+    return { total: t, per };
+  }
+  // Deal a realistic declarer+dummy pair (partners, so no overlap) for a counting drill:
+  // no freak-long combined suit, a sensible combined count, and a teachable top-trick band.
+  function dealDeclDummy() {
+    for (let t = 0; t < 5000; t++) {
+      const h = deal();
+      const decl = h[0], dummy = h[2];
+      const cl = { S: 0, H: 0, D: 0, C: 0 };
+      for (const c of [...decl, ...dummy]) cl[c.suit]++;
+      if (["S", "H", "D", "C"].some((s) => cl[s] > 7)) continue;   // no absurd combined length
+      const tt = topTricks(decl, dummy);
+      if (tt.total < 3 || tt.total > 12) continue;                 // keep it in a teachable band
+      const hcp = BID.evalHand(decl).hcp + BID.evalHand(dummy).hcp;
+      if (hcp < 20) continue;                                      // looks like a real contract
+      return { decl, dummy, tt, hcp };
+    }
+    return null;
+  }
+  function generateDeclCount(lesson) {
+    const D = dealDeclDummy();
+    if (!D) return { ok: false, reason: "no suitable declarer/dummy deal" };
+    const { decl, dummy, tt } = D;
+    const breakdown = ["S", "H", "D", "C"].filter((s) => tt.per[s])
+      .map((s) => `${tt.per[s]} in ${suitWord(s)}`).join(", ") || "none";
+    if (lesson.drill.q === "needtricks") {
+      const need = Math.max(0, 9 - tt.total);
+      return {
+        ok: true, kind: "declcount", lesson: lesson.id, declHand: decl, dummyHand: dummy, contractLabel: "3NT",
+        prompt: "You are declarer in 3NT. How many more tricks must you develop?",
+        answerLabel: String(need),
+        why: `3NT needs nine tricks and you have ${tt.total} on top (${breakdown}), so establishment must find ${need} more${need ? " \u2014 through high cards, length, or a finesse" : ", meaning the contract is already there"}.`,
+        choices: numericChoices(need, 2).map((n) => ({ label: String(n), correct: n === need })),
+      };
+    }
+    // default: raw top-trick count
+    const ans = tt.total;
+    return {
+      ok: true, kind: "declcount", lesson: lesson.id, declHand: decl, dummyHand: dummy,
+      prompt: "How many top tricks (sure winners) do the two hands hold?",
+      answerLabel: String(ans),
+      why: `Counting sure winners suit by suit \u2014 ${breakdown} \u2014 gives ${ans} top trick${ans === 1 ? "" : "s"} you can cash without losing the lead.`,
+      choices: numericChoices(ans).map((n) => ({ label: String(n), correct: n === ans })),
+    };
+  }
+
+  // ---- E: concept / judgment drills (rule-keyed multiple choice) ----
+  // These lessons have no single "bot bid" as an answer, so instead of forcing an auction
+  // drill the answer key is an explicit, inspectable rule. Some are LIVE (built on a real
+  // bot auction, e.g. takeout-vs-penalty); others draw from a small curated bank of standard
+  // doctrine (paraphrased, original wording). Choices carry {label, correct}, exactly like
+  // the eval kind, so the UI renders them the same way.
+  const GLY = { S: "\u2660", H: "\u2665", D: "\u2666", C: "\u2663", NT: "NT" };
+  const shuffleChoices = (opts, correctLabel) =>
+    ENG.shuffle(opts.map((label) => ({ label, correct: label === correctLabel })));
+
+  // Per SAYC: a double of a partscore is takeout; a double of game-or-higher (or their
+  // freely-bid 3NT) is penalty. This is the crisp rule the d-penalty lesson teaches.
+  function doubleIsTakeout(lastBid) {
+    if (!lastBid || lastBid.k !== "B") return null;
+    if (lastBid.strain === "NT") return lastBid.level < 3;   // 3NT+ = penalty
+    const gameLevel = isMajor(lastBid.strain) ? 4 : (isMinor(lastBid.strain) ? 5 : 4);
+    return lastBid.level < gameLevel;                         // below game = takeout
+  }
+
+  const CONCEPT = {
+    // d-penalty — CONSTRUCTED, balanced 50/50: the opponents settle in a partscore (double
+    // = takeout) or reach game / 3NT (double = penalty). The answer is keyed by the same
+    // doubleIsTakeout rule so there is a single source of truth. South is always on turn
+    // facing the opponents' final bid.
+    "penalty": () => {
+      const wantPenalty = Math.random() < 0.5;
+      const openSuit = ENG.shuffle(["S", "H", "D", "C"])[0];
+      let lastBid;
+      if (wantPenalty) {
+        const useNT = Math.random() < 0.35;
+        lastBid = useNT ? { k: "B", level: 3, strain: "NT" }
+                        : { k: "B", level: isMajor(openSuit) ? 4 : 5, strain: openSuit };
+      } else {
+        lastBid = { k: "B", level: (Math.random() < 0.4 ? 3 : 2), strain: openSuit }; // partscore raise
+      }
+      const calls = [{ k: "B", level: 1, strain: openSuit, by: LHO }, { k: "P", by: PARTNER }, { ...lastBid, by: RHO }];
+      const takeout = doubleIsTakeout(lastBid);
+      const ans = takeout ? "Takeout" : "Penalty";
+      const ct = lastBid.level + GLY[lastBid.strain];
+      return {
+        calls, dealer: LHO,
+        prompt: `The opponents have reached ${ct}. If you double now, is it takeout or penalty?`,
+        answerLabel: ans,
+        why: takeout
+          ? `${ct} is a partscore, so a double here is takeout \u2014 it asks partner to pick a suit, showing values and support for the unbid suits.`
+          : `${ct} is ${lastBid.strain === "NT" ? "their 3NT" : "game"}, so a double here is penalty \u2014 partner can't read it as takeout, so it says you expect to defeat the contract.`,
+        choices: shuffleChoices(["Takeout", "Penalty"], ans),
+      };
+    },
+
+    // c-balancetwo — CONSTRUCTED: is a 2NT bid Unusual (direct) or natural (balancing)?
+    "balance2nt": () => {
+      const unusual = Math.random() < 0.5;
+      const openSuit = ENG.shuffle(["H", "S", "D", "C"])[0];
+      const ans = unusual ? "Unusual (two-suiter)" : "Natural (19\u201321 balanced)";
+      const calls = unusual
+        ? [{ k: "B", level: 1, strain: openSuit, by: RHO }, { k: "B", level: 2, strain: "NT", by: SOUTH }]
+        : [{ k: "B", level: 1, strain: openSuit, by: LHO }, { k: "P", by: PARTNER }, { k: "P", by: RHO }, { k: "B", level: 2, strain: "NT", by: SOUTH }];
+      return {
+        calls, dealer: unusual ? RHO : LHO,
+        prompt: "Your 2NT here \u2014 Unusual or natural?",
+        answerLabel: ans,
+        why: unusual
+          ? "A jump to 2NT directly over their opening is Unusual: five or more in the two lowest unbid suits (here, the minors), not a strong balanced hand."
+          : "In the passout seat the opening was passed to you, so 2NT is not Unusual \u2014 by common agreement it is natural: a strong balanced hand, about 19\u201321. Confirm the meaning with your partner.",
+        choices: shuffleChoices(["Unusual (two-suiter)", "Natural (19\u201321 balanced)"], ans),
+      };
+    },
+
+    // s-choose — curated: match the slam tool to the doubt.
+    "slamtool": () => {
+      const BANK = [
+        { s: "You and partner have found a big spade fit and slam is in the air. Your only worry is whether you're off two aces.", a: "Blackwood 4NT", why: "A suit fit is set and the doubt is ace count, so Blackwood asks partner directly how many aces they hold \u2014 keeping you out of a slam missing two." },
+        { s: "You hold a balanced 18 opposite partner's balanced notrump opening. There's no suit fit; the only question is whether the combined count is enough.", a: "Quantitative 4NT", why: "For a notrump slam decided by points with no suit fit, a raise to 4NT is quantitative \u2014 it invites 6NT, and partner passes minimum or accepts with a maximum." },
+        { s: "You have a heart fit and slam values, but a small doubleton in clubs worries you \u2014 not the ace count.", a: "Control bids (cuebidding)", why: "When a specific unguarded side suit is the worry rather than the number of aces, cuebid your controls up the line so partner can tell you whether the danger suit is covered." },
+        { s: "You've agreed diamonds with slam interest and you're happy about side-suit controls, but you must check you aren't off two aces.", a: "Blackwood 4NT", why: "The trump fit is set and the only doubt is aces, so Blackwood is the right tool." },
+        { s: "You have a spade fit and worry specifically that both minors might be wide open \u2014 the ace count isn't the issue.", a: "Control bids (cuebidding)", why: "The worry is unguarded suits, not ace count, so cuebid controls to locate where your side is protected before committing to slam." },
+        { s: "Partner opened 1NT and you have a flat 16. You want slam only if partner is at the very top of the range.", a: "Quantitative 4NT", why: "A direct 4NT over a natural notrump is quantitative: it decides a notrump slam by points, inviting 6NT." },
+      ];
+      const item = ENG.shuffle(BANK.slice())[0];
+      return {
+        scenario: item.s, prompt: "Which slam tool fits the doubt?",
+        answerLabel: item.a, why: item.why,
+        choices: shuffleChoices(["Blackwood 4NT", "Quantitative 4NT", "Control bids (cuebidding)"], item.a),
+      };
+    },
+
+    // d-strategy — curated: pick the defensive plan before the lead.
+    "defplan": () => {
+      const BANK = [
+        { s: "Dummy came down with a long, strong side suit (K\u2011Q\u2011J\u2011x\u2011x) and an outside entry. Declarer can soon pitch losers on it.", a: "Active", why: "When dummy has a ready source of discards, defend actively \u2014 cash or set up your winners fast, before declarer throws losers away on the long suit." },
+        { s: "It's a flat notrump contract, no long suit in sight, and every lead from your hand risks handing declarer a trick.", a: "Passive", why: "With no source of tricks for declarer and nothing safe to attack, defend passively \u2014 give nothing away and make declarer do the work." },
+        { s: "You hold four trumps to the jack plus a long side suit, and declarer is in a suit game.", a: "Forcing", why: "Lead your long suit to make declarer ruff; shortening declarer's trumps below yours wins trump control \u2014 the forcing defence." },
+        { s: "Dummy will come down short in a side suit with small trumps, poised to ruff declarer's losers.", a: "Attack trumps", why: "When dummy's value is ruffing, lead trumps to strip them before declarer can use them, killing the ruffs." },
+        { s: "Declarer is in four of a major; dummy has a singleton in your long suit and three small trumps.", a: "Attack trumps", why: "Dummy will ruff your suit, so lead trumps to draw dummy's trumps and stop the ruffs." },
+        { s: "You're defending 3NT with a balanced hand and no long suit to run; any new suit you broach could cost a tempo or a trick.", a: "Passive", why: "Nothing to establish and every switch is risky \u2014 stay passive and let declarer break the suits open." },
+      ];
+      const item = ENG.shuffle(BANK.slice())[0];
+      return {
+        scenario: item.s, prompt: "Which defensive plan?",
+        answerLabel: item.a, why: item.why,
+        choices: shuffleChoices(["Active", "Passive", "Forcing", "Attack trumps"], item.a),
+      };
+    },
+
+    // s-control — curated: the up-the-line cuebidding mechanic (cheapest first-round control).
+    "controlseq": () => {
+      const BANK = [
+        { s: "Spades are agreed and slam is live. You hold the \u2663A and the \u2665A, nothing in diamonds. Which control do you show first?",
+          a: "4\u2663", opts: ["4\u2663", "4\u2666", "4\u2665", "4NT"],
+          why: "Cuebid your cheapest first-round control up the line. Holding the club and heart aces, clubs is cheaper, so 4\u2663 comes first \u2014 the heart ace can wait for the next round." },
+        { s: "Spades are agreed with slam interest. You hold the \u2666A but no first-round club control. What's your cuebid?",
+          a: "4\u2666", opts: ["4\u2663", "4\u2666", "4\u2665", "4NT"],
+          why: "You cue only controls you actually hold. Bypassing 4\u2663 to bid 4\u2666 shows the diamond control and denies a first-round club control \u2014 the skip itself carries information." },
+        { s: "Spades are agreed and slam beckons. Your only first-round side control is the \u2665A \u2014 no control in clubs or diamonds. What do you cue?",
+          a: "4\u2665", opts: ["4\u2663", "4\u2666", "4\u2665", "4NT"],
+          why: "Cue the cheapest control you hold. With nothing in clubs or diamonds, you skip straight to 4\u2665 \u2014 partner reads the bypass as denying first-round club and diamond controls." },
+        { s: "Spades are agreed, slam values. You are void in clubs and hold the \u2665A. Cheapest first-round control?",
+          a: "4\u2663", opts: ["4\u2663", "4\u2665", "4NT", "4\u2660"],
+          why: "A void is a first-round control, exactly like an ace. Clubs is cheapest, so 4\u2663 shows the club void up the line before you reveal the heart ace." },
+        { s: "Hearts are agreed with slam interest. You hold the \u2666A but no first-round club control. Your cuebid?",
+          a: "4\u2666", opts: ["4\u2663", "4\u2666", "4\u2660", "4NT"],
+          why: "Up the line below game in hearts, clubs is cheapest \u2014 but with no club control you bid 4\u2666, showing the diamond control and denying the club one. (4\u2660 would be past game and isn't a cue.)" },
+        { s: "Spades are agreed, slam values. Your clubs are headed by the \u2663K (second-round control) and you hold the \u2665A (first-round). What do you cue first?",
+          a: "4\u2665", opts: ["4\u2663", "4\u2665", "4NT", "4\u2660"],
+          why: "First-round controls \u2014 aces and voids \u2014 come first; the club king is only a second-round control, so don't cue 4\u2663. Bid 4\u2665 to show the heart ace; the club king can come on a later round." },
+      ];
+      const item = ENG.shuffle(BANK.slice())[0];
+      return {
+        scenario: item.s, prompt: "Which control do you bid first?",
+        answerLabel: item.a, why: item.why,
+        choices: shuffleChoices(item.opts, item.a),
+      };
+    },
+
+    // dp-method — curated: name the establishment method for a single suit (declarer play).
+    "establishmethod": () => {
+      const BANK = [
+        { s: "You hold \u2665K Q J 10 opposite \u2665 8 7 6.", a: "High cards",
+          why: "You hold a solid sequence but not the ace. Lead the suit to knock out the defenders' ace, promoting your K-Q-J into winners \u2014 establishment by high cards." },
+        { s: "You hold \u2663Q J 10 9 opposite \u2663 4 3 2.", a: "High cards",
+          why: "Force out the ace and king; once those are gone your Q-J-10 are winners. Driving out the defenders' high cards is establishment by high cards." },
+        { s: "You hold \u2660A K 7 6 5 opposite \u2660 9 4 3 2 \u2014 nothing missing at the top.", a: "Length",
+          why: "You already hold the top cards; the extra trick comes from the fifth card once the defenders' spades are gone. If the suit splits 3-2 your last card wins \u2014 establishment by length." },
+        { s: "You hold \u2666A K Q 6 5 opposite \u2666 7 3.", a: "Length",
+          why: "The top honours are already tricks; the chance for MORE comes from the long 6 and 5 after the outstanding diamonds fall. A 3-3 break sets up an extra winner \u2014 establishment by length." },
+        { s: "You hold \u2666A Q opposite \u2666 4 3.", a: "Finesse",
+          why: "Lead low toward the A-Q and, if the king lies with your left-hand opponent, play the queen to win a trick you don't own outright \u2014 a finesse." },
+        { s: "You hold \u2660A Q J 10 opposite \u2660 3 2.", a: "Finesse",
+          why: "With a tenace missing the king, lead toward the A-Q-J-10 and finesse; each successful finesse wins a trick around the defender's king \u2014 establishment by finessing." },
+        { s: "Hearts are trumps. You hold \u2666A 4 opposite a diamond void in dummy, and dummy has small trumps.", a: "Ruffing",
+          why: "Cash the ace, then ruff your low diamond in the short (dummy) hand. Trumping losers in the hand with fewer trumps turns them into tricks \u2014 establishment by ruffing." },
+        { s: "Spades are trumps. You hold \u2663 6 5 4 3 opposite a singleton \u2663 2 in dummy.", a: "Ruffing",
+          why: "Give up a club or two, then ruff your remaining low clubs in dummy. The short trump hand ruffing your losers is establishment by ruffing." },
+      ];
+      const item = ENG.shuffle(BANK.slice())[0];
+      return {
+        scenario: item.s, prompt: "How do you develop extra tricks in this suit?",
+        answerLabel: item.a, why: item.why,
+        choices: shuffleChoices(["High cards", "Length", "Finesse", "Ruffing"], item.a),
+      };
+    },
+  };
+  // ---- declarer-play technique drills: single-suit double-dummy oracle ----
+  const DECLPLAY = installDeclPlay({ ENG });
+  CONCEPT.finesseplay = DECLPLAY.CONCEPT_EXTRA.finesseplay;
+  CONCEPT.forceplay   = DECLPLAY.CONCEPT_EXTRA.forceplay;
+  function generateConcept(lesson) {
+    const q = CONCEPT[lesson.drill.concept];
+    if (!q) return { ok: false, reason: "unknown concept: " + lesson.drill.concept };
+    const built = q();
+    if (!built) return { ok: false, reason: "concept did not converge" };
+    return { ok: true, kind: "concept", lesson: lesson.id, ...built };
+  }
+
   // ---- C: opening-lead drills (answer from the game's own PLY oracle) ----
   const cardKey = (c) => c.rank + c.suit;
   const RVL = ENG.RANKVAL;
   const LEAD_WHY = {
-    LEAD_SEQ: (p) => `Top of a sequence in ${suitWord(p.suit)} \u2014 the ${p.top} is a safe, constructive lead that promotes your lower cards.`,
-    LEAD_4TH: (p) => `Fourth-best from your longest suit (${suitWord(p.suit)}) \u2014 the classic lead to develop length.`,
-    LEAD_ACE: (p) => `Against a suit contract you don't underlead an ace, so lead the ace of ${suitWord(p.suit)}.`,
-    LEAD_LOW: (p) => `Lead a low ${suitWord(p.suit)} \u2014 a quiet, safe choice with nothing better to attack.`,
+    LEAD_SEQ: (p) => `Top of a sequence in ${suitWord(p.suit)}: the ${p.top} is a safe lead that can't cost a trick and promotes your lower cards into winners.`,
+    LEAD_4TH: (p) => `Fourth-best from your longest suit (${suitWord(p.suit)}): the classic attacking lead to develop length \u2014 and it lets partner use the Rule of 11 to place the missing cards.`,
+    LEAD_ACE: (p) => `Against a suit contract you don't underlead an ace \u2014 you might never score it \u2014 so lead the ace of ${suitWord(p.suit)} itself.`,
+    LEAD_LOW: (p) => `Lead a low ${suitWord(p.suit)} \u2014 a quiet, constructive choice when you have no sequence or clear suit to attack.`,
     ONLY: () => `Only one card to lead.`,
   };
   const suitWord = (s) => ({ S: "spades", H: "hearts", D: "diamonds", C: "clubs" }[s] || s);
@@ -770,6 +1316,79 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     for (const c of ENG.shuffle(cands)) { if (!seen.has(cardKey(c))) { seen.add(cardKey(c)); out.push(c); } }
     return ENG.shuffle(out).slice(0, Math.min(5, Math.max(4, out.length)));
   }
+  // ---- constructed slam-ask RESPONSE drills (guaranteed 100% convergence) ----
+  // The only faithfulness requirement is that South's ANSWER come from BID.chooseBid.
+  // The bot returns the ace-showing response for ANY legal auction ending in partner's
+  // 4NT (Blackwood) / 4C (Gerber), so instead of waiting for the rare event of partner
+  // organically reaching the ask (which no finite retry budget can guarantee), we build a
+  // clean, textbook fit-then-ask prefix and read South's reply off chooseBid. This yields a
+  // tidier auction than a random ramble AND converges every time. Verified 100% correct
+  // across all ace counts 0-4. (Gerber needs South to have bid notrump for the bot to read
+  // partner's 4C as Gerber, so the skeleton has South respond 1NT.)
+  const slamSuitLen = (hand) => { const l = { S: 0, H: 0, D: 0, C: 0 }; for (const c of hand) l[c.suit]++; return l; };
+  function slamTrump(hand) {
+    const l = slamSuitLen(hand);
+    const majors = ["H", "S"].filter((s) => l[s] >= 4).sort((a, b) => l[b] - l[a]);
+    if (majors.length) return majors[0];                       // prefer a real major fit
+    return ["S", "H", "D", "C"].sort((a, b) => l[b] - l[a])[0]; // else South's longest (always >= 4)
+  }
+  // ---- constructed lead-directing double drill (guaranteed convergence) ----
+  // A lead-directing double shows a good 5+ suit but only modest overall values — the bot makes
+  // it only when it would otherwise pass (a strong hand overcalls instead). So we deal a strong
+  // suit AND keep dealing until BID.chooseBid actually returns the double, guaranteeing both
+  // convergence and bot-faithfulness. The auction: LHO 1NT, partner passes, RHO bids the
+  // conventional 2-level call in that suit; South doubles to demand the lead.
+  function generateLeadDirect(lesson) {
+    const dealer = LHO;
+    for (let t = 0; t < 8000; t++) {
+      const h = deal()[0];
+      const e = BID.evalHand(h);
+      const cand = ["C", "D", "H"].filter((s) => e.len[s] >= 5 && e.top3(s) >= 2);
+      if (!cand.length) continue;
+      const suit = cand[(Math.random() * cand.length) | 0];
+      const calls = [{ k: "B", level: 1, strain: "NT", by: LHO }, { k: "P", by: PARTNER },
+                     { k: "B", level: 2, strain: suit, by: RHO }];
+      const answer = BID.chooseBid(h, calls, dealer, SOUTH);
+      if (answer.k !== "D") continue;   // strong hands overcall instead — keep looking
+      return {
+        ok: true, lesson: lesson.id, dealer,
+        southHand: h, calls, answer, ev: e, choices: buildChoices(answer, calls, dealer),
+      };
+    }
+    return { ok: false, reason: "no lead-directing-double hand found" };
+  }
+
+  function generateSlamResponse(lesson, kind) {
+    const south = deal()[0];
+    const dealer = PARTNER;                                    // partner (North) opens and asks
+    let calls, okFn;
+    if (kind === "BW") {
+      const t = slamTrump(south);
+      calls = [{ k: "B", level: 1, strain: t, by: PARTNER }, { k: "P", by: RHO },
+               { k: "B", level: 3, strain: t, by: SOUTH },   { k: "P", by: LHO },
+               { k: "B", level: 4, strain: "NT", by: PARTNER }, { k: "P", by: RHO }];
+      okFn = (a) => a.k === "B" && a.level === 5;              // 5-level ace-show
+    } else { // GB (Gerber): South must have bid NT for the bot to read 4C as Gerber
+      calls = [{ k: "B", level: 1, strain: "D", by: PARTNER }, { k: "P", by: RHO },
+               { k: "B", level: 1, strain: "NT", by: SOUTH },  { k: "P", by: LHO },
+               { k: "B", level: 4, strain: "C", by: PARTNER }, { k: "P", by: RHO }];
+      okFn = (a) => a.k === "B" && a.level === 4 && ["D", "H", "S", "NT"].includes(a.strain);
+    }
+    const answer = BID.chooseBid(south, calls, dealer, SOUTH);
+    if (!okFn(answer)) return { ok: false, reason: "slam-ask answer was not an ace-show (unexpected)" };
+    // Distractors ARE the sibling ace-showing responses, so every wrong answer is a
+    // plausible "miscounted your aces" — the exact skill the drill tests. (0 and 4 aces
+    // share a response, so there are four distinct rungs for five ace counts.)
+    const ladder = (kind === "BW")
+      ? [{ k: "B", level: 5, strain: "C" }, { k: "B", level: 5, strain: "D" }, { k: "B", level: 5, strain: "H" }, { k: "B", level: 5, strain: "S" }]
+      : [{ k: "B", level: 4, strain: "D" }, { k: "B", level: 4, strain: "H" }, { k: "B", level: 4, strain: "S" }, { k: "B", level: 4, strain: "NT" }];
+    return {
+      ok: true, lesson: lesson.id, dealer,
+      southHand: south, calls: calls.slice(),
+      answer, ev: BID.evalHand(south), choices: ENG.shuffle(ladder),
+    };
+  }
+
   function generateLead(lesson, tries = 12000) {
     if (!PLY) return { ok: false, reason: "no play oracle (PLY) injected" };
     const wantNT = lesson.drill.strain === "NT";
@@ -809,7 +1428,12 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
   // ---- the generator ----
   function generate(lesson, tries = 8000) {
     if (lesson.drill && lesson.drill.kind === "eval") return generateEval(lesson);
+    if (lesson.drill && lesson.drill.kind === "declcount") return generateDeclCount(lesson);
+    if (lesson.drill && lesson.drill.kind === "concept") return generateConcept(lesson);
     if (lesson.drill && lesson.drill.pos === "lead") return generateLead(lesson);
+    if (lesson.drill && lesson.drill.pos === "slam-bwresp") return generateSlamResponse(lesson, "BW");
+    if (lesson.drill && lesson.drill.pos === "slam-gbresp") return generateSlamResponse(lesson, "GB");
+    if (lesson.drill && lesson.drill.pos === "resp-lead-dbl") return generateLeadDirect(lesson);
     const spec = lesson.drill && POS[lesson.drill.pos];
     if (!spec) return { ok: false, reason: "no drillable position for this lesson" };
     const target = TARGET[lesson.id] || (() => true);
@@ -859,6 +1483,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     for (const l of lessons) {
       if (!l.drill) { out[l.id] = { generatable: false, reason: "teach-only", rate: 0 }; continue; }
       if (l.drill.kind === "eval") { out[l.id] = { generatable: true, reason: "eval", rate: 1 }; continue; }
+      if (l.drill.kind === "declcount") { out[l.id] = { generatable: true, reason: "declcount", rate: 1 }; continue; }
       if (l.drill.pos === "lead" && !PLY) { out[l.id] = { generatable: false, reason: "needs play oracle", rate: 0 }; continue; }
       let hit = 0;
       for (let i = 0; i < samples; i++) if (generate(l, budget).ok) hit++;
@@ -871,7 +1496,7 @@ function makeGenerator({ ENG, AUC, BID, PLY }) {
     return out;
   }
 
-  return { generate, audit, parse, POS, TARGET, CFG };
+  return { generate, audit, parse, POS, TARGET, CFG, topTricks, SUIT_SOLVER: DECLPLAY.SUIT_SOLVER };
 }
 
 
@@ -1322,7 +1947,10 @@ const BID = (function(){
     // I already overcalled → competitive continuation (treat my overcall as "opener")
     if(iHaveBid) return openerRebid(ev, ctx);
     // first chance to act over their opening
-    return overcallBid(ev, ctx);
+    const oc = overcallBid(ev, ctx);
+    // a lead-directing double replaces a pass only — never a values-showing overcall
+    if(oc.k==="P"){ const ldd = leadDirectingDouble(ev, ctx); if(ldd) return ldd; }
+    return oc;
   }
   
   /* ---------------- OPENING ---------------- */
@@ -1450,7 +2078,13 @@ const BID = (function(){
     }
     // route by opening type
     if(op.strain==="NT"){
-      if(op.level===1) return respTo1NT(ev, ctx);
+      if(op.level===1){
+        // partner's 1NT OPENING with a suit overcall by RHO → systems off (cuebid = Stayman)
+        const rl = ctx.rhoLast;
+        if(rl && rl.k==="B" && rl.strain!=="NT" && ctx.openerSeat===ctx.partner)
+          return respTo1NTInterf(ev, ctx, rl);
+        return respTo1NT(ev, ctx);
+      }
       if(op.level===2) return respTo2NT(ev, ctx);
       if(op.level===3) return P;
     }
@@ -1461,6 +2095,35 @@ const BID = (function(){
     return P;
   }
   
+  /* Responding to partner's 1NT OPENING after RHO overcalls a suit (interference).
+     Systems are OFF: Stayman and transfers do not apply. A cuebid of the opponent's
+     suit is Stayman with game-forcing values (asks partner for a 4-card major); new-suit
+     bids are natural. (Over a double, by contrast, systems stay on — handled by respTo1NT.) */
+  function respTo1NTInterf(ev, ctx, over){
+    const h=ev.hcp, len=ev.len, theirs=over.strain;
+    const stopTheirs = ev.stopper(theirs);
+    const NTgame = Math.max(3, cheapestLevel("NT",ctx));   // 3NT (or higher if forced)
+    // 1) a natural 5-card major (other than their suit) with invitational+ values: bid it
+    for(const m of (len.S>=len.H ? ["S","H"] : ["H","S"])){
+      if(len[m]>=5 && m!==theirs && h>=8) return B(cheapestLevel(m,ctx), m);
+    }
+    // 2) cuebid their suit = game-forcing Stayman: 10+ with a 4-card UNBID major (a major
+    //    other than the one they overcalled, so a 4-4 fit is still findable)
+    if(h>=10 && ((len.H===4 && theirs!=="H") || (len.S===4 && theirs!=="S")))
+      return B(cheapestLevel(theirs,ctx), theirs);
+    // 3) natural 3NT to play: game values with their suit stopped
+    if(h>=10 && stopTheirs) return B(NTgame, "NT");
+    // 4) natural, forcing 5-card minor (jump to 3-level): game values, long minor, no NT stopper
+    for(const m of (len.D>=len.C ? ["D","C"] : ["C","D"])){
+      if(h>=10 && len[m]>=5 && m!==theirs) return B(Math.max(3, cheapestLevel(m,ctx)), m);
+    }
+    // 5) competitive 2NT: a balanced invitational hand (8-9) with a stopper, if 2NT is free
+    if(h>=8 && h<=9 && ev.balanced && stopTheirs && bidVal(B(2,"NT"))>bidVal(ctx.info.lastBid))
+      return B(2,"NT");
+    // otherwise nothing constructive to say over the interference
+    return P;
+  }
+
   function respTo1NT(ev, ctx){
     const h=ev.hcp, len=ev.len;
     // with a 5+ major, transfer; with 4-4 majors and game interest, Stayman
@@ -1628,6 +2291,28 @@ const BID = (function(){
     return B(cheapestLevel(opB[1].strain,ctx), opB[1].strain);
   }
 
+  /* Responder's reverse: after a 1-level suit response and opener's rebid, bidding a NEW
+     suit that ranks HIGHER than the first response — at the 2 level, which forces opener to
+     the 3 level to give preference — shows a game-forcing hand with a second suit and extra
+     values ("we're going at least to game; keep describing"). Only offered when responder
+     has no fit with opener to show instead. */
+  function responderReverse(ev, ctx, op){
+    if(ev.hcp < 12) return null;                        // a reverse promises game-forcing extras
+    const myReal = ctx.myBids.filter(c=>c.k==="B");
+    if(myReal.length !== 1) return null;                // this is responder's SECOND bid
+    const first = myReal[0];
+    if(first.strain==="NT" || first.level !== 1) return null;  // first response was a 1-level suit
+    const ourSuits = new Set([...ctx.myBids, ...ctx.partnerBids]
+      .filter(c=>c.k==="B" && c.strain!=="NT").map(c=>c.strain));
+    // lowest NEW 4+ suit ranking above the first suit that bids as a genuine 2-level reverse
+    for(const s of ORDER){
+      if(s==="NT") continue;
+      if(ev.len[s]>=4 && higher(s, first.strain) && !ourSuits.has(s) && cheapestLevel(s,ctx)===2)
+        return B(2, s);
+    }
+    return null;
+  }
+
   function responderContinue(ev, ctx, op){
     const bwr=handleBlackwoodResult(ev,ctx); if(bwr) return bwr;
     // 2S puppet follow-up: I bid 2S over partner's 1NT and opener bid the forced 3C.
@@ -1648,6 +2333,8 @@ const BID = (function(){
     const gb=gerberResponse(ev,ctx); if(gb) return gb;
     // did I show/find a fit? look for a suit where partner bid it and I have 3+, or I bid it and partner raised
     const fit = findFit(ev, ctx);
+    // game-forcing two-suiter with no fit: reverse into the higher suit to keep describing
+    if(!fit){ const rev = responderReverse(ev, ctx, op); if(rev) return rev; }
     let call = placeContract(ev, ctx, combinedMin, combinedMax, fit);
     // 2-over-1 obligation: after a 2-level new-suit response, responder must bid
     // again below game (SAYC). Never pass opener's non-game rebid — describe instead.
@@ -1972,6 +2659,25 @@ const BID = (function(){
     return P;                                            // partner has placed the contract
   }
 
+  /* Lead-directing double of the opponents' conventional response to a 1NT opening.
+     Position: our LHO opened 1NT, partner passed, RHO made a conventional 2-level bid
+     (Stayman 2C / red-suit transfer 2D or 2H) and it's our first turn. With a strong holding
+     in the doubled suit we double to ask partner to lead that suit. Gated very tightly (LHO
+     opener, 1NT, partner silent, RHO's conventional bid is the last call, and we hold 5+ with
+     two of the top three honours) so it cannot fire in ordinary competitive auctions. */
+  function leadDirectingDouble(ev, ctx){
+    if(ctx.openerSeat !== ctx.lho) return null;                 // LHO opened
+    const openBid = ctx.lhoBids.find(c=>c.k==="B");
+    if(!openBid || openBid.level!==1 || openBid.strain!=="NT") return null;   // ...a 1NT opening
+    if(ctx.partnerBids.some(c=>c.k==="B")) return null;         // partner stayed out
+    if(ctx.info.lastBidder !== ctx.rho) return null;            // RHO made the last bid...
+    const conv = ctx.info.lastBid;
+    if(!conv || conv.level!==2 || !(conv.strain==="C"||conv.strain==="D"||conv.strain==="H")) return null; // ...a conventional 2C/2D/2H
+    const s = conv.strain;
+    if(ev.len[s]>=5 && ev.top3(s)>=2) return DBL;               // strong suit → direct its lead
+    return null;
+  }
+
   function overcallBid(ev, ctx){
     const oppBid = ctx.info.lastBid;
     const oppOpen = firstOppBid(ctx);
@@ -2127,7 +2833,7 @@ const PLY = (function(){
   
      ctx = { hand, trick:[{rank,suit,player}], ledSuit, trump, seat, declarer, dummy,
              seen[], dummyHand?, mateHand? } */
-  const { resolveTrick, legalPlays, RANKVAL } = ENG;
+  const { resolveTrick, legalPlays, RANKVAL, makeDeck } = ENG;
   
   const SUITS=["S","H","D","C"];
   const partnerOf=(s)=>(s+2)%4;
@@ -2169,6 +2875,25 @@ const PLY = (function(){
   function chooseCard(ctx){ return chooseCardWhy(ctx).card; }
   
   /* ---------- leading ---------- */
+  /* Unblock: when the hand on lead is the SHORT hand in a suit (singleton/doubleton) and holds a
+     top honour that outranks the mate's longer holding, cash that honour NOW so it doesn't strand the
+     mate's length behind it. This is the "play the high card from the short hand first" discipline. */
+  function unblockCash(ctx, hereB, mateB, known, seen){
+    const { trump } = ctx;
+    for(const s of SUITS){
+      if(s===trump) continue;
+      const here=byDesc(hereB[s]||[]), mate=byDesc(mateB[s]||[]);
+      if(here.length===0 || here.length>2) continue;              // short hand only
+      if(mate.length<4) continue;                                 // mate must be a real long suit
+      const topOutV=topOut(s, known, seen);
+      if(!(RANKVAL[here[0].rank] > topOutV && RANKVAL[here[0].rank] > RANKVAL[mate[0].rank])) continue;
+      // only when the mate is a genuinely RUNNING suit (top two touching honours) — otherwise
+      // cashing early just wastes an entry rather than unblocking a run
+      if(RANKVAL[mate[0].rank]>=11 && RANKVAL[mate[0].rank]-RANKVAL[mate[1].rank]===1) return here[0];
+    }
+    return null;
+  }
+
   function chooseLead(ctx, legal){
     const { seat, declarer } = ctx;
     const declaring = sideOf(seat)===sideOf(declarer);
@@ -2182,6 +2907,10 @@ const PLY = (function(){
     const known = combined;
     const hereB = buckets(hand), mateB = buckets(mateHand), combB = buckets(combined);
   
+    // 0) ruff a loser in the short (mate) hand BEFORE drawing trumps, if drawing would strip
+    //    the trumps the mate needs to ruff
+    const rbd = ruffBeforeDraw(ctx, hereB, mateB, known, seen);
+    if(rbd) return W(rbd,"DECL_RUFF_FIRST",{suit:rbd.suit});
     // 1) draw trumps while opponents hold one and I own the master trump
     if(trump!=="NT"){
       const combT = combB[trump]||[];
@@ -2195,16 +2924,22 @@ const PLY = (function(){
         }
       }
     }
-    // 2) cash a side winner this hand holds
+    // 2) if a finessable tenace sits in THIS hand, cross to the other hand to lead toward it
+    const cross = crossToFinesse(ctx, hereB, mateB, known, seen);
+    if(cross) return W(cross,"DECL_CROSS",{suit:cross.suit});
+    // 2b) unblock: cash a short-hand top honour that would otherwise strand the mate's longer suit
+    const unb = unblockCash(ctx, hereB, mateB, known, seen);
+    if(unb) return W(unb,"DECL_UNBLOCK",{suit:unb.suit,card:unb.rank});
+    // 3) cash a side winner this hand holds
     for(const s of SUITS){
       if(s===trump) continue;
       const here=byDesc(hereB[s]||[]); if(!here.length) continue;
       if(RANKVAL[here[0].rank] > topOut(s, known, seen)) return W(here[0],"DECL_CASH",{suit:s,card:here[0].rank});
     }
-    // 3) finesse: lead low toward a broken honour in the other hand
+    // 4) finesse: lead low toward a broken honour in the other hand
     const fin = finesseLead(ctx, hereB, mateB, known);
     if(fin) return W(fin.card,"DECL_FINESSE",{suit:fin.card.suit,honor:fin.honor});
-    // 4) ruff a loser: short side suit here, trumps opposite
+    // 5) ruff a loser: short side suit here, trumps opposite
     if(trump!=="NT"){
       for(const s of SUITS){
         if(s===trump) continue;
@@ -2240,6 +2975,66 @@ const PLY = (function(){
     }
     return best;
   }
+
+  /* Is `mineDesc` (my cards in suit s, byDesc) a finessable tenace — a broken honour holding
+     whose missing higher honour is still outstanding, so the trick is won by leading TOWARD it
+     rather than cashing? Handles the common A-Q (K out) and A-J-10 (K,Q out) shapes. */
+  function isFinessableTenace(mineDesc, s, known, seen){
+    const r = mineDesc.map(c=>c.rank);
+    const out = outstanding(s, known, seen);
+    const has = x=>r.includes(x);
+    if(has("A") && has("Q") && !has("K") && out.includes("K")) return { honor:"Q" };
+    if(has("A") && has("J") && has("10") && !has("K") && !has("Q") && out.includes("K")) return { honor:"J" };
+    return null;
+  }
+
+  /* Find a card in my hand whose suit lets the OTHER hand win the trick — an entry to cross
+     over (never via the trump suit). Returns my lowest card in that suit. */
+  function findEntryToMate(ctx, hereB, mateB, known, seen){
+    const { trump } = ctx;
+    for(const s of SUITS){
+      if(s===trump) continue;
+      const mine=byAsc(hereB[s]||[]); const mate=byDesc(mateB[s]||[]);
+      if(!mine.length || !mate.length) continue;
+      const topV = topOut(s, known, seen);
+      if(RANKVAL[mate[0].rank] > topV && RANKVAL[mate[0].rank] > RANKVAL[mine[0].rank]) return mine[0];
+    }
+    return null;
+  }
+
+  /* If a finessable tenace sits in the hand ON LEAD, we're in the WRONG hand to finesse it.
+     Cross to the other hand (lead an entry) so we can lead toward the tenace next time. */
+  function crossToFinesse(ctx, hereB, mateB, known, seen){
+    const { trump } = ctx;
+    for(const s of SUITS){
+      if(s===trump) continue;
+      const mine=byDesc(hereB[s]||[]);
+      if(!isFinessableTenace(mine, s, known, seen)) continue;
+      const entry=findEntryToMate(ctx, hereB, mateB, known, seen);
+      if(entry && entry.suit!==s) return entry;
+    }
+    return null;
+  }
+
+  /* Ruff a loser in the SHORT trump hand (the mate) BEFORE drawing trumps, when drawing would
+     strip the trumps the mate needs to ruff. Returns the side-suit loser to lead now. */
+  function ruffBeforeDraw(ctx, hereB, mateB, known, seen){
+    const { trump } = ctx;
+    if(trump==="NT") return null;
+    const myTr=hereB[trump]||[], mateTr=mateB[trump]||[];
+    if(!mateTr.length || mateTr.length>myTr.length) return null;   // mate must be short (ruffing) hand
+    // Only ruff-first when drawing would WASTE the mate's trumps: every mate trump is lower than
+    // my lowest trump, so pulling trumps forces the mate to follow helplessly instead of ruffing.
+    if(RANKVAL[byDesc(mateTr)[0].rank] >= RANKVAL[byAsc(myTr)[0].rank]) return null;
+    for(const s of SUITS){
+      if(s===trump) continue;
+      const mine=hereB[s]||[], mate=mateB[s]||[];
+      if(mine.length <= mate.length) continue;           // need a shortage in mate to ruff into
+      const losers=byAsc(mine.filter(c=>RANKVAL[c.rank] < topOut(s, known, seen)));
+      if(losers.length) return losers[0];
+    }
+    return null;
+  }
   
   function topOfSequence(cards){
     // top of a 2+ touching-honour sequence WITHIN a suit (top >= J); best across suits
@@ -2255,13 +3050,210 @@ const PLY = (function(){
     }
     return best;
   }
+  /* Reading layer: reconstruct what partner has asked for from the seat-tagged play history.
+     - partner led a suit  -> that's partner's suit, worth returning
+     - I led a suit and partner followed with a high spot (>=7) -> encourage; a low spot (<=5) -> discourage
+     - partner discarded a high spot -> come-on for that suit
+     Later signals override earlier ones. Defenders only. */
+  function readDefense(ctx){
+    const { seat, trump, history } = ctx;
+    const partner = partnerOf(seat);
+    const prefer = new Set(), discourage = new Set();
+    const reason = {};   // suit -> "return" (partner's suit) | "encourage" (partner's signal)
+    if(!history || !history.length) return { prefer, discourage, reason };
+    const like = (s,why)=>{ prefer.add(s); discourage.delete(s); reason[s]=why; };
+    const dislike = s=>{ discourage.add(s); prefer.delete(s); delete reason[s]; };
+    for(const tr of history){
+      const cards = tr.cards||[]; if(!cards.length) continue;
+      const leaderSeat = cards[0].player;
+      const led = tr.ledSuit;
+      const pc = cards.find(c=>c.player===partner);
+      if(leaderSeat===partner){ like(led,"return"); continue; }      // partner's suit
+      if(leaderSeat===seat && pc && pc.suit===led){                 // partner's attitude to my lead
+        const rv=RANKVAL[pc.rank];
+        if(tr.winner!==partner && rv<=9){ if(rv>=7) like(led,"encourage"); else if(rv<=5) dislike(led); }
+        continue;
+      }
+      if(pc && pc.suit!==led && pc.suit!==trump && RANKVAL[pc.rank]>=7) like(pc.suit,"encourage"); // come-on discard
+    }
+    return { prefer, discourage, reason };
+  }
+
+  /* Hand-reading: if I lead into dummy (dummy plays right after me), avoid feeding a suit where
+     dummy holds a tenace (A-Q, K-J, A-J) — that hands declarer a free finesse. Lead up to weakness. */
+  function leadIntoDummyTenace(ctx){
+    const { seat, dummy, dummyHand } = ctx;
+    const avoid=new Set();
+    if(!dummyHand || dummy!==(seat+1)%4) return avoid;
+    for(const s of SUITS){
+      const ds=dummyHand.filter(c=>c.suit===s).map(c=>c.rank);
+      const has=r=>ds.includes(r);
+      if((has("A")&&has("Q")&&!has("K")) || (has("K")&&has("J")&&!has("Q")) || (has("A")&&has("J")&&!has("K")&&!has("Q"))) avoid.add(s);
+    }
+    return avoid;
+  }
+
+  /* ---------- live defensive-lead rollout (scoped mini-oracle) ----------
+     Mining showed the defensive "which suit to switch to" leak is single-strategy-robust (not a
+     strategy-fusion artifact): a correct per-deal switch exists but no cheap fixed rule captures it.
+     So at a DEFENSIVE LEAD (dummy already visible), we sample worlds consistent with what we see and
+     roll each candidate lead out under the base heuristic, picking the suit that holds declarer to the
+     fewest tricks. Fires only when ROLLOUT_K>0 (off by default → identical to v16). Deterministic:
+     the world sample is seeded from the visible state, so the harness stays reproducible. A reentrancy
+     guard makes the rollout's own defenders use the fast policy (no infinite recursion). */
+  // Live-rollout depth for the defensive-lead mini-oracle. 0 disables it (engine == v16). ~16 is a
+  // good phone-affordable default (one lead decision ≈ K×suits×40 fast plays). Env-overridable so the
+  // offline harness can A/B it; in the browser there is no process, so the constant governs.
+  let LIVE_ROLLOUT_K = 16;
+  if(typeof process!=='undefined' && process.env && process.env.ROLLOUT_K!==undefined) LIVE_ROLLOUT_K = +process.env.ROLLOUT_K;
+  let _inRollout=false;
+  function _mulb(a){ a=a>>>0; return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+  function _stateSeed(ctx){ let h=2166136261>>>0; const p=[ctx.seat,(ctx.history||[]).length]; for(const c of (ctx.hand||[])) p.push(c.id); for(const c of (ctx.seen||[])) p.push(c.rank+c.suit); const s=p.join(","); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+  function _sampleWorld(ctx, rng){
+    const { seat, dummy, hand, dummyHand, seen, history } = ctx;
+    const hiddenSeats=[0,1,2,3].filter(s=> s!==seat && s!==dummy);   // partner + declarer
+    const key=c=>c.rank+c.suit; const known=new Set();
+    for(const c of hand) known.add(key(c));
+    for(const c of (dummyHand||[])) known.add(key(c));
+    for(const c of (seen||[])) known.add(key(c));
+    const unseen=makeDeck().filter(c=> !known.has(key(c)));
+    const nplayed=(history||[]).length; const need={}; const voids={};
+    for(const s of hiddenSeats){ need[s]=13-nplayed; voids[s]=new Set(); }
+    for(const tr of (history||[])){ const led=tr.ledSuit; for(const c of (tr.cards||[])){ if(hiddenSeats.includes(c.player) && c.suit!==led) voids[c.player].add(led); } }
+    for(let attempt=0; attempt<40; attempt++){
+      const pool=unseen.slice();
+      for(let i=pool.length-1;i>0;i--){ const j=(rng()*(i+1))|0; [pool[i],pool[j]]=[pool[j],pool[i]]; }
+      const out={}; for(const s of hiddenSeats) out[s]=[]; let ok=true;
+      for(const c of pool){ const elig=hiddenSeats.filter(s=> out[s].length<need[s] && !voids[s].has(c.suit)); if(!elig.length){ ok=false; break; } elig.sort((a,b)=>(need[a]-out[a].length)-(need[b]-out[b].length)); out[elig[0]].push(c); }
+      if(ok && hiddenSeats.every(s=>out[s].length===need[s])) return out;
+    }
+    return null;
+  }
+  function _playoutAfterLead(ctx, h, leadCard){
+    const { trump, declarer, dummy, seat, seen, history } = ctx;
+    const seen2=(seen||[]).map(c=>({rank:c.rank,suit:c.suit}));
+    const hist2=(history||[]).map(t=>({ledSuit:t.ledSuit,winner:t.winner,cards:t.cards.map(c=>({rank:c.rank,suit:c.suit,player:c.player}))}));
+    let declTricks=hist2.reduce((a,tr)=> a+(sideOf(tr.winner)===sideOf(declarer)?1:0),0);
+    { const i=h[seat].findIndex(x=>x.id===leadCard.id); if(i>=0) h[seat].splice(i,1); }
+    let leader=seat; const startTrick=hist2.length;
+    for(let t=startTrick;t<13;t++){
+      const trick=[]; let led=null;
+      for(let k=0;k<4;k++){ const s=(leader+k)%4;
+        let card;
+        if(t===startTrick && k===0){ card=leadCard; }
+        else { const dg=sideOf(s)===sideOf(declarer);
+          const c2={ hand:h[s], trick:trick.slice(), ledSuit:led, trump, seat:s, declarer, dummy,
+            seen:seen2.slice(), history:hist2.slice(), dummyHand:h[dummy].slice(),
+            mateHand:(dg&&s===declarer)?h[dummy].slice():(dg&&s===dummy)?h[declarer].slice():undefined };
+          try{ card=chooseCard(c2); }catch(_){ card=null; }
+          const legal=legalPlays(h[s], trick.length?led:null); if(!card||!legal.find(x=>x.id===card.id)) card=legal[0];
+          const i=h[s].findIndex(x=>x.id===card.id); h[s].splice(i,1); }
+        if(k===0) led=card.suit; trick.push({rank:card.rank,suit:card.suit,player:s,id:card.id});
+      }
+      const win=resolveTrick(trick,led,trump).winner; if(sideOf(win)===sideOf(declarer))declTricks++;
+      for(const tc of trick) seen2.push({rank:tc.rank,suit:tc.suit});
+      hist2.push({ledSuit:led,winner:win,cards:trick.map(x=>({rank:x.rank,suit:x.suit,player:x.player}))}); leader=win;
+    }
+    return declTricks;
+  }
+  // Exact double-dummy solver over a small endgame: perfect play by BOTH sides from `leader` on lead
+  // (leadCard forced). Returns declarer-side tricks TO GO. Memoised on remaining cards + leader.
+  function _ddAfterLead(hands, trump, declarer, leader, leadCard){
+    const memo=new Map();
+    function key(hs, ld){ let s=""; for(let i=0;i<4;i++) s+=hs[i].map(c=>c.suit+c.rank).sort().join(",")+"|"; return s+"#"+ld; }
+    function fromLead(hs, ld){
+      if(!hs[0].length && !hs[1].length && !hs[2].length && !hs[3].length) return 0;
+      const k=key(hs,ld); const m=memo.get(k); if(m!==undefined) return m;
+      const r=trickSearch(hs, ld, null, []); memo.set(k,r); return r;
+    }
+    function trickSearch(hs, toPlay, ledSuit, played){
+      if(played.length===4){
+        const win=resolveTrick(played, ledSuit, trump).winner;
+        return ((win%2)===(declarer%2)?1:0) + fromLead(hs, win);
+      }
+      const hand=hs[toPlay];
+      const follow=ledSuit? hand.filter(c=>c.suit===ledSuit):[];
+      const legal=(ledSuit && follow.length)? follow : hand;
+      const decl=((toPlay%2)===(declarer%2));
+      let best=decl?-1:999;
+      for(const c of legal){
+        const nh=hs.slice(); nh[toPlay]=hand.filter(x=>x!==c);
+        const nled=played.length===0?c.suit:ledSuit;
+        const v=trickSearch(nh, (toPlay+1)%4, nled, played.concat([{rank:c.rank,suit:c.suit,player:toPlay}]));
+        if(decl){ if(v>best)best=v; } else { if(v<best)best=v; }
+      }
+      return best;
+    }
+    const hs=hands.slice(); hs[leader]=hands[leader].filter(x=>x.id!==leadCard.id);
+    return trickSearch(hs, (leader+1)%4, leadCard.suit, [{rank:leadCard.rank,suit:leadCard.suit,player:leader}]);
+  }
+  const DD_MAX = 0;   // 0 = ship heuristic rollout (metric-optimal); set 4 for exact "sound endgame" mode (see report)   // when each hand has <= DD_MAX cards, evaluate worlds EXACTLY (double-dummy) not by heuristic playout
+
+  function defensiveLeadRollout(ctx, legal){
+    const K = LIVE_ROLLOUT_K;
+    if(!K || _inRollout || !ctx.dummyHand || (ctx.trick && ctx.trick.length)) return null;
+    _inRollout=true;
+    try{
+      const rng=_mulb(_stateSeed(ctx));
+      const worlds=[]; for(let n=0;n<K;n++){ const w=_sampleWorld(ctx,rng); if(w) worlds.push(w); }
+      if(!worlds.length) return null;
+      // one lead per SUIT is enough (the cascade decides the spot); evaluate the cheapest card per suit
+      const bySuit={}; for(const c of legal){ if(!bySuit[c.suit] || RANKVAL[c.rank]<RANKVAL[bySuit[c.suit].rank]) bySuit[c.suit]=c; }
+      const cands=Object.values(bySuit);
+      if(cands.length<2) return null;
+      // GRANULARITY DISPATCH: exact double-dummy in the endgame, sampled heuristic rollout earlier.
+      const useDD = DD_MAX>0 && ctx.hand.length<=DD_MAX;
+      const histDecl = useDD ? (ctx.history||[]).reduce((a,tr)=> a+(sideOf(tr.winner)===sideOf(ctx.declarer)?1:0),0) : 0;
+      let best=null, bestVal=Infinity;
+      for(const cand of cands){
+        let sum=0;
+        for(const w of worlds){ const h=[null,null,null,null];
+          h[ctx.seat]=ctx.hand.slice(); h[ctx.dummy]=ctx.dummyHand.slice();
+          for(const s of Object.keys(w)) h[+s]=w[s].slice();
+          sum += useDD ? (histDecl + _ddAfterLead(h, ctx.trump, ctx.declarer, ctx.seat, cand))
+                       : _playoutAfterLead(ctx, h, cand); }
+        const val=sum/worlds.length;
+        if(val<bestVal-1e-9){ bestVal=val; best=cand; }
+      }
+      return best;
+    } finally { _inRollout=false; }
+  }
+
   function defenderLead(ctx, legal){
     const { hand, trump } = ctx;
+    const b=buckets(hand);
+    const read=readDefense(ctx);
+    // live rollout picks the switch SUIT when enabled; then fall to the cascade to pick the spot card.
+    const rlead=defensiveLeadRollout(ctx, legal);
+    if(rlead){ const cand=byDesc(b[rlead.suit]);
+      if(trump!=="NT" && cand.length && cand[0].rank==="A") return W(cand[0],"D_ROLLOUT",{suit:rlead.suit});
+      if(cand.length>=4) return W(cand[3],"D_ROLLOUT",{suit:rlead.suit});
+      if(cand.length) return W(byAsc(cand)[0],"D_ROLLOUT",{suit:rlead.suit});
+    }
+    // 1) return / continue a suit partner asked for (their own suit, or one they encouraged) —
+    //    but NOT into a ruff: in a suit contract, returning a suit dummy is void in just gives
+    //    declarer a ruff, so skip it and switch instead (mined from rollout-oracle disagreements).
+    const dvoid = s => ctx.trump!=="NT" && ctx.dummyHand && ctx.dummyHand.filter(c=>c.suit===s).length===0;
+    const pref=[...read.prefer].filter(s=>s!==trump && (b[s]||[]).length && !dvoid(s));
+    if(pref.length){
+      pref.sort((a,c)=>(b[c].length-b[a].length));
+      const s=pref[0]; const cand=byDesc(b[s]);
+      const code = read.reason[s]==="return" ? "D_RETURN" : "D_CONTINUE";
+      if(ctx.trump!=="NT" && cand.length && cand[0].rank==="A") return W(cand[0],code,{suit:s}); // don't underlead the ace vs a suit contract
+      if(cand.length>=4) return W(cand[3],code,{suit:s});
+      if(cand.length===2) return W(cand[0],code,{suit:s});   // high from a doubleton (return)
+      return W(byAsc(cand)[0],code,{suit:s});
+    }
+    // 2) top of a sequence — a safe attacking lead
     const seq=topOfSequence(hand);
     if(seq) return W(seq,"LEAD_SEQ",{suit:seq.suit,top:seq.rank});
-    const b=buckets(hand);
+    // 3) longest non-trump suit, avoiding one partner discouraged, one that feeds dummy's tenace,
+    //    or (mined) one dummy is void in — leading it into a suit contract just gives a ruff.
+    const avoid=new Set([...read.discourage, ...leadIntoDummyTenace(ctx)]);
+    for(const s of SUITS) if(dvoid(s)) avoid.add(s);
     let best=null,len=-1;
-    for(const s of SUITS){ if(s===trump) continue; if((b[s]||[]).length>len){ len=(b[s]||[]).length; best=s; } }
+    for(const s of SUITS){ if(s===trump||avoid.has(s)) continue; if((b[s]||[]).length>len){ len=(b[s]||[]).length; best=s; } }
+    if(best==null){ for(const s of SUITS){ if(s===trump) continue; if((b[s]||[]).length>len){ len=(b[s]||[]).length; best=s; } } }
     const cand = best!=null ? byDesc(b[best]) : byDesc(legal);
     if(trump!=="NT" && cand.length && cand[0].rank==="A") return W(cand[0],"LEAD_ACE",{suit:cand[0].suit});
     if(cand.length>=4) return W(cand[3],"LEAD_4TH",{suit:cand[3].suit});
@@ -2270,6 +3262,171 @@ const PLY = (function(){
   }
   
   /* ---------- following ---------- */
+  /* Cover an honour with an honour (2nd hand). Cover a led J/Q/K when we hold exactly ONE
+     honour above it (the classic Kx-covers-Q that promotes lower cards); if we hold two+
+     honours above, we dominate and keep them (play low). Never squander the bare ace on a
+     lower honour as 2nd hand. */
+  function coverHonour(ctx, suitCards){
+    const led = ctx.trick[0];
+    if(!led) return null;
+    const lv = RANKVAL[led.rank];
+    if(lv < 11 || lv >= 14) return null;                 // only cover J/Q/K
+    const above = byAsc(suitCards).filter(c=>RANKVAL[c.rank] > lv);
+    const honoursAbove = above.filter(c=>RANKVAL[c.rank] >= 11);
+    if(honoursAbove.length !== 1) return null;           // 2+ honours above -> dominate, don't cover
+    const cov = honoursAbove[0];
+    if(cov.rank === "A") return null;                    // keep the ace as 2nd hand
+    return cov;                                          // cheapest single honour that covers
+  }
+
+  /* Second-hand exception — SPLIT HONOURS. When a low card is led and I (a defender in second
+     seat) hold two or more TOUCHING honours but not the ace, play the LOWER honour. This forces
+     declarer to spend a top card now and promotes my remaining honour, rather than letting declarer
+     steal a cheap trick with a middling card. Never split when I hold the ace (I control the suit). */
+  function splitHonors(ctx, suitCards){
+    const { trick, seat, declarer } = ctx;
+    if(sideOf(seat)===sideOf(declarer)) return null;              // defenders only
+    const led = trick[0];
+    if(!led || RANKVAL[led.rank] >= 10) return null;              // only when a LOW card is led
+    if(suitCards.some(c=>c.rank==="A")) return null;              // holding the ace = control, play low
+    const desc = byDesc(suitCards);
+    for(let i=0;i<desc.length;i++){
+      if(RANKVAL[desc[i].rank] < 10) break;                       // honours only (10,J,Q,K)
+      let j=i;
+      while(j+1<desc.length && RANKVAL[desc[j].rank]-RANKVAL[desc[j+1].rank]===1 && RANKVAL[desc[j+1].rank]>=10) j++;
+      if(j>i) return desc[j];                                     // lower card of the touching honour run
+    }
+    return null;
+  }
+
+
+  function thirdHandCard(suitCards, curHighVal){
+    const canWin = byDesc(suitCards).filter(c=>RANKVAL[c.rank] > curHighVal);
+    if(!canWin.length) return null;
+    if(RANKVAL[canWin[0].rank] < 11) return canWin[0];   // no honour available -> highest spot
+    let i=0;
+    while(i+1<canWin.length && RANKVAL[canWin[i].rank]-RANKVAL[canWin[i+1].rank]===1 && RANKVAL[canWin[i+1].rank]>=10) i++;
+    return canWin[i];                                    // cheapest of the top touching-honour run
+  }
+
+  /* Declarer hold-up in notrump: with a SOLE ace stopper in a short combined holding, duck
+     early rounds (Rule of 7: duck 7 - combinedLen times) to sever the defenders' link. */
+  function holdUp(ctx, suitCards){
+    const { trump, ledSuit, seat, declarer, seen, trick } = ctx;
+    if(trump !== "NT") return null;
+    if(sideOf(seat) !== sideOf(declarer)) return null;   // declaring side only
+    const leaderSeat = (seat - trick.length + 4) % 4;    // hold up only when an OPPONENT is attacking
+    if(sideOf(leaderSeat) === sideOf(declarer)) return null;
+    if(!suitCards.some(c=>c.rank==="A")) return null;     // must hold the ace
+    // (mined) a hold-up only gains with a SINGLE stopper. If the two declaring hands together hold the
+    // ace AND king, that's a double stopper — just win; ducking only loses tempo. (Was checking the
+    // acting hand alone, which missed an A/K split across declarer and dummy.)
+    const mateInSuit = (ctx.mateHand || ctx.dummyHand || []).filter(c=>c.suit===ledSuit);
+    const combined = new Set(suitCards.concat(mateInSuit).map(c=>c.rank));
+    if(combined.has("A") && combined.has("K")) return null;
+    const nonAce = suitCards.filter(c=>c.rank!=="A");
+    if(!nonAce.length) return null;                        // only the bare ace -> must win
+    const cur = currentWinner(trick, ledSuit, trump);
+    if(cur.winner!==-1 && sideOf(cur.winner)===sideOf(seat)) return null; // our side already winning
+    const mate = ctx.mateHand || ctx.dummyHand || [];
+    const combinedLen = suitCards.length + mate.filter(c=>c.suit===ledSuit).length;
+    const ducks = 7 - combinedLen;
+    if(ducks <= 0) return null;
+    const roundsBefore = Math.floor((seen||[]).filter(c=>c.suit===ledSuit).length / 3);
+    if(roundsBefore >= ducks) return null;                 // held up enough -> take it now
+    return byAsc(nonAce)[0];                               // duck low, keep the ace
+  }
+
+  /* Defensive carding: choose WHICH low card to play so it carries a signal.
+     Attitude on partner's lead (high = encourage, low = discourage). Count on an opponent's lead,
+     but only when it is USEFUL — when the opponents are establishing this suit and partner must
+     read its length (dummy long here, or a later round of the same suit). On a random suit, honest
+     count mostly helps declarer (who sees both defenders), so we just play a neutral low card. The
+     signal card never wins the trick, so it's trick-neutral. Declarer's side never signals. */
+  function signalPlay(ctx, suitCards, plainCode){
+    const { seat, declarer, trump, ledSuit, trick, dummyHand, history } = ctx;
+    const lowest = byAsc(suitCards)[0];
+    if(sideOf(seat) === sideOf(declarer)) return W(lowest, plainCode || "F_2ND_LOW", {suit:ledSuit});
+    const pos = trick.length;
+    const leaderSeat = (seat - pos + 4) % 4;
+    const partnerLed = leaderSeat === partnerOf(seat);
+    const spots = suitCards.filter(c => RANKVAL[c.rank] < 10);   // 2..9 — never signal with the 10+
+    // (mined) if the holding is ALL honours/tens there is no spot to signal with — don't spend an
+    // honour on a signal, just play the lowest card and keep the higher honour as a potential trick.
+    if(!spots.length) return W(lowest, plainCode || "F_2ND_LOW", {suit:ledSuit});
+    const pool = spots;
+    const hi = byDesc(pool)[0], lo = byAsc(pool)[0];
+    if(partnerLed){
+      const topRank = RANKVAL[byDesc(suitCards)[0].rank];
+      const ruffValue = trump !== "NT" && suitCards.length <= 2 && ledSuit !== trump;
+      const encourage = topRank >= 12 || ruffValue;             // Q+ in the suit, or a doubleton to ruff
+      return encourage ? W(hi, "F_ATT_HI", { card: hi.rank, suit: ledSuit })
+                       : W(lo, "F_ATT_LO", { card: lo.rank, suit: ledSuit });
+    }
+    // opponent led: give count only when the suit is being established and partner needs it
+    const dummyLen = (dummyHand||[]).filter(c=>c.suit===ledSuit).length;
+    const roundsPlayed = (history||[]).filter(t=>t.ledSuit===ledSuit).length;
+    const countUseful = dummyLen>=4 || roundsPlayed>=1;
+    if(!countUseful) return W(lowest, plainCode || "F_2ND_LOW", {suit:ledSuit});
+    const even = (suitCards.length % 2) === 0;
+    return even ? W(hi, "F_CNT_HI", { card: hi.rank, suit: ledSuit })
+                : W(lo, "F_CNT_LO", { card: lo.rank, suit: ledSuit });
+  }
+
+  /* Count how many cards of `suit` a given player has already shown (history + current trick). */
+  function playedInSuit(ctx, player, suit){
+    let n=0;
+    for(const tr of ctx.history||[]) for(const c of (tr.cards||[])) if(c.player===player && c.suit===suit) n++;
+    for(const c of (ctx.trick||[])) if(c.player===player && c.suit===suit) n++;
+    return n;
+  }
+  /* READ partner's count signal: infer partner's ORIGINAL length in `suit` from the first spot they
+     played to it (high spot = even, low spot = odd), resolved to the parity-correct length closest to
+     an even split of `outstanding` (= declarer + partner cards). Returns null if no clear read. */
+  function partnerOrigLen(ctx, suit, outstanding){
+    const partner=partnerOf(ctx.seat);
+    let first=null;
+    for(const tr of ctx.history||[]){ if(tr.ledSuit!==suit) continue; const pc=(tr.cards||[]).find(c=>c.player===partner && c.suit===suit); if(pc){ first=pc; break; } }
+    if(!first) for(const c of (ctx.trick||[])) if(c.player===partner && c.suit===suit){ first=c; break; }
+    if(!first) return null;
+    const rv=RANKVAL[first.rank];
+    const even = rv>=7 ? true : (rv<=5 ? false : null);   // a lone 6 is ambiguous
+    if(even===null) return null;
+    let best=null, bd=99;
+    for(let L=1;L<=outstanding;L++){ if((L%2===0)!==even) continue; const d=Math.abs(L-outstanding/2); if(d<bd){ bd=d; best=L; } }
+    return best;
+  }
+
+  /* Defensive hold-up: as a defender, duck the sole ace stopper to strand a long, running dummy suit.
+     Count-aware: read partner's count to learn declarer's length and WIN the ace on the round that
+     exhausts declarer (never later than the Rule-of-7-style third-round fallback). Returns {card,code}
+     — either a low duck or the ace to win-and-strand — or null when the hold-up doesn't apply. NT only. */
+  function defHoldUp(ctx, suitCards){
+    const { trump, ledSuit, seat, declarer, dummy, dummyHand, history, trick } = ctx;
+    if(trump!=="NT") return null;
+    if(sideOf(seat)===sideOf(declarer)) return null;                 // defenders only
+    const leaderSeat=(seat - trick.length + 4)%4;
+    if(sideOf(leaderSeat)===sideOf(seat)) return null;               // an opponent must have led it
+    if(!dummyHand) return null;
+    const ace=suitCards.find(c=>c.rank==="A");
+    if(!ace || suitCards.length<3) return null;                      // sole ace stopper, Axx+
+    const dummySuit=dummyHand.filter(c=>c.suit===ledSuit);
+    if(dummySuit.length<4 || RANKVAL[byDesc(dummySuit)[0].rank]<12) return null; // long, honour-headed
+    const roundsPlayed=(history||[]).filter(t=>t.ledSuit===ledSuit).length;
+    const thisRound=roundsPlayed+1;
+    // read count -> declarer's original length in the suit; take the ace once declarer is exhausted
+    const myOrig    = suitCards.length + playedInSuit(ctx, seat, ledSuit);
+    const dummyOrig = dummySuit.length + playedInSuit(ctx, dummy, ledSuit);
+    const outstanding = 13 - myOrig - dummyOrig;                     // declarer + partner, originally
+    const pOrig = partnerOrigLen(ctx, ledSuit, outstanding);
+    const declOrig = (pOrig!=null) ? Math.max(1, outstanding - pOrig) : null;
+    const takeByCount = declOrig!=null && thisRound >= declOrig;     // count says declarer's last card
+    const takeByRule  = roundsPlayed >= 2;                           // fallback: no later than 3rd round
+    if(takeByCount || takeByRule) return { card: ace, code:"F_HOLDUP_WIN" };
+    const spare=byAsc(suitCards.filter(c=>c.rank!=="A"));
+    return spare.length ? { card: spare[0], code:"F_DUCK_HOLDUP" } : { card: ace, code:"F_HOLDUP_WIN" };
+  }
+
   function chooseFollow(ctx, legal){
     const { trick, ledSuit, trump, seat } = ctx;
     const pos=trick.length;
@@ -2280,24 +3437,81 @@ const PLY = (function(){
   
     if(canFollow){
       const suitCards = legal.filter(c=>c.suit===ledSuit);
-      if(partnerWinning) return W(byAsc(suitCards)[0],"F_DUCK_PARTNER");
-      if(pos===3){ const w=cheapestWinner(ctx, suitCards); return w?W(w,"F_WIN_CHEAP",{card:w.rank}):W(byAsc(suitCards)[0],"F_CANT"); }
-      if(pos===2){ const w=cheapestWinner(ctx, suitCards); return w?W(w,"F_3RD_HIGH",{card:w.rank}):W(byAsc(suitCards)[0],"F_CANT"); }
-      return W(byAsc(suitCards)[0],"F_2ND_LOW");
+      // declarer hold-up (sole ace stopper, NT) — applies at any seat before the win/duck logic
+      const hu = holdUp(ctx, suitCards);
+      if(hu) return W(hu,"F_HOLDUP",{suit:ledSuit});
+      // defensive hold-up: duck (or, once count says declarer is exhausted, win) the ace to strand a long dummy suit
+      const dhu = defHoldUp(ctx, suitCards);
+      if(dhu) return W(dhu.card, dhu.code, {suit:ledSuit});
+      // 2nd hand: cover an honour, split touching honours on a low lead, else low (with count for a defender)
+      if(pos===1){
+        const cov = coverHonour(ctx, suitCards);
+        if(cov) return W(cov,"F_COVER",{card:cov.rank});
+        const sp = splitHonors(ctx, suitCards);
+        if(sp) return W(sp,"F_SPLIT",{card:sp.rank,suit:ledSuit});
+        return signalPlay(ctx, suitCards, "F_2ND_LOW");
+      }
+      // 3rd hand: third-hand high, unless partner's led honour is already winning
+      if(pos===2){
+        const ledCard = trick[0];
+        // (mined) partner is SECURE if already winning and either led an honour (J+) OR the only hand
+        // still to play is the dummy and it cannot beat partner's card — then don't waste a winner.
+        const fourthIsDummy = ((seat+1)%4)===ctx.dummy && ctx.dummyHand;
+        const dummyCantBeat = fourthIsDummy && !ctx.dummyHand.some(c=>c.suit===ledSuit && RANKVAL[c.rank] > RANKVAL[cur.card.rank]);
+        const partnerSecure = partnerWinning && (RANKVAL[ledCard.rank] >= 11 || dummyCantBeat);
+        if(!partnerSecure){
+          const declaring = sideOf(seat)===sideOf(ctx.declarer);
+          const known = (ctx.hand||[]).concat(ctx.mateHand||[]);
+          // declarer with a genuine tenace finesses the low honour (Q from AQ); otherwise both
+          // declarer and defender secure the trick with proper third-hand-high (the A from A84).
+          const isFin = declaring && isFinessableTenace(byDesc(suitCards), ledSuit, known, ctx.seen);
+          const th = isFin ? cheapestWinner(ctx, suitCards)
+                           : thirdHandCard(suitCards, RANKVAL[cur.card.rank]);
+          if(th) return W(th, isFin?"F_FINESSE_WIN":"F_3RD_HIGH", {card:th.rank, suit:ledSuit});
+        }
+        return signalPlay(ctx, suitCards, "F_DUCK_PARTNER");   // duck -> attitude for a defender
+      }
+      // 4th hand: win as cheaply as possible; never overtake partner
+      if(!partnerWinning){
+        const w=cheapestWinner(ctx, suitCards); if(w) return W(w,"F_WIN_CHEAP",{card:w.rank});
+      }
+      return signalPlay(ctx, suitCards, partnerWinning?"F_DUCK_PARTNER":"F_CANT");
     }
     if(trump!=="NT"){
       const myTr=legal.filter(c=>c.suit===trump);
-      if(myTr.length && !partnerWinning){ const w=cheapestWinner(ctx, myTr); if(w) return W(w,"RUFF"); }
+      if(myTr.length && !partnerWinning){ const w=cheapestWinner(ctx, myTr); if(w) return W(w,"RUFF",{suit:ledSuit}); }
     }
     const d=discard(ctx, legal);
     return W(d,"DISCARD",{suit:d.suit});
   }
+  /* Discard from length: shed the lowest card of your longest suit — the card you can most afford,
+     keeping guards and honours in the shorter suits. (Deliberate attitude discards were tried and
+     removed: for the bot they spend more than they return, the same trap as costly signalling.) */
   function discard(ctx, legal){
-    const { trump } = ctx;
+    const { trump, seat, declarer, dummyHand } = ctx;
     const pool = legal.filter(c=>c.suit!==trump).length ? legal.filter(c=>c.suit!==trump) : legal;
     const b=buckets(pool);
+    const defender = sideOf(seat)!==sideOf(declarer);
+    if(defender && dummyHand){
+      // Keep length that guards dummy's long suits; pitch from a suit with no guarding duty.
+      // Guard duty = dummy has a real long suit (4+) AND is LONGER than me: the danger is the cards
+      // dummy holds beyond my length, so if I'm as long as dummy I already outlast it and can pitch
+      // freely. (Guarding 4-card suits I already match ties up length for nothing — measured worse.)
+      const scored = SUITS.filter(s=>(b[s]||[]).length).map(s=>{
+        const myLen=(b[s]||[]).length;
+        const dlen=dummyHand.filter(c=>c.suit===s).length;
+        return { s, myLen, guardDuty: dlen>=4 && dlen>myLen };
+      });
+      const free = scored.filter(x=>!x.guardDuty);
+      // longest first (economy); (mined) break LENGTH TIES by pitching from the most worthless suit —
+      // the one whose highest card is lowest — so equal-length honour/sequence holdings stay intact.
+      const topVal = s => (b[s]||[]).reduce((m,c)=>Math.max(m,RANKVAL[c.rank]),0);
+      const pickFrom = (free.length ? free : scored).sort((a,c)=> (c.myLen-a.myLen) || (topVal(a.s)-topVal(c.s)));
+      if(pickFrom.length) return byAsc(b[pickFrom[0].s])[0];
+    }
+    // declarer, or no dummy view yet: economy — pitch the lowest card of the longest suit
     let best=null,len=-1;
-    for(const s of SUITS){ if(b[s].length>len){ len=b[s].length; best=s; } }
+    for(const s of SUITS){ if((b[s]||[]).length>len){ len=(b[s]||[]).length; best=s; } }
     return byAsc(b[best])[0];
   }
   
@@ -2326,7 +3540,7 @@ function sortHandDisplay(hand){
   return [...hand].sort((a,b)=>{
     const sa=SUIT_DISPLAY.indexOf(a.suit), sb=SUIT_DISPLAY.indexOf(b.suit);
     if(sa!==sb) return sa-sb;
-    return RVAL[b.rank]-RVAL[a.rank];
+    return RVAL[a.rank]-RVAL[b.rank];   // ascending within a suit (low → high, left → right)
   });
 }
 // the declarer plays the dummy's cards
@@ -2377,6 +3591,7 @@ function freshDeal(prev, dealer){
     roundStartedAt:Date.now(), roundEndedAt:null,
     log:[`Deal ${prev.dealNo||1}. ${who(prev,dealer)} deals.`],
     dealNo:(prev.dealNo||1),
+    gradeQueue:[], grades:{}, gradeOn:(prev.gradeOn!==false),
   };
 }
 function freshRubber(brains, names, dealer){
@@ -2385,6 +3600,7 @@ function freshRubber(brains, names, dealer){
     rubberNo:1, dealNo:1,
     games:[0,0], vuln:[false,false], gameBelow:[0,0], total:[0,0],
     rubberDone:false, rubberWinner:null, sheet:[],
+    gradeOn:true,
   };
   return freshDeal(base, dealer!=null?dealer:0);
 }
@@ -2398,6 +3614,7 @@ const cloneState=(s)=>{
   c.games=[...s.games]; c.vuln=[...s.vuln]; c.gameBelow=[...s.gameBelow]; c.total=[...s.total];
   c.tricks=[...(s.tricks||[0,0])]; c.brains=[...s.brains];
   c.names=[...(s.names||["","","",""])]; c.sheet=[...(s.sheet||[])]; c.log=[...(s.log||[])];
+  c.gradeQueue=[...(s.gradeQueue||[])]; c.grades={...(s.grades||{})};
   return c;
 };
 const pushLog=(s,l)=>{ s.log=[l,...(s.log||[])].slice(0,40); };
@@ -2426,14 +3643,59 @@ function applyBid(s, seat, call){
   return s;
 }
 
+/* ---- live declarer-play grading (additive; a snapshot is queued, graded off-thread by the worker,
+   and the result is attached as a Table Talk log line — it NEVER touches game state) ---- */
+function gradeVoidsPlayed(s){
+  const voids=[new Set(),new Set(),new Set(),new Set()];
+  const played=[[],[],[],[]];
+  for(const t of (s.trickHistory||[])){
+    for(const tc of t.trick){
+      played[tc.seat].push({rank:tc.card.rank, suit:tc.card.suit});
+      if(tc.card.suit!==t.ledSuit) voids[tc.seat].add(tc.card.suit);   // show-out void
+    }
+  }
+  return {voids, played};
+}
+function gradeHash(str){ let h=2166136261>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+function maybeEnqueueGrade(s, seat, card){
+  if(!s.gradeOn || !s.contract) return;
+  if(s.trick.length!==0) return;                                    // grade only the LEAD to a trick
+  const declSide=sideOf(s.contract.declarer);
+  const isDeclLead = sideOf(seat)===declSide;
+  // Defender leads are graded from the defender's info-set (own hand + dummy). The opening lead happens
+  // BEFORE dummy is exposed (3 hidden hands — outside the 2-hidden sampler), so skip just that one.
+  if(!isDeclLead && !s.dummyRevealed) return;
+  const defs=[0,1,2,3].filter(x=>sideOf(x)!==declSide);
+  const {voids, played}=gradeVoidsPlayed(s);
+  const strip=(h)=>h.map(c=>({rank:c.rank, suit:c.suit}));
+  const played_key=`${card.rank}.${card.suit}`;
+  const moveId=`${s.rubberNo||1}.${s.dealNo||1}.${s.tricksPlayed}`;
+  const pos={
+    hands:[strip(s.hands[0]),strip(s.hands[1]),strip(s.hands[2]),strip(s.hands[3])],
+    voids:voids.map(v=>[...v]), played,
+    trump:s.trump, declarer:s.contract.declarer, leader:seat, defs,
+    won_decl:s.tricks[declSide], completed:s.tricksPlayed,
+    need:6+s.contract.level, level:s.contract.level,
+    played_key, seed:gradeHash(moveId+"|"+played_key), N:16,
+    payoff:"make", vul:!!s.vuln[declSide], moveId, tricksPlayed:s.tricksPlayed, leaderSeat:seat,
+  };
+  s.gradeQueue=[...(s.gradeQueue||[]), pos];
+}
+
 /* ---- play step ---- */
 function applyPlay(s, seat, cardId){
   const hand=s.hands[seat];
   const card=hand.find(c=>c.id===cardId) || ENG.legalPlays(hand, s.trick.length?s.ledSuit:null)[0];
+  try{ maybeEnqueueGrade(s, seat, card); }catch(_){}   // snapshot BEFORE the card leaves the hand
+  // Capture the engine's reasoning for this card (for the Table Talk play-by-play). The read is
+  // taken from the position BEFORE the card leaves the hand; it applies when the played card is the
+  // one the engine would choose (always true for the bots; true for a human playing "by the book").
+  let why=null;
+  try{ const rec=PLY.chooseCardWhy(playCtx(s, seat)); if(rec && rec.card && rec.card.id===card.id) why=rec.why; }catch(_){ why=null; }
   s.hands={...s.hands, [seat]: hand.filter(c=>c.id!==card.id)};
   const firstCardOfDeal = (s.tricksPlayed===0 && s.trick.length===0);
   if(s.trick.length===0) s.ledSuit=card.suit;
-  s.trick=[...s.trick, {seat, card}];
+  s.trick=[...s.trick, {seat, card, why}];
   if(firstCardOfDeal) s.dummyRevealed=true;               // dummy exposed after the opening lead
   if(s.trick.length===4){
     const cards=s.trick.map(tc=>({rank:tc.card.rank,suit:tc.card.suit,player:tc.seat}));
@@ -2516,6 +3778,21 @@ function reducer(state, a){
       return applyBid(s, a.seat!=null?a.seat:s.turn, call);
     }
     case "PLAY":{ const s=cloneState(state); return applyPlay(s, a.player!=null?a.player:s.turn, a.cardId); }
+    case "PLAY_GRADE":{
+      const g=a.grade;
+      const s=cloneState(state);
+      s.gradeQueue=(s.gradeQueue||[]).filter(p=>p.moveId!==a.moveId);
+      if(g && !g.skipped){
+        s.grades={...(s.grades||{}), [a.moveId]: g};
+        const glyph=(k)=>{ const i=k.lastIndexOf("."); return k.slice(0,i)+(STRAIN_GLYPH[k.slice(i+1)]||k.slice(i+1)); };
+        const bestKey = g.best_named || g.best;   // A5: pedagogically-named representative
+        const role = g.role==="defender" ? "Defence" : "Declarer play";
+        const tag = g.played_in_equiv ? "\u2713 sound" : `best ${glyph(bestKey)}`;
+        pushLog(s, `${role}: ${g.points}/100 \u2014 ${tag}${g.needs_clairvoyance?" (DD-only)":""}`);
+      }
+      return s;
+    }
+    case "TOGGLE_GRADE": return {...state, gradeOn: !state.gradeOn};
     case "NEXT_DEAL":{
       if(state.rubberDone) return state;
       const s=cloneState(state);
@@ -2535,6 +3812,8 @@ function playCtx(s, seat){
   return {
     hand:s.hands[seat], trick:s.trick.map(tc=>({rank:tc.card.rank,suit:tc.card.suit,player:tc.seat})),
     ledSuit:s.ledSuit, trump:s.trump, seat, declarer:s.declarer, dummy:s.dummy, seen:s.seen.slice(),
+    history: (s.trickHistory||[]).map(t=>({ ledSuit:t.ledSuit, winner:t.winner,
+      cards:t.trick.map(tc=>({ rank:tc.card.rank, suit:tc.card.suit, player:tc.seat })) })),
     dummyHand: dummyExposed ? s.hands[s.dummy].slice() : undefined,
     mateHand:  (declaring && seat===s.declarer) ? s.hands[s.dummy].slice()
              : (declaring && seat===s.dummy)    ? s.hands[s.declarer].slice() : undefined,
@@ -2668,20 +3947,36 @@ const TEACH_DEFAULT = {
   play: {
     ONLY:"Only one legal card — you must follow suit.",
     LEAD_SEQ:"Top of a sequence in {suit}: the {top} is a safe lead that promotes your lower cards into winners.",
-    LEAD_4TH:"Fourth-best from your longest suit ({suit}) — the classic opening lead to develop length.",
+    LEAD_4TH:"Fourth-best from your longest suit ({suit}): the classic lead to develop length — and it lets partner use the Rule of 11 to place the missing cards.",
     LEAD_ACE:"Against a suit contract you don't underlead an ace, so lead the ace of {suit} itself.",
-    LEAD_LOW:"Lead a low {suit} — a quiet, safe choice with nothing better to attack.",
+    LEAD_LOW:"Lead a low {suit} — a quiet, constructive choice when you have no sequence or clear suit to attack.",
+    D_CONTINUE:"Partner encouraged {suit} with an earlier signal — lead it again to develop the suit they like.",
+    D_RETURN:"Return partner's suit: they opened {suit}, so leading it back helps set up their long cards and honours.",
+    D_ROLLOUT:"Switch to {suit}: testing each suit against the hands partner and declarer could hold, leading {suit} gives declarer the fewest tricks on average.",
     DECL_DRAW:"You're declarer with the top trump: play the {card} to draw the defenders' trumps so they can't ruff your winners.",
     DECL_CASH:"The {card} is the highest {suit} still out — cash your sure winner.",
     DECL_FINESSE:"Lead low toward your {honor} of {suit}: if the missing higher honour sits before it, the {honor} scores. That's a finesse — a free shot at an extra trick.",
     DECL_RUFF:"Lead your losing {suit} so the other hand can ruff it — turning a loser into a trick with a trump.",
+    DECL_RUFF_FIRST:"Ruff before drawing trumps: lead your losing {suit} now so the short hand can trump it while it still holds trumps.",
+    DECL_CROSS:"Cross to the other hand in {suit} so you can lead toward your tenace and take the finesse from the correct side.",
     DECL_ESTABLISH:"Lead low in your long {suit} to knock out the defenders' stoppers and set up later winners.",
-    F_2ND_LOW:"Second hand low: no need to spend an honour before seeing what partner and declarer do.",
+    F_2ND_LOW:"Second hand low in {suit}: no need to spend an honour before seeing what partner and declarer do.",
+    F_SPLIT:"Split your honours: with touching honours in {suit} and a low card led, play the lower one to force out a top card and promote the other.",
+    DECL_UNBLOCK:"Unblock: cash the high {suit} from the short hand first so it does not trap the long suit behind it.",
     F_3RD_HIGH:"Third hand high — the {card} is the cheapest card that can win, forcing out the defenders' higher cards.",
+    F_FINESSE_WIN:"Finish the finesse: play the {card}, not the ace. If the missing honour is trapped, the {card} wins and you score an extra {suit} trick.",
     F_WIN_CHEAP:"Win the trick as cheaply as you can with the {card}, saving your higher cards.",
-    F_DUCK_PARTNER:"Partner is already winning the trick — play low and keep your strength.",
-    F_CANT:"You can't beat what's on the table, so play low and hold your honours.",
-    RUFF:"You're out of the suit led — ruff with a low trump to win the trick.",
+    F_DUCK_PARTNER:"Partner is already winning the trick — play low in {suit} and keep your strength for later.",
+    F_CANT:"You can't beat what's on the table in {suit}, so play low and hold your honours.",
+    F_COVER:"Cover an honour with an honour: play the {card} so your side's lower cards are promoted into winners.",
+    F_HOLDUP:"Hold up: duck this round of {suit} and keep your ace, cutting the defenders' link to their long suit.",
+    F_DUCK_HOLDUP:"Defensive hold-up: duck your ace of {suit} to cut declarer off from dummy's long suit — win it once declarer is out.",
+    F_HOLDUP_WIN:"Take the ace of {suit} now: partner's count shows declarer has run out, so winning here strands dummy's long suit.",
+    F_ATT_HI:"Attitude signal: the high {card} of {suit} encourages partner to keep leading the suit.",
+    F_ATT_LO:"Attitude signal: the low {card} of {suit} discourages the suit — partner should look elsewhere.",
+    F_CNT_HI:"Count signal: the high {card} starts a high-low to show an even number of {suit}.",
+    F_CNT_LO:"Count signal: the low {card} shows an odd number of {suit} (low-high).",
+    RUFF:"You're out of {suit} — ruff with a low trump to win the trick and save your higher trumps.",
     DISCARD:"Can't follow and don't want to ruff — throw a low {suit}, your safest discard.",
   },
   glossary: {
@@ -2707,14 +4002,14 @@ const TEACH_DEFAULT = {
     "takeout double":"A double asking partner to choose a suit, showing opening values and support for the unbid suits.",
     "penalty double":"A double made expecting to defeat the opponents' contract for extra points.",
     "redouble":"A call after an opponent's double that raises the stakes when you expect to make the contract.",
-    "stayman":"A 2\u2663 response to 1NT asking opener whether they hold a four-card major.",
+    "stayman":"A 2♣ response to 1NT asking opener whether they hold a four-card major.",
     "transfer":"A bid telling partner to bid the next suit up, so the stronger hand becomes hidden declarer (a Jacoby transfer).",
     "blackwood":"A 4NT bid asking partner how many aces they hold, used when exploring a slam.",
-    "weak two":"An opening 2\u2666/2\u2665/2\u2660 showing a six-card suit and only 5\u201310 HCP, made to steal bidding space.",
+    "weak two":"An opening 2♦/2♥/2♠ showing a six-card suit and only 5–10 HCP, made to steal bidding space.",
     "preempt":"A high opening on a long, weak hand, made to crowd the opponents out of the auction.",
     "stopper":"A holding that halts a suit at no-trump (an Ace, or a guarded King, etc.).",
     "vulnerable":"Having already won a game this rubber; bonuses and penalties are larger when vulnerable.",
-    "game":"A contract worth 100+ trick points (3NT, 4\u2665/4\u2660, 5\u2663/5\u2666). Two games win the rubber.",
+    "game":"A contract worth 100+ trick points (3NT, 4♥/4♠, 5♣/5♦). Two games win the rubber.",
     "part-score":"A contract below game; several can add up to a game across successive deals.",
     "slam":"A contract for 12 tricks (small slam) or all 13 (grand slam), earning a large bonus.",
     "rubber":"A match won by the first side to complete two games, worth a 500 or 700 bonus.",
@@ -2723,9 +4018,60 @@ const TEACH_DEFAULT = {
     "second hand low":"A defensive rule of thumb: playing second to a trick, usually play low and wait.",
     "third hand high":"A defensive rule of thumb: playing third to a trick, play high to help win it.",
     "discard":"Playing a card of another suit when you can't follow and choose not to ruff.",
+    "attitude signal":"A defender's spot card that shows liking for the suit partner led: a high card encourages continuing, a low card discourages it.",
+    "suit-preference":"A discard or spot card whose height points partner toward a suit: a high card likes the suit discarded (or asks for the higher side suit), a low card discourages it.",
+    "lead up to weakness":"Leading a suit toward the weak hand rather than into a tenace — avoid feeding declarer a free finesse by leading into dummy's A-Q.",
+    "count signal":"A defender's spot card that shows the parity of their length: high-then-low shows an even number, low-then-high shows odd. Given mainly on declarer's leads.",
+    "hold-up":"Declarer refusing to win an early round of a suit at no-trump, keeping a stopper to cut the defenders' link to their long suit.",
+    "defensive hold-up":"A defender ducking their sole stopper (the ace) for a round or two so that when declarer runs out of the suit, dummy's long cards are stranded without an entry.",
+    "cover an honour":"Playing a higher honour on an honour led by an opponent, to promote your side's lower cards into winners.",
+    "tenace":"Two non-touching honours such as A-Q or K-J, worth an extra trick if led toward so the missing honour is trapped.",
+    "entry":"A card that wins a trick in a particular hand, letting declarer reach that hand to lead from it — often needed to take a finesse from the right side.",
     "contract":"The final bid: how many tricks the declaring side must win, and in which strain.",
     "auction":"The bidding, in which the four players compete to name the contract.",
-    "level":"The number in a bid; add six to get the tricks required (4\u2660 = 6 + 4 = 10 tricks).",
+    "level":"The number in a bid; add six to get the tricks required (4♠ = 6 + 4 = 10 tricks).",
+    "opening bid":"The first bid that names a suit or no-trump. It shows about 12 or more points (or a good long suit) and begins describing the hand to partner.",
+    "negative double":"A double by responder after partner opens and the next opponent overcalls. It is for takeout — showing the unbid major(s) with enough values to compete — not for penalty.",
+    "Jacoby transfer":"A response to 1NT that names the suit just below your real major (2♦ shows hearts, 2♥ shows spades). Opener bids your suit, so the strong hand becomes declarer and stays hidden.",
+    "reverse":"Opener's rebid of a new, higher-ranking suit at the two level (e.g. 1♦ then 2♥). It forces partner to the three level to give preference, so it promises extra strength — about 17+ points.",
+    "limit raise":"A jump raise of partner's suit (e.g. 1♥–3♥) showing roughly 10–11 points with a fit. It is invitational to game, not forcing.",
+    "single raise":"Raising partner's suit by one level (e.g. 1♥–2♥), showing a fit and about 6–10 points.",
+    "Michaels":"A cuebid of the opponent's opening suit that shows a two-suiter — both majors over a minor, or the other major plus a minor over a major (at least 5-5).",
+    "unusual notrump":"A jump to 2NT over an opponent's opening showing at least 5-5 in the two lowest unbid suits — usually the two minors.",
+    "Cappelletti":"A set of overcalls for competing against an opponent's 1NT opening: double shows a strong balanced hand, and the two-level bids show one- or two-suited hands.",
+    "Jordan":"A 2NT response over an opponent's takeout double of partner's major, showing a limit raise or better (10+ points with support). It lets a direct raise be merely competitive.",
+    "fourth suit forcing":"When three suits have been bid, bidding the fourth is artificial and forcing. It doesn't promise that suit — it asks partner for more, often a stopper for no-trump.",
+    "forcing":"A bid partner is not allowed to pass. The partnership must keep bidding until the message is complete.",
+    "game-forcing":"A bid that commits the partnership to reach at least game — the auction cannot stop in a part-score.",
+    "Gerber":"A 4♣ bid that asks partner how many aces they hold, used mainly after a no-trump bid to explore slam.",
+    "cuebid":"A bid of a suit an opponent has bid. It is artificial and forcing — used to show a big hand, a two-suiter (see Michaels), or a fit plus a control.",
+    "Jacoby 2NT":"A 2NT response to partner's 1-of-a-major opening showing a game-forcing raise with four-card support, asking opener to describe shape.",
+    "control bid":"Bidding a suit where you hold first- or second-round control (an ace or void, a king or singleton) on the way to slam, to show partner where your strength lies.",
+    "trick":"One card played by each of the four players in turn. Thirteen tricks are contested each deal; the highest trump — or the highest card of the led suit — wins.",
+    "follow suit":"Playing a card of the suit that was led. You must follow suit if you can; only when void may you discard or ruff.",
+    "led suit":"The suit of the first card played to a trick. Everyone must follow it if able.",
+    "artificial":"A bid whose meaning is conventional rather than natural — it doesn't promise the suit named (e.g. Stayman, a transfer, or fourth suit forcing).",
+    "invitational":"A bid inviting partner to bid game with a little extra, but allowing them to pass with a minimum. Not forcing.",
+    "shortage":"A short holding — a void (none), singleton (one) or doubleton (two) — which adds ruffing value when partner has a fit.",
+    "tenace":"Two high cards with a gap, such as A-Q or K-J. Led toward, a tenace can trap a missing honour and win an extra trick by finesse.",
+    "top trick":"A sure winner you can cash at once without giving up the lead. Counting these is the first step of the plan.",
+    "establish":"To develop extra winners in a suit — by knocking out the defenders' higher cards or exhausting the suit — until your remaining cards are good.",
+    "establishment":"Developing a suit until your lower cards become winners, by forcing out higher cards or running the suit once it breaks.",
+    "ruffing":"Trumping a loser to win a trick; the extra tricks come from ruffing in the hand with fewer trumps, usually dummy.",
+    "hold-up":"Refusing to win an early trick — typically declining to take an ace — to cut the defenders' link in that suit.",
+    "unblock":"Playing or overtaking the high cards from the short hand first so a long suit does not get stuck with its winners out of reach.",
+    "promote":"To turn a lower card into a winner by driving out the higher cards that beat it.",
+    "promotion":"Turning a lower card into a winner by forcing out the cards that outrank it.",
+    "length":"Extra tricks from a long suit: once the other players are void in it, your remaining low cards win by default.",
+    "long card":"A low card that becomes a winner once every other player is out of the suit.",
+    "entry":"A card that wins a trick in a particular hand, giving you access to that hand's winners.",
+    "entries":"Cards that let you reach a particular hand to cash its winners; managing entries is central to any plan.",
+    "loser":"A card that will lose a trick because the defenders still hold higher ones.",
+    "winner":"A card that will win its trick — either a top card or one you have established.",
+    "cover":"Playing a higher honour on an opponent's honour, to promote your side's lower cards — \"cover an honour with an honour.\"",
+    "duck":"Deliberately playing low and letting the opponents win a trick you could take, for timing or to preserve communication.",
+    "overtake":"Playing a higher card on your side's own winner to gain the lead in the hand you need next, often to unblock or reach length.",
+    "drop":"Felling a missing honour by cashing top cards so it falls under them — the alternative to taking a finesse.",
   },
 };
 function teachTable(kind){
@@ -2790,10 +4136,10 @@ const suitClass=su=>su==="S"?"s-sp":su==="H"?"s-he":su==="D"?"s-di":"s-cl";
 const Corner=({rank,glyph,pos})=>(
   <div className={"idx "+pos}><span className="ir">{rank}</span>{glyph!=null&&<span className="is">{glyph}</span>}</div>
 );
-function Card({c,faceDown,onClick,disabled,selected,small}){
+function Card({c,faceDown,onClick,disabled,selected,suggested,small}){
   if(faceDown) return <div onClick={onClick} className={"brback"+(small?" sm":"")} style={{cursor:onClick?"pointer":"default"}}/>;
   const g=SUIT_GLYPH[c.suit];
-  const cls=["brcard",suitClass(c.suit),small?"sm":"",selected?"sel":"",
+  const cls=["brcard",suitClass(c.suit),small?"sm":"",selected?"sel":"",suggested?"sug":"",
     (onClick&&!disabled)?"clk":"",disabled?"dis":""].filter(Boolean).join(" ");
   const idxGlyph=IDXSUIT.has(c.rank)?g:null;
   let center;
@@ -2813,8 +4159,7 @@ const CallChip=({c,big})=>{
   if(c.k==="P") return <span className="chip pass">Pass</span>;
   if(c.k==="D") return <span className="chip dbl">X</span>;
   if(c.k==="R") return <span className="chip dbl">XX</span>;
-  const red = c.strain==="H"||c.strain==="D";
-  return <span className={"chip bid"+(big?" big":"")+(red?" red":"")}>{c.level}<b>{STRAIN_GLYPH[c.strain]}</b></span>;
+  return <span className={"chip bid"+(big?" big":"")}>{c.level}<b className={suitColorClass(c.strain)}>{STRAIN_GLYPH[c.strain]}</b></span>;
 };
 
 /* ---------------- seat badges ---------------- */
@@ -2863,33 +4208,37 @@ function AuctionView({s}){
 
 /* ---------------- bidding box ---------------- */
 function BiddingBox({s, seat, dispatch, suggestion}){
-  const levels=[1,2,3,4,5,6,7];
-  const canDbl = AUC.callLegal({k:"D"}, s.calls, s.dealer);
-  const canRdbl= AUC.callLegal({k:"R"}, s.calls, s.dealer);
   const sug = suggestion;
   const sugKey = sug ? (sug.k==="B"?`${sug.level}${sug.strain}`:sug.k) : null;
+  const sugLevel = sug && sug.k==="B" ? sug.level : null;
   const bidLegal=(L,st)=>AUC.callLegal({k:"B",level:L,strain:st}, s.calls, s.dealer);
+  const legalLevels=[1,2,3,4,5,6,7].filter(L=>STRAIN_ORDER.some(st=>bidLegal(L,st)));
+  const [lvl,setLvl]=React.useState(null);
+  const curLvl = (lvl!=null && legalLevels.includes(lvl)) ? lvl
+    : (sugLevel && legalLevels.includes(sugLevel)) ? sugLevel : legalLevels[0];
+  const canDbl = AUC.callLegal({k:"D"}, s.calls, s.dealer);
+  const canRdbl= AUC.callLegal({k:"R"}, s.calls, s.dealer);
   return (
-    <div className="bidbox">
-      <div className="bidgrid">
-        {levels.map(L=>(
-          <div key={L} className="brow">
-            <div className="blv num">{L}</div>
-            {STRAIN_ORDER.map(st=>{
-              const ok=bidLegal(L,st);
-              const isSug = sugKey===`${L}${st}`;
-              const red = st==="H"||st==="D";
-              return <button key={st} disabled={!ok}
-                className={"bcell"+(red?" red":"")+(isSug?" sug":"")}
-                onClick={()=>dispatch({type:"BID", seat, call:{k:"B",level:L,strain:st}})}>{STRAIN_GLYPH[st]}</button>;
-            })}
-          </div>
+    <div className="bidbox2">
+      <div className="bb-levels">
+        {[1,2,3,4,5,6,7].map(L=>(
+          <button key={L} disabled={!legalLevels.includes(L)}
+            className={"bb-lv"+(L===curLvl?" on":"")+(sugLevel===L?" sug":"")}
+            onClick={()=>setLvl(L)}>{L}</button>
         ))}
       </div>
-      <div className="bidacts">
-        <button className={"bx pass"+(sugKey==="P"?" sug":"")} onClick={()=>dispatch({type:"BID", seat, call:{k:"P"}})}>Pass</button>
-        <button className="bx dbl" disabled={!canDbl} onClick={()=>dispatch({type:"BID", seat, call:{k:"D"}})}>Double</button>
-        <button className="bx dbl" disabled={!canRdbl} onClick={()=>dispatch({type:"BID", seat, call:{k:"R"}})}>Redbl</button>
+      <div className="bb-strains">
+        {STRAIN_ORDER.map(st=>{
+          const ok=curLvl!=null && bidLegal(curLvl,st);
+          return <button key={st} disabled={!ok}
+            className={"bb-st "+(suitColorClass(st)||"nt")+(sugKey===`${curLvl}${st}`?" sug":"")}
+            onClick={()=>dispatch({type:"BID", seat, call:{k:"B",level:curLvl,strain:st}})}>{STRAIN_GLYPH[st]}</button>;
+        })}
+      </div>
+      <div className="bb-acts">
+        <button className={"bb-act"+(sugKey==="P"?" sug":"")} onClick={()=>dispatch({type:"BID", seat, call:{k:"P"}})}>Pass</button>
+        <button className={"bb-act"+(sugKey==="D"?" sug":"")} disabled={!canDbl} onClick={()=>dispatch({type:"BID", seat, call:{k:"D"}})}>Double</button>
+        <button className={"bb-act"+(sugKey==="R"?" sug":"")} disabled={!canRdbl} onClick={()=>dispatch({type:"BID", seat, call:{k:"R"}})}>Redbl</button>
       </div>
     </div>
   );
@@ -2931,7 +4280,7 @@ function TrickTable({s, focus}){
 }
 
 /* ---------------- a hand row ---------------- */
-function HandRow({hand, onPlay, legalIds, selectable, label, faceDown, count}){
+function HandRow({hand, onPlay, legalIds, selectable, label, faceDown, count, sugId}){
   const cards=sortHandDisplay(hand||[]);
   return (
     <div className="handblock">
@@ -2941,7 +4290,7 @@ function HandRow({hand, onPlay, legalIds, selectable, label, faceDown, count}){
           ? Array.from({length:count||cards.length}).map((_,i)=><Card key={i} faceDown small/>)
           : cards.map(c=>{
               const ok=!legalIds || legalIds.has(c.id);
-              return <Card key={c.id} c={c} small={label!=="You"}
+              return <Card key={c.id} c={c} small={label!=="You"} suggested={sugId===c.id}
                 onClick={selectable&&ok?()=>onPlay(c):undefined} disabled={selectable&&!ok}/>;
             })}
       </div>
@@ -3087,22 +4436,38 @@ function RulesScreen({onClose}){
 }
 
 /* wrap known glossary terms in a string as tappable spans (first occurrence of each) */
+/* Colorize bare suit glyphs in running text to match the four-colour deck: spades blue,
+   hearts red, diamonds gold, clubs green. Returns an array of strings and colored spans. */
+function suitColorClass(suit){ return suit==="S"?"gsp":suit==="H"?"ghe":suit==="D"?"gdi":suit==="C"?"gcl":""; }
+function colorizeSuits(str, kp){
+  if(!str || typeof str!=="string") return [str];
+  if(!/[\u2660\u2665\u2666\u2663]/.test(str)) return [str];
+  const out=[]; let last=0, m; const re=/[\u2660\u2665\u2666\u2663]\uFE0E?/g;
+  const clsOf={"\u2660":"gsp","\u2665":"ghe","\u2666":"gdi","\u2663":"gcl"};
+  while((m=re.exec(str))){
+    if(m.index>last) out.push(str.slice(last,m.index));
+    out.push(<span key={(kp||"s")+m.index} className={clsOf[m[0][0]]}>{m[0]}</span>);
+    last=m.index+m[0].length;
+  }
+  if(last<str.length) out.push(str.slice(last));
+  return out;
+}
 function linkifyGlossary(text, gloss, onTap){
-  const keys=Object.keys(gloss||{}); if(!keys.length || !text) return [text];
+  const keys=Object.keys(gloss||{}); if(!keys.length || !text) return colorizeSuits(text,"c");
   const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   const ordered=keys.slice().sort((a,b)=>b.length-a.length);
-  let re; try{ re=new RegExp("\\b("+ordered.map(esc).join("|")+")(es|s)?\\b","gi"); }catch(_){ return [text]; }
+  let re; try{ re=new RegExp("\\b("+ordered.map(esc).join("|")+")(es|s)?\\b","gi"); }catch(_){ return colorizeSuits(text,"c"); }
   const out=[]; let last=0,m; const seen=new Set();
   while((m=re.exec(text))){
     const whole=m[0], start=m.index, base=m[1].toLowerCase();
     const key=ordered.find(k=>k.toLowerCase()===base);
     if(!key || seen.has(key)) continue;
     seen.add(key);
-    if(start>last) out.push(text.slice(last,start));
-    out.push(<span key={start} className="gloss-term" onClick={(e)=>{e.stopPropagation();onTap(key);}}>{whole}</span>);
+    if(start>last) out.push(...colorizeSuits(text.slice(last,start),"a"+start));
+    out.push(<span key={start} className="gloss-term" onClick={(e)=>{e.stopPropagation();onTap(key);}}>{colorizeSuits(whole,"g"+start)}</span>);
     last=start+whole.length;
   }
-  if(last<text.length) out.push(text.slice(last));
+  if(last<text.length) out.push(...colorizeSuits(text.slice(last),"z"+last));
   return out;
 }
 
@@ -3167,6 +4532,7 @@ const THEME_CSS=`
 .brcard .idx,.brcard .ir,.brcard .is,.brcard .mid,.brcard .ctr,.brcard .pip{color:inherit;background:transparent;font-variant-emoji:text;-webkit-text-fill-color:currentColor;-webkit-backface-visibility:hidden;backface-visibility:hidden;}
 .brcard .is,.brcard .pip{font-family:"DejaVu Sans","Noto Sans Symbols2","Noto Sans Symbols","Segoe UI Symbol","Apple Symbols","Arial Unicode MS",sans-serif!important;}
 .brcard.sel{background:var(--selbg);border-color:var(--purple);transform:translateY(calc(-8px*var(--k)));}
+.brcard.sug{border-color:var(--green);box-shadow:0 0 0 2px var(--green),0 0 12px color-mix(in srgb,var(--green) 55%,transparent);transform:translateY(calc(-9px*var(--k)));}
 .brcard .idx{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:.9;font-weight:700;}
 .brcard .idx.tl{top:calc(3px*var(--k));left:calc(4px*var(--k));} .brcard .idx.br{bottom:calc(3px*var(--k));right:calc(4px*var(--k));transform:rotate(180deg);}
 .brcard .ir{font-size:calc(11px*var(--k));} .brcard .is{font-size:calc(8px*var(--k));margin-top:calc(1px*var(--k));}
@@ -3218,19 +4584,21 @@ const THEME_CSS=`
 .br .chip.pass{color:var(--dim);} .br .chip.dbl{color:var(--pink);}
 .br .chip.bid{color:var(--ink);} .br .chip.bid.red{color:var(--red);} .br .chip.bid b{font-weight:800;}
 .br .chip.big{font-size:15px;}
-.br .bidbox{border:1px solid var(--line);padding:7px;}
-.br .bidgrid{display:flex;flex-direction:column;gap:3px;}
-.br .brow{display:grid;grid-template-columns:20px repeat(5,1fr);gap:3px;align-items:center;}
-.br .blv{font-size:10px;color:var(--dim);text-align:center;}
-.br .bcell{font:inherit;font-size:13px;font-weight:700;padding:5px 0;background:transparent;color:var(--ink);border:1px solid var(--line2);cursor:pointer;}
-.br .bcell.red{color:var(--red);}
-.br .bcell:disabled{opacity:.16;cursor:default;}
-.br .bcell.sug{background:var(--purple);color:var(--fillink);border-color:var(--purple);}
-.br .bidacts{display:flex;gap:6px;margin-top:7px;}
-.br .bx{flex:1;font:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:7px 0;background:transparent;border:1px solid var(--line);color:var(--ink);cursor:pointer;}
-.br .bx.pass{color:var(--dim);} .br .bx.dbl{color:var(--pink);border-color:var(--pink);}
-.br .bx:disabled{opacity:.24;cursor:default;}
-.br .bx.sug{background:var(--purple);color:var(--fillink);border-color:var(--purple);}
+.br .bidbox2{border:1px solid var(--line);padding:7px;display:flex;flex-direction:column;gap:5px;}
+.br .bb-levels{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.br .bb-lv{font:inherit;font-size:14px;font-weight:800;padding:8px 0;background:transparent;color:var(--ink);border:1px solid var(--line);cursor:pointer;transition:background .08s;}
+.br .bb-lv.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.br .bb-lv.sug{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green);}
+.br .bb-lv:disabled{opacity:.2;cursor:default;}
+.br .bb-strains{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;}
+.br .bb-st{font:inherit;font-size:21px;font-weight:700;line-height:1;padding:9px 0;background:transparent;color:var(--ink);border:1px solid var(--line);cursor:pointer;}
+.br .bb-st.gsp{color:var(--sp);} .br .bb-st.ghe{color:var(--he);} .br .bb-st.gdi{color:var(--di);} .br .bb-st.gcl{color:var(--cl);}
+.br .bb-st:disabled{opacity:.2;cursor:default;}
+.br .bb-st.sug{border-color:var(--green);box-shadow:0 0 0 2px var(--green);}
+.br .bb-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:1px;}
+.br .bb-act{font:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 0;background:transparent;color:var(--ink);border:1px solid var(--line);cursor:pointer;}
+.br .bb-act:disabled{opacity:.24;cursor:default;}
+.br .bb-act.sug{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green);}
 .br .tricktable{position:relative;height:200px;border:1px solid var(--line);display:grid;
   grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;
   grid-template-areas:". top ." "left center right" ". bottom .";align-items:center;justify-items:center;}
@@ -3247,8 +4615,13 @@ const THEME_CSS=`
 .br .tinfo .trk2{font-size:9px;color:var(--dim);margin-top:4px;letter-spacing:.06em;}
 .br .handblock{border:1px solid var(--line2);padding:5px 4px 6px;}
 .br .hlabel{margin:0 0 4px 2px;}
-.br .hand{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:44px;}
-.br .youhand .hand{min-height:62px;gap:5px;}
+.br .hand{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-start;min-height:44px;padding-top:calc(11px*var(--k));}
+.br .hand .brcard{margin-left:calc(-27px*var(--k));transition:transform .1s;}
+.br .hand .brcard.sm{margin-left:calc(-18px*var(--k));}
+.br .hand .brcard:first-child{margin-left:0;}
+.br .hand .brcard.clk:hover{transform:translateY(calc(-11px*var(--k)));z-index:20;}
+.br .hand .brcard.sel,.br .hand .brcard.sug{z-index:18;}
+.br .youhand .hand{min-height:74px;}
 .br .sheet{border:1px solid var(--line);}
 .br .shead,.br .srow{display:grid;grid-template-columns:1.3fr 1fr 1fr;}
 .br .shead{border-bottom:1px solid var(--line2);}
@@ -3267,6 +4640,18 @@ const THEME_CSS=`
 .br .btn:disabled{opacity:.3;cursor:default;color:var(--dim);border-color:var(--line);}
 .br .hint{font-size:11px;color:var(--dim);text-align:center;line-height:1.4;min-height:16px;}
 .br .hint b{color:var(--ink);}
+.br .gsp{color:var(--sp);} .br .ghe{color:var(--he);} .br .gdi{color:var(--di);} .br .gcl{color:var(--cl);}
+.br .lrn-l-mod{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:3px;}
+.br .lrn-l-body{margin:8px 0 4px;}
+.br .lrn-l-para{font-size:12px;line-height:1.62;color:var(--ink);margin:0 0 10px;}
+.br .lrn-xref{color:var(--rule);border-bottom:1px dotted var(--rule);cursor:pointer;font-style:italic;}
+.br .lrn-nav{display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--line2);padding-top:10px;}
+.br .lrn-nav-b{flex:1;font:inherit;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--ink);background:transparent;border:1px solid var(--line);padding:8px 10px;cursor:pointer;text-align:left;line-height:1.3;}
+.br .lrn-nav-b.right{text-align:right;}
+.br .lrn-nav-b:disabled{opacity:0;cursor:default;}
+.br .lrn-hist{display:flex;gap:2px;margin-right:8px;}
+.br .lrn-hb{font:inherit;font-size:16px;line-height:1;font-weight:700;width:26px;height:24px;padding:0;color:var(--ink);background:transparent;border:1px solid var(--line);cursor:pointer;}
+.br .lrn-hb:disabled{opacity:.3;cursor:default;}
 .br .teachbox{border:1px solid var(--purple);background:var(--line2);padding:9px 11px;display:flex;gap:9px;align-items:flex-start;}
 .br .teachbox .tb-tag{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple);font-weight:700;padding-top:2px;flex:0 0 auto;}
 .br .teachbox .tb-txt{font-size:11px;line-height:1.55;color:var(--ink);}
@@ -3373,9 +4758,10 @@ const THEME_CSS=`
 .br .mcard{width:19px;height:23px;border-radius:3px;background:#f7f4ea;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.4);}
 .br .mcard.empty{background:transparent;box-shadow:none;border:1px dashed var(--line2);}
 .br .mcard.win{outline:2px solid var(--green);outline-offset:1px;}
-.br .mcard .mr{font-size:9px;font-weight:800;color:#1a1a1a;}
-.br .mcard .ms{font-size:8px;color:#1a1a1a;margin-top:.5px;}
-.br .mcard .mr.red,.br .mcard .ms.red{color:#c62828;}
+.br .mcard .mr{font-size:9px;font-weight:800;color:inherit;}
+.br .mcard .ms{font-size:8px;color:inherit;margin-top:.5px;}
+.br .mcard{color:#1a1a1a;}
+.br .mcard.gsp{color:#1c6fd4;} .br .mcard.ghe{color:#b3232a;} .br .mcard.gdi{color:#b8860b;} .br .mcard.gcl{color:#1c7a3f;}
 .br .mt-seat{font-size:7.5px;letter-spacing:.04em;color:var(--dim);font-weight:700;}
 .br .mt-seat.win{color:var(--green);}
 /* your-turn hint */
@@ -3422,7 +4808,10 @@ const THEME_CSS=`
 .br .lrn-acall .b{font-weight:800;color:var(--ink);} .br .lrn-acall .b.red{color:var(--pink);}
 .br .lrn-yourhand-l,.br .lrn-prompt{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:14px 0 6px;}
 .br .lrn-prompt{color:var(--ink);font-size:14px;letter-spacing:0;text-transform:none;font-weight:700;margin:16px 0 10px;}
-.br .lrn-hand{display:flex;flex-direction:column;gap:4px;padding:10px;border:1px solid var(--line2);border-radius:10px;background:rgba(0,0,0,.14);}
+.br .lrn-scenario{color:var(--ink);font-size:13px;line-height:1.5;background:var(--panel,rgba(255,255,255,.04));border-left:2px solid var(--line);padding:10px 12px;border-radius:6px;margin:12px 0 4px;}
+.br .lrn-hand{padding:8px 6px;border:1px solid var(--line2);border-radius:10px;background:rgba(0,0,0,.14);}
+.br .lrn-decldummy{display:flex;flex-direction:column;gap:2px;}
+.br .lrn-decldummy .lrn-yourhand-l:first-of-type{margin-top:4px;}
 .br .lrn-suit{display:flex;gap:3px;flex-wrap:wrap;}
 .br .lrn-choices{display:flex;flex-wrap:wrap;gap:8px;}
 .br .lrn-choice{font:inherit;font-size:15px;font-weight:800;min-width:52px;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;}
@@ -3548,19 +4937,29 @@ function partnerProfile(calls, dealer, seat){
   if(prof.pointsMin>prof.pointsMax) prof.pointsMin=Math.max(0,prof.pointsMax-3);
   return prof;
 }
-function drawerCardRead(before, card, seat, ledSuit, trump){
+const PLAY_TAG = {
+  F_ATT_HI:"attitude signal (encouraging)", F_ATT_LO:"attitude signal (discouraging)",
+  F_CNT_HI:"count signal (even)", F_CNT_LO:"count signal (odd)",
+  F_COVER:"cover an honour", F_HOLDUP:"hold-up", F_DUCK_HOLDUP:"defensive hold-up", F_HOLDUP_WIN:"win to strand", F_3RD_HIGH:"third hand high", F_FINESSE_WIN:"finesse",
+  DECL_UNBLOCK:"unblock",   F_SPLIT:"split honours",   F_WIN_CHEAP:"wins cheaply", F_DUCK_PARTNER:"low \u2014 partner is winning", F_2ND_LOW:"second hand low",
+  F_CANT:"low", DECL_DRAW:"drawing trumps", DECL_CASH:"cashing a winner", DECL_FINESSE:"finesse",
+  DECL_RUFF:"setting up a ruff", DECL_RUFF_FIRST:"ruff before drawing", DECL_CROSS:"crossing to finesse",
+  DECL_ESTABLISH:"establishing a suit", RUFF:"ruff", DISCARD:"discard",
+  LEAD_SEQ:"top of a sequence", LEAD_4TH:"fourth best", LEAD_ACE:"ace lead", LEAD_LOW:"low lead", D_CONTINUE:"reading partner — continue their suit", D_RETURN:"return partner's suit", D_ROLLOUT:"rollout-chosen switch", ONLY:"forced",
+};
+function drawerCardRead(before, card, seat, ledSuit, trump, why){
   const nm=card.rank+SUIT_GLYPH[card.suit];
-  if(before.length===0) return {who:seat, text:"leads "+nm, win:true, kind:"lead"};
+  const tag = why && PLAY_TAG[why.code] ? " \u2014 "+PLAY_TAG[why.code] : "";
+  if(before.length===0) return {who:seat, text:"leads "+nm+tag, win:true, kind:"lead"};
   const cards=[...before.map(t=>({rank:t.card.rank,suit:t.card.suit,player:t.seat})),{rank:card.rank,suit:card.suit,player:seat}];
   const rr=ENG.resolveTrick(cards, ledSuit, trump); const win=rr.winner===seat;
-  if(card.suit===ledSuit) return {who:seat, text:"follows with "+nm+(win?" \u2014 winning":""), win, kind:"follow"};
-  if(trump!=="NT" && card.suit===trump) return {who:seat, text:"ruffs with "+nm+(win?" \u2014 winning":""), win, kind:"ruff"};
-  return {who:seat, text:"discards "+nm, win:false, kind:"discard"};
+  if(card.suit===ledSuit) return {who:seat, text:"follows with "+nm+(win?" \u2014 winning":"")+tag, win, kind:"follow"};
+  if(trump!=="NT" && card.suit===trump) return {who:seat, text:"ruffs with "+nm+(win?" \u2014 winning":"")+tag, win, kind:"ruff"};
+  return {who:seat, text:"discards "+nm+tag, win:false, kind:"discard"};
 }
 function MiniCard({card, win}){
   if(!card) return <div className="mcard empty"/>;
-  const red=card.suit==="H"||card.suit==="D";
-  return <div className={"mcard"+(win?" win":"")}><span className={"mr"+(red?" red":"")}>{card.rank}</span><span className={"ms"+(red?" red":"")}>{SUIT_GLYPH[card.suit]}</span></div>;
+  return <div className={"mcard "+suitColorClass(card.suit)+(win?" win":"")}><span className="mr">{card.rank}</span><span className="ms">{SUIT_GLYPH[card.suit]}</span></div>;
 }
 function MiniTrick({t, focus}){
   const bottom=focus, top=partnerOf(focus), left=nextSeat(focus), right=(focus+3)%4;
@@ -3615,12 +5014,12 @@ function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
     rows.push(<div key="ph" className="dl-head">The play</div>);
     for(const t of th){
       let before=[]; const lines=[];
-      for(const tc of t.trick){ const r=drawerCardRead(before,tc.card,tc.seat,t.ledSuit,t.trump); lines.push(r); before=[...before,tc]; }
+      for(const tc of t.trick){ const r=drawerCardRead(before,tc.card,tc.seat,t.ledSuit,t.trump,tc.why); lines.push(r); before=[...before,tc]; }
       rows.push(
         <div key={"t"+t.num} className="dl-trick">
           <MiniTrick t={t} focus={focus}/>
           <div className="dl-trick-body">
-            {lines.map((r,j)=><div key={j} className={"dl-play "+sideCls(r.who)+(r.win?" win":"")}><span className="dl-seat sm">{SEAT_ABBR[r.who]}</span>{r.text}</div>)}
+            {lines.map((r,j)=><div key={j} className={"dl-play "+sideCls(r.who)+(r.win?" win":"")}><span className="dl-seat sm">{SEAT_ABBR[r.who]}</span>{link(r.text)}</div>)}
             <div className="dl-trick-sum">{SEAT_NAME[t.winner]} wins trick {t.num}.</div>
           </div>
         </div>
@@ -3629,12 +5028,12 @@ function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
     if(s.trick && s.trick.length){
       let before=[]; const lines=[];
       const ledSuit=s.ledSuit||(s.trick[0]&&s.trick[0].card.suit);
-      for(const tc of s.trick){ const r=drawerCardRead(before,tc.card,tc.seat,ledSuit,s.trump); lines.push(r); before=[...before,tc]; }
+      for(const tc of s.trick){ const r=drawerCardRead(before,tc.card,tc.seat,ledSuit,s.trump,tc.why); lines.push(r); before=[...before,tc]; }
       rows.push(
         <div key="curtrick" className="dl-trick live">
           <div className="dl-trick-body">
             <div className="dl-live-h">In progress</div>
-            {lines.map((r,j)=><div key={j} className={"dl-play "+sideCls(r.who)+(r.win?" win":"")}><span className="dl-seat sm">{SEAT_ABBR[r.who]}</span>{r.text}</div>)}
+            {lines.map((r,j)=><div key={j} className={"dl-play "+sideCls(r.who)+(r.win?" win":"")}><span className="dl-seat sm">{SEAT_ABBR[r.who]}</span>{link(r.text)}</div>)}
           </div>
         </div>
       );
@@ -3647,6 +5046,34 @@ function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
         <div className="dl-hint-b">{link(sug.text)}</div>
       </div>
     );
+  }
+  const grades=s.grades||{};
+  const gkeys=Object.keys(grades).sort((a,b)=>(+a.split(".").pop())-(+b.split(".").pop()));
+  if(gkeys.length){
+    const gl=(k)=>{ if(!k) return ""; const i=k.lastIndexOf("."); return k.slice(0,i)+(SUIT_GLYPH[k.slice(i+1)]||k.slice(i+1)); };
+    rows.push(<div key="gh" className="dl-head">Card-play grades</div>);
+    for(const mk of gkeys){
+      const g=grades[mk]; if(!g) continue;
+      const trickNo=(+mk.split(".").pop())+1;
+      const role=g.role==="defender"?"Defence":"Declarer";
+      const accent=g.points>=95?"#3aa657":(g.points>=70?"#c79a2e":"#c0503f");
+      const runners=(g.ranked||[]).slice(0,4);
+      rows.push(
+        <div key={"g"+mk} style={{margin:"6px 0",padding:"7px 9px",borderRadius:8,background:"rgba(127,127,127,0.08)",borderLeft:"3px solid "+accent}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:11,opacity:0.8}}>
+            <span>{role} · trick {trickNo}{g.best_tag?<span style={{marginLeft:6,padding:"1px 6px",borderRadius:10,background:"rgba(127,127,127,0.20)",fontSize:10}}>{g.best_tag}</span>:null}</span><b style={{color:accent}}>{g.points}/100</b>
+          </div>
+          <div style={{fontSize:12,marginTop:3,lineHeight:1.45}}>
+            {g.played_in_equiv
+              ? <span>Led {gl(g.played)} — <b>sound</b>.</span>
+              : <span>Led {gl(g.played)}; best {gl(g.best_named||g.best)}.</span>}
+            {g.best_why ? <div style={{opacity:0.78,marginTop:2}}>{link(g.best_why)}</div> : null}
+            {runners.length>1 ? <div style={{opacity:0.6,marginTop:2}}>Equal options: {runners.map(gl).join("  ")}</div> : null}
+            {g.needs_clairvoyance ? <div style={{opacity:0.55,marginTop:2,fontStyle:"italic"}}>double-dummy best needs clairvoyance</div> : null}
+          </div>
+        </div>
+      );
+    }
   }
   if(!rows.length) rows.push(<div key="empty" className="dl-empty">The running commentary appears here as the deal unfolds — every call and card, what it shows, and what we can deduce about partner's hand.</div>);
   return (
@@ -3684,19 +5111,8 @@ class UIErrorBoundary extends React.Component{
    ====================================================================== */
 function dwCallKey(c){ return c.k==="B" ? "B"+c.level+c.strain : c.k; }
 function LearnHand({hand}){
-  const by={S:[],H:[],D:[],C:[]};
-  (hand||[]).forEach(c=>by[c.suit].push(c));
-  const order=["S","H","D","C"];
-  for(const s of order) by[s].sort((a,b)=>ENG.RANKVAL[b.rank]-ENG.RANKVAL[a.rank]);
-  return (
-    <div className="lrn-hand">
-      {order.map(s=> by[s].length ? (
-        <div key={s} className="lrn-suit">
-          {by[s].map(c=><span key={c.id} className="lrn-card"><Card c={c} small/></span>)}
-        </div>
-      ) : null)}
-    </div>
-  );
+  const cards=sortHandDisplay(hand||[]);
+  return <div className="lrn-hand"><div className="hand">{cards.map(c=><Card key={c.id} c={c} small/>)}</div></div>;
 }
 function AuctionStrip({calls, dealer}){
   if(!calls || !calls.length) return null;
@@ -3707,6 +5123,17 @@ function AuctionStrip({calls, dealer}){
           <span className="s">{SEAT_ABBR[c.by]}</span><span className={"b"+((c.k==="B"&&(c.strain==="H"||c.strain==="D"))?" red":"")}>{callLabel(c)}</span>
         </span>
       ))}
+    </div>
+  );
+}
+function DeclarerDummy({declHand, dummyHand, contractLabel}){
+  return (
+    <div className="lrn-decldummy">
+      {contractLabel && <div className="lrn-contract">Contract: <b>{contractLabel}</b> — you are declarer (South)</div>}
+      <div className="lrn-yourhand-l">Dummy (North)</div>
+      <LearnHand hand={dummyHand}/>
+      <div className="lrn-yourhand-l">Your hand (South, declarer)</div>
+      <LearnHand hand={declHand}/>
     </div>
   );
 }
@@ -3721,10 +5148,11 @@ function DrillRunner({lesson, onBack, onTapTerm}){
   if(!drill || !drill.ok){
     return <div className="lrn-drill"><div className="lrn-fail">This drill couldn't be generated just now.</div><button className="lrn-btn" onClick={next}>Try again</button><button className="lrn-btn ghost" onClick={onBack}>Back</button></div>;
   }
-  const isEval=drill.kind==="eval", isLead=drill.kind==="lead";
+  const isEval=drill.kind==="eval", isLead=drill.kind==="lead", isConcept=drill.kind==="concept", isDecl=drill.kind==="declcount";
+  const isMC=isEval||isConcept||isDecl;   // multiple-choice kinds share {label,correct} choices
   // correctness + reveal data per kind
   let choices, isCorrect, correctLabel, whyText, prompt;
-  if(isEval){
+  if(isMC){
     choices=drill.choices; prompt=drill.prompt; correctLabel=drill.answerLabel; whyText=drill.why;
     isCorrect=(ch)=>!!ch.correct;
   } else if(isLead){
@@ -3736,8 +5164,8 @@ function DrillRunner({lesson, onBack, onTapTerm}){
     isCorrect=(ch)=>dwCallKey(ch)===dwCallKey(drill.answer);
   }
   const choose=(ch)=>{ if(pick) return; setPick(ch); setScore(s=>({c:s.c+(isCorrect(ch)?1:0),n:s.n+1})); };
-  const chLabel=(ch)=> isEval?ch.label : isLead?(ch.rank+SUIT_GLYPH[ch.suit]) : callLabel(ch);
-  const chKey=(ch,i)=> isEval?("e"+i) : isLead?(ch.rank+ch.suit) : dwCallKey(ch);
+  const chLabel=(ch)=> isMC?ch.label : isLead?(ch.rank+SUIT_GLYPH[ch.suit]) : callLabel(ch);
+  const chKey=(ch,i)=> isMC?("e"+i) : isLead?(ch.rank+ch.suit) : dwCallKey(ch);
   const picked = pick!=null;
   const gotIt = picked && isCorrect(pick);
   return (
@@ -3747,10 +5175,11 @@ function DrillRunner({lesson, onBack, onTapTerm}){
         <span className="lrn-score num">{score.c}/{score.n}</span>
       </div>
       {isLead && drill.contract && <div className="lrn-contract">Contract: <b>{drill.contract.level}{STRAIN_GLYPH[drill.contract.strain]}</b> by {SEAT_NAME[drill.contract.declarer]} — you're on lead</div>}
-      {!isEval && <AuctionStrip calls={drill.calls} dealer={drill.dealer}/>}
-      <div className="lrn-yourhand-l">Your hand (South)</div>
-      <LearnHand hand={drill.southHand}/>
-      <div className="lrn-prompt">{prompt}</div>
+      {drill.calls && <AuctionStrip calls={drill.calls} dealer={drill.dealer}/>}
+      {drill.southHand && <><div className="lrn-yourhand-l">Your hand (South)</div><LearnHand hand={drill.southHand}/></>}
+      {drill.declHand && <DeclarerDummy declHand={drill.declHand} dummyHand={drill.dummyHand} contractLabel={drill.contractLabel}/>}
+      {drill.scenario && <div className="lrn-scenario">{link(drill.scenario)}</div>}
+      <div className="lrn-prompt">{link(prompt)}</div>
       <div className={"lrn-choices"+(isLead?" cards":"")}>
         {choices.map((ch,i)=>{
           const mine=picked && chKey(pick)===chKey(ch,i);
@@ -3769,39 +5198,90 @@ function DrillRunner({lesson, onBack, onTapTerm}){
     </div>
   );
 }
-function LessonPage({lesson, onBack, onTapTerm}){
+/* Long-form lesson text ("the textbook") is fetched at runtime from bridge-teaching.json
+   under the "lessons" key, keyed by lesson id. Until it loads (or in the artifact preview, where
+   there is no JSON to fetch), LessonPage falls back to the short `teach` note. Keeping the prose
+   out of this file keeps the app lean; the JSON is the source of truth for lesson content. */
+function getLessonText(id){
+  return (typeof window!=="undefined" && window.BRIDGE_TEACHING && window.BRIDGE_TEACHING.lessons
+    && window.BRIDGE_TEACHING.lessons[id]) || null;
+}
+
+/* Flat, ordered index across all modules — for prev/next navigation and cross-refs. */
+const LESSON_FLAT = CURRICULUM.flatMap(m => m.lessons.map(l => ({ ...l, module: m.module })));
+const LESSON_BY_ID = Object.fromEntries(LESSON_FLAT.map(l => [l.id, l]));
+
+/* Render lesson body: paragraphs, [[id]] cross-reference links, glossary + suit colour. */
+function renderLessonBody(text, gloss, onTapTerm, onNavId){
+  return String(text).split(/\n\n+/).map((para, pi) => {
+    const parts=[]; let last=0, m, i=0; const re=/\[\[([a-z0-9-]+)\]\]/gi;
+    while((m=re.exec(para))){
+      if(m.index>last) parts.push(...linkifyGlossary(para.slice(last,m.index), gloss, onTapTerm));
+      const id=m[1], les=LESSON_BY_ID[id];
+      parts.push(<span key={"x"+pi+"-"+(i++)} className="lrn-xref" onClick={(e)=>{e.stopPropagation(); onNavId && onNavId(id);}}>{les?les.title:id}</span>);
+      last=m.index+m[0].length;
+    }
+    if(last<para.length) parts.push(...linkifyGlossary(para.slice(last), gloss, onTapTerm));
+    return <p key={pi} className="lrn-l-para">{parts}</p>;
+  });
+}
+
+function LessonPage({lesson, onBack, onTapTerm, onNav, onNavId}){
   const [drilling,setDrilling]=React.useState(false);
   const gloss=getGlossary();
   const bookRef = lesson.ch ? ("Standard Bidding with SAYC — ch. "+lesson.ch) : null;
+  const idx = LESSON_FLAT.findIndex(l=>l.id===lesson.id);
+  const prev = idx>0 ? LESSON_FLAT[idx-1] : null;
+  const next = idx>=0 && idx<LESSON_FLAT.length-1 ? LESSON_FLAT[idx+1] : null;
+  const body = getLessonText(lesson.id);
   if(drilling) return <DrillRunner lesson={lesson} onBack={()=>setDrilling(false)} onTapTerm={onTapTerm}/>;
   return (
     <div className="lrn-lesson">
       <button className="lrn-back" onClick={onBack}>‹ all lessons</button>
+      <div className="lrn-l-mod">{lesson.module} &nbsp;·&nbsp; {idx+1} / {LESSON_FLAT.length}</div>
       <h3 className="lrn-l-title">{lesson.title}</h3>
       {bookRef && <div className="lrn-l-ref">{bookRef}</div>}
-      <p className="lrn-l-teach">{linkifyGlossary(lesson.teach, gloss, onTapTerm)}</p>
+      {body
+        ? <div className="lrn-l-body">{renderLessonBody(body, gloss, onTapTerm, onNavId)}</div>
+        : <p className="lrn-l-teach">{linkifyGlossary(lesson.teach, gloss, onTapTerm)}</p>}
       {lesson.drill
         ? <button className="lrn-btn big" onClick={()=>setDrilling(true)}>Practice this ›</button>
-        : <div className="lrn-teachonly">This is a concept lesson — read and absorb; there's no single-answer drill for it.</div>}
+        : <div className="lrn-teachonly">A concept lesson — read and absorb; there's no single-answer drill for it.</div>}
+      <div className="lrn-nav">
+        <button className="lrn-nav-b" disabled={!prev} onClick={()=>prev&&onNav(-1)}>{prev? "‹ "+prev.title : ""}</button>
+        <button className="lrn-nav-b right" disabled={!next} onClick={()=>next&&onNav(1)}>{next? next.title+" ›" : ""}</button>
+      </div>
     </div>
   );
 }
 function LearnScreen({onClose}){
-  const [sel,setSel]=React.useState(null);       // selected lesson
+  const [nav,setNav]=React.useState({stack:[], pos:-1});   // browser-style visit history
   const [glossTerm,setGlossTerm]=React.useState(null);
   const [showGloss,setShowGloss]=React.useState(false);
   const onTapTerm=(t)=>{ setGlossTerm(t); setShowGloss(true); };
+  const sel = nav.pos>=0 ? LESSON_BY_ID[nav.stack[nav.pos]] : null;
+  const canBack = nav.pos>0, canFwd = nav.pos < nav.stack.length-1;
+  const go   = (id)=>{ if(!LESSON_BY_ID[id]) return; setNav(n=>{ const stack=n.stack.slice(0,n.pos+1); stack.push(id); return {stack, pos:stack.length-1}; }); };
+  const back = ()=> setNav(n=> n.pos>0 ? {...n, pos:n.pos-1} : n);
+  const fwd  = ()=> setNav(n=> n.pos<n.stack.length-1 ? {...n, pos:n.pos+1} : n);
+  const toList = ()=> setNav({stack:[], pos:-1});
   const drillableCount=CURRICULUM.reduce((n,m)=>n+m.lessons.filter(l=>l.drill).length,0);
   const total=CURRICULUM.reduce((n,m)=>n+m.lessons.length,0);
   return (
     <div className="lrn-overlay">
       <div className="lrn-top">
+        {sel && <div className="lrn-hist">
+          <button className="lrn-hb" disabled={!canBack} onClick={back} title="Back">‹</button>
+          <button className="lrn-hb" disabled={!canFwd} onClick={fwd} title="Forward">›</button>
+        </div>}
         <span className="lrn-title">LEARN&nbsp;·&nbsp;SAYC</span>
         <button className="dl-x" onClick={onClose}>×</button>
       </div>
       <div className="lrn-scroll">
         {sel ? (
-          <LessonPage lesson={sel} onBack={()=>setSel(null)} onTapTerm={onTapTerm}/>
+          <LessonPage lesson={sel} onBack={toList} onTapTerm={onTapTerm}
+            onNav={(d)=>{ const i=LESSON_FLAT.findIndex(l=>l.id===sel.id); const j=i+d; if(j>=0&&j<LESSON_FLAT.length) go(LESSON_FLAT[j].id); }}
+            onNavId={(id)=>go(id)}/>
         ) : (
           <>
             <div className="lrn-intro">{total} lessons across {CURRICULUM.length} modules · {drillableCount} with live practice drills. Tap a lesson to read it; drillable lessons let you practice against the bidding engine.</div>
@@ -3809,7 +5289,7 @@ function LearnScreen({onClose}){
               <div key={mi} className="lrn-module">
                 <div className="lrn-mod-h">{m.module}</div>
                 {m.lessons.map(l=>(
-                  <button key={l.id} className="lrn-lrow" onClick={()=>setSel(l)}>
+                  <button key={l.id} className="lrn-lrow" onClick={()=>go(l.id)}>
                     <span className="lrn-lrow-t">{l.title}</span>
                     {l.drill ? <span className="lrn-badge drill">drill</span> : <span className="lrn-badge read">read</span>}
                   </button>
@@ -3825,6 +5305,13 @@ function LearnScreen({onClose}){
 }
 
 
+/* ===== inlined grader.worker.js (self-contained module worker; instantiated via a Blob URL below) =====
+ * GENERATED from the parity-verified grader core (grader.worker.js). It loads bridge-dds from
+ * https://esm.sh/bridge-dds@1.4.0 on first use; if that fails (offline / CSP) it silently falls back to
+ * the pure-JS endgame solver inlined inside it. Grading is a pure guarded side-effect and never touches
+ * game state or card legality. Do not hand-edit; regenerate from the grader package if the core changes. */
+const GRADER_WORKER_SRC = "/* grader.worker.js \u2014 off-main-thread declarer-play grader (SELF-CONTAINED; deploy next to index.html).\n * Loads bridge-dds (full-hand double-dummy) from a CDN; if that fails (offline) falls back to the inlined\n * pure-JS solver for the endgame regime. Purely additive: only ever returns display annotations.\n * GENERATED by build_grd_inline.js from the parity-verified grader core \u2014 do not edit by hand. */\nconst GRD = (function(){\n  const SAMP = (function(){\n/* sampler.js \u2014 inference-aware (belief-weighted) sampling of the hidden defender hands (port of belief.py).\n *\n * Splits the unseen cards between two defenders under a belief model constrained by (a) the AUCTION\n * (per-seat HCP window + suit-length floors) and (b) the PLAY (showout voids + cards already played).\n *\n * DESIGN PRINCIPLE (inherited from belief.py / auction.js): constraints may only ever HELP or NO-OP,\n * never hang and never corrupt. Voids are enforced structurally; auction constraints by\n * rejection-with-a-retry-cap that falls back to an unconstrained split if the budget is exhausted.\n *\n * PORTABILITY: belief.py shuffles with Python's Mersenne RNG, which cannot run on-phone. This port takes\n * an injected `rng` (a () -> float in [0,1), e.g. mulberry32 \u2014 the same family used for deal generation)\n * and shuffles with the identical Fisher-Yates used by playlib.seededDeck. Driving belief.py with the\n * SAME mulberry32 + Fisher-Yates makes the two bit-identical (see sampler_parity.js). This is the whole\n * point of the port: same sampling POLICY, a portable RNG.\n *\n * Card shape: { rank, suit, ... } with rank in \"2\"..\"10\",\"J\",\"Q\",\"K\",\"A\"; suit in \"S\",\"H\",\"D\",\"C\".\n */\n\nconst HCPV = { A: 4, K: 3, Q: 2, J: 1 };\nconst SUITS = [\"S\", \"H\", \"D\", \"C\"];\n\n/* seeded RNG (mulberry32) \u2014 bit-identical to playlib.js / ddpar.mulberry32 for the same seed. */\nfunction mulberry32(seed) {\n  let a = seed >>> 0;\n  return function () {\n    a |= 0; a = (a + 0x6D2B79F5) | 0;\n    let t = Math.imul(a ^ (a >>> 15), 1 | a);\n    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;\n    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;\n  };\n}\n\n/* Fisher-Yates identical to playlib.seededDeck: for i=len-1..1, j=(rng()*(i+1))|0, swap. In place. */\nfunction fyShuffle(list, rng) {\n  for (let i = list.length - 1; i > 0; i--) {\n    const j = (rng() * (i + 1)) | 0;\n    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;\n  }\n  return list;\n}\n\nfunction hcp(cards) {\n  let h = 0;\n  for (const c of cards) h += HCPV[c.rank] || 0;\n  return h;\n}\nfunction suitLen(cards, s) {\n  let n = 0;\n  for (const c of cards) if (c.suit === s) n += 1;\n  return n;\n}\n\n/* Does a candidate ORIGINAL holding satisfy an auction constraint {hcpMin,hcpMax,suitMin,suitMax?}. */\nfunction handOk(originalCards, con) {\n  if (con === null || con === undefined) return true;\n  const h = hcp(originalCards);\n  if (h < (con.hcpMin ?? 0) || h > (con.hcpMax ?? 37)) return false;\n  const smin = con.suitMin || {};\n  for (const s of SUITS) {\n    if (suitLen(originalCards, s) < (smin[s] || 0)) return false;\n  }\n  const smax = con.suitMax; // optional; deriveConstraints doesn't emit it yet\n  if (smax) {\n    for (const s of SUITS) {\n      if (suitLen(originalCards, s) > (smax[s] ?? 13)) return false;\n    }\n  }\n  return true;\n}\n\nfunction _unconstrained(pool, n0, rng) {\n  const p = pool.slice();\n  fyShuffle(p, rng);\n  return [p.slice(0, n0), p.slice(n0)];\n}\n\n/* Deal `pool` between two defenders under a belief model. Faithful port of belief.sample_split.\n *\n * pool   : array of unseen cards to distribute\n * n0     : number of cards the FIRST defender still holds (second gets pool.length - n0)\n * cons   : [con_def0, con_def1] auction constraints on each defender's ORIGINAL hand, or [null,null]\n * rng    : () -> float in [0,1)\n * opts.voids  : [set_def0, set_def1] suits each defender is known void in; optional\n * opts.played : [list_def0, list_def1] cards each defender has ALREADY played; optional\n * opts.tries  : rejection budget before falling back (default 200)\n *\n * Returns [cardsDef0, cardsDef1] \u2014 always a legal split of `pool` of sizes (n0, n1).\n */\nfunction sampleSplit(pool, n0, cons, rng, opts = {}) {\n  const voids = opts.voids || [new Set(), new Set()];\n  const played = opts.played || [[], []];\n  const tries = opts.tries ?? 200;\n  const n1 = pool.length - n0;\n\n  const forced0 = [], forced1 = [], free = [];\n  for (const c of pool) {\n    const s = c.suit;\n    const v0 = voids[0].has(s), v1 = voids[1].has(s);\n    if (v0 && v1) return _unconstrained(pool, n0, rng); // contradictory info -> fallback\n    if (v0) forced1.push(c);\n    else if (v1) forced0.push(c);\n    else free.push(c);\n  }\n\n  if (forced0.length > n0 || forced1.length > n1) return _unconstrained(pool, n0, rng);\n\n  const need0 = n0 - forced0.length;\n  for (let t = 0; t < tries; t++) {\n    const f = free.slice();\n    fyShuffle(f, rng);\n    const d0 = forced0.concat(f.slice(0, need0));\n    const d1 = forced1.concat(f.slice(need0));\n    const orig0 = d0.concat(played[0]);\n    const orig1 = d1.concat(played[1]);\n    if (handOk(orig0, cons[0]) && handOk(orig1, cons[1])) return [d0, d1];\n  }\n  return _unconstrained(pool, n0, rng); // budget exhausted: never hang, never corrupt\n}\n\nreturn { mulberry32, fyShuffle, hcp, suitLen, handOk, sampleSplit, HCPV, SUITS };\n\n  })();\n  const DDS = (function(){\n/* dds.js \u2014 a pure-JS EXACT double-dummy solver for on-device endgame evaluation (A2, portable half).\n *\n * Portable stand-in for the ONE non-portable grader piece. A WASM DDS (Bo Haglund lineage) can later\n * replace it for full-hand speed; this JS solver is exact and near-instant for the ENDGAME-exact regime\n * the architecture calls out (few cards left -> one exact solve, no sampling), and doubles as the\n * reference oracle any WASM drop-in is validated against.\n *\n * solveLead(hands, trump, leader) reproduces endplay solve_board EXACTLY: for every legal card the\n * `leader` can play from an ON-LEAD position (trick empty), the tricks the LEADER'S SIDE takes with\n * double-dummy play by both sides.\n *\n * Exactness-preserving speedups: (1) EQUIVALENT-CARD COLLAPSING \u2014 cards in a run with no opponent card\n * between them are double-dummy identical, so only one representative is searched (its value is copied to\n * the whole class); (2) a bound-aware TRANSPOSITION TABLE at trick boundaries (alpha-beta with memory).\n * Both are exact; the parity gate (dds_parity.js vs endplay) proves it.\n *\n * hands  : [seat0..seat3], each [{rank,suit}]  (seats 0=S,1=W,2=N,3=E; sideOf = seat%2)\n * trump  : \"S\"|\"H\"|\"D\"|\"C\"|\"NT\" ; leader : seat on lead\n */\nconst RANKS = [\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\",\"J\",\"Q\",\"K\",\"A\"];\nconst SUITS = [\"S\",\"H\",\"D\",\"C\"];\nconst R_IDX = Object.fromEntries(RANKS.map((r,i)=>[r,i]));\nconst S_IDX = { S:0, H:1, D:2, C:3 };\nconst sideOf = (seat)=> seat & 1;\n\nfunction toMasks(hands){\n  const m=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];\n  for(let s=0;s<4;s++) for(const c of hands[s]) m[s][S_IDX[c.suit]] |= (1<<R_IDX[c.rank]);\n  return m;\n}\n\nfunction trickWinner(plays, ledSuitIdx, trumpIdx){\n  let win=plays[0], winTrump=(S_IDX[win.suit]===trumpIdx);\n  for(let i=1;i<4;i++){\n    const p=plays[i], si=S_IDX[p.suit], isT=(si===trumpIdx);\n    if(isT && !winTrump){ win=p; winTrump=true; }\n    else if(isT && winTrump){ if(R_IDX[p.rank]>R_IDX[win.rank]) win=p; }\n    else if(!isT && !winTrump && si===ledSuitIdx){ if(R_IDX[p.rank]>R_IDX[win.rank]) win=p; }\n  }\n  return win.seat;\n}\n\n// Equivalence classes for a suit: ranks with no OTHER remaining card strictly between them collapse.\n// mineS, unionS: 13-bit masks. Returns [{rep, members:[rankIdx desc]}], classes ordered rank-desc.\nfunction suitClasses(mineS, unionS){\n  const ranks=[]; let m=mineS; while(m){ const b=m&-m; ranks.push(31-Math.clz32(b)); m^=b; }\n  ranks.sort((a,b)=>b-a);\n  const classes=[];\n  for(const r of ranks){\n    if(classes.length){\n      const prev=classes[classes.length-1];\n      const low=prev.members[prev.members.length-1];  // lowest rank so far in this class\n      let between=0;\n      for(let t=r+1;t<low;t++){ if((unionS>>t)&1){ between=1; break; } }\n      if(!between){ prev.members.push(r); continue; }\n    }\n    classes.push({ members:[r] });\n  }\n  for(const c of classes) c.rep=c.members[0];\n  return classes;\n}\n\n// Representative legal plays [suitIdx, rankIdx] for `toPlay` (collapsed). ledSuit=-1 => any.\n// `trick` = cards already on the CURRENT incomplete trick; their ranks must count in the between-test,\n// because a played intermediate card can split two of a hand's cards (one beats it, one doesn't).\nfunction repPlays(masks, toPlay, ledSuit, trick){\n  const union=[\n    masks[0][0]|masks[1][0]|masks[2][0]|masks[3][0],\n    masks[0][1]|masks[1][1]|masks[2][1]|masks[3][1],\n    masks[0][2]|masks[1][2]|masks[2][2]|masks[3][2],\n    masks[0][3]|masks[1][3]|masks[2][3]|masks[3][3],\n  ];\n  if(trick) for(const p of trick) union[S_IDX[p.suit]] |= (1<<R_IDX[p.rank]);\n  const mine=masks[toPlay];\n  const suits = (ledSuit>=0 && mine[ledSuit]) ? [ledSuit] : [0,1,2,3];\n  const out=[];\n  for(const s of suits){\n    if(!mine[s]) continue;\n    for(const c of suitClasses(mine[s], union[s])) out.push([s, c.rep]);\n  }\n  return out;\n}\n\n// bound-aware transposition table entry: {lo, hi}\nfunction solveNode(masks, toPlay, trick, ledSuit, trumpIdx, maxSide, alpha, beta, tt){\n  let empty=true;\n  for(let s=0;s<4 && empty;s++) for(let su=0;su<4;su++) if(masks[s][su]){ empty=false; break; }\n  if(empty && trick.length===0) return 0;\n\n  // TT only at trick boundaries (trick empty): key on masks + toPlay\n  let memoKey=null;\n  if(trick.length===0 && !global.__DDS_NOTT){\n    memoKey = toPlay+\"|\"+masks[0].join(\",\")+\"|\"+masks[1].join(\",\")+\"|\"+masks[2].join(\",\")+\"|\"+masks[3].join(\",\");\n    const e=tt.get(memoKey);\n    if(e){\n      if(e.lo>=beta) return e.lo;\n      if(e.hi<=alpha) return e.hi;\n      if(e.lo===e.hi) return e.lo;\n      if(e.lo>alpha) alpha=e.lo;\n      if(e.hi<beta)  beta=e.hi;\n    }\n  }\n  const a0=alpha, b0=beta;\n\n  const isMax=(sideOf(toPlay)===maxSide);\n  const legal=repPlays(masks, toPlay, trick.length? ledSuit : -1, trick);\n  let best= isMax? -1 : 99;\n\n  for(const [su,ri] of legal){\n    masks[toPlay][su] ^= (1<<ri);\n    trick.push({ seat:toPlay, suit:SUITS[su], rank:RANKS[ri] });\n    let val;\n    if(trick.length===4){\n      const winner=trickWinner(trick, (trick.length>1? ledSuit : su), trumpIdx);\n      const credit=(sideOf(winner)===maxSide)?1:0;\n      val = credit + solveNode(masks, winner, [], -1, trumpIdx, maxSide, alpha-credit, beta-credit, tt);\n    } else {\n      const nextLed=(trick.length>1? ledSuit : su);\n      val = solveNode(masks, (toPlay+1)%4, trick, nextLed, trumpIdx, maxSide, alpha, beta, tt);\n    }\n    trick.pop();\n    masks[toPlay][su] ^= (1<<ri);\n\n    if(isMax){ if(val>best) best=val; if(best>alpha) alpha=best; }\n    else     { if(val<best) best=val; if(best<beta)  beta=best; }\n    if(alpha>=beta) break;\n  }\n\n  if(memoKey!==null){\n    // store bound with flag semantics\n    let lo=-1, hi=99;\n    if(best<=a0) hi=best;          // fail-low -> upper bound\n    else if(best>=b0) lo=best;     // fail-high -> lower bound\n    else { lo=best; hi=best; }     // exact\n    const prev=tt.get(memoKey);\n    if(prev){ lo=Math.max(lo,prev.lo); hi=Math.min(hi,prev.hi); }\n    tt.set(memoKey, {lo,hi});\n  }\n  return best;\n}\n\nfunction solveLead(hands, trump, leader){\n  const trumpIdx=(trump===\"NT\")?-1:S_IDX[trump];\n  const maxSide=sideOf(leader);\n  const masks=toMasks(hands);\n  const tt=new Map();\n  const union=[\n    masks[0][0]|masks[1][0]|masks[2][0]|masks[3][0],\n    masks[0][1]|masks[1][1]|masks[2][1]|masks[3][1],\n    masks[0][2]|masks[1][2]|masks[2][2]|masks[3][2],\n    masks[0][3]|masks[1][3]|masks[2][3]|masks[3][3],\n  ];\n  const out={};\n  const mine=masks[leader];\n  for(let s=0;s<4;s++){\n    if(!mine[s]) continue;\n    for(const cls of suitClasses(mine[s], union[s])){\n      const ri=cls.rep;\n      masks[leader][s] ^= (1<<ri);\n      const trick=[{ seat:leader, suit:SUITS[s], rank:RANKS[ri] }];\n      const val=solveNode(masks,(leader+1)%4,trick,s,trumpIdx,maxSide,-1,99,tt);\n      masks[leader][s] ^= (1<<ri);\n      for(const mr of cls.members) out[`${RANKS[mr]}.${SUITS[s]}`]=val;  // copy to equivalents\n    }\n  }\n  return out;\n}\n\nfunction bestTricks(hands, trump, leader){\n  let m=-1; for(const v of Object.values(solveLead(hands,trump,leader))) if(v>m) m=v; return m;\n}\n\nreturn { RANKS, SUITS, R_IDX, S_IDX, sideOf, toMasks, trickWinner, suitClasses, repPlays, solveNode, solveLead, bestTricks };\n\n  })();\n  const GR = (function(){\n/* grader.js \u2014 the PORTABLE EV-band scoring core for the teaching layer (JS port of grader.py).\n *\n * Verbatim port of grader.py's pure scoring: payoffs (tricks / make / imp), the SD-equivalent band,\n * per-card points (full marks inside the band, decaying with EV lost), and SD-vs-DD divergence. These\n * functions are dependency-free BY DESIGN so they run identically offline (Python) and on-phone (JS).\n *\n * The ONE piece NOT ported here is `eval_card_evs` \u2014 the DDS-backed per-card sampler. On-phone that is\n * supplied by a WASM DDS module (A2); this file consumes its output (`per`, `truth`) as pure data.\n *\n * `per`   : { cardKey: [finalDeclarerTricks per sampled world] }  (>=1 world)\n * `truth` : { cardKey: finalDeclarerTricks on the TRUE layout }   (clairvoyant, for divergence)\n * cardKey : any stable string, e.g. \"A.S\" / \"10.D\" (rank '.' suit). Grader never parses it.\n *\n * PARITY NOTE: grade() reproduces CPython semantics exactly \u2014\n *   - argmax (`best`) returns the FIRST key achieving the max in `per` insertion order (strict >),\n *   - the equivalence band is a STABLE sort by descending EV (ties keep insertion order),\n *   - all float ops use IEEE-754 binary64 in the same order, so results are bit-identical to Python\n *     up to the final decimal rounding (see pyRound1, which mirrors Python's round-half-even).\n */\n\n// ---- IMP table (difference in points -> IMPs), standard ----\nconst _IMP = [20, 50, 90, 130, 170, 220, 270, 320, 370, 430, 500, 600, 750, 900, 1100, 1300, 1500, 1750, 2000, 2250, 2500, 3000, 3500, 4000];\nfunction _imps(diff) {\n  const a = Math.abs(diff);\n  let i = 0;\n  for (const th of _IMP) {\n    if (a < th) break;\n    i += 1;\n  }\n  return diff >= 0 ? i : -i;\n}\n\n// Duplicate score from declarer's side for making `tricks` in a `level`-`trump` contract.\nfunction _contractScore(tricks, need, level, trump, vul) {\n  const over = tricks - need;\n  if (over < 0) return (vul ? -200 : -100) * (-over); // undertricks (undoubled)\n  const per = (trump === \"C\" || trump === \"D\") ? 20 : 30;\n  const base = per * level + (trump === \"NT\" ? 10 : 0);\n  const game = base >= 100;\n  let bonus = game ? (vul ? 500 : 300) : 50;\n  if (level === 6) bonus += vul ? 750 : 500;\n  if (level === 7) bonus += vul ? 1500 : 1000;\n  return base + bonus + per * over;\n}\n\n// ---- PAYOFFS: final declarer trick count -> value (pure, portable) ----\nfunction payoffTricks(finals /*, need, level, trump, vul */) {\n  let s = 0;\n  for (const t of finals) s += t;\n  return s / finals.length;\n}\nfunction payoffMake(finals, need /*, level, trump, vul */) {\n  let s = 0;\n  for (const t of finals) if (t >= need) s += 1;\n  return s / finals.length;\n}\nfunction payoffImp(finals, need, level, trump, vul) {\n  const datum = _contractScore(need, need, level, trump, vul);\n  let s = 0;\n  for (const t of finals) s += _imps(_contractScore(t, need, level, trump, vul) - datum);\n  return s / finals.length;\n}\n\nconst PAYOFFS = { tricks: payoffTricks, make: payoffMake, imp: payoffImp };\nconst DEFAULT_EPS = { tricks: 0.10, make: 0.02, imp: 0.30 };  // \"equivalent\" band per payoff\nconst _SCALE = { tricks: 1.0, make: 0.20, imp: 3.0 };          // EV units per full 100->0 points swing\n\n// Canonical card order for BACKEND-INDEPENDENT tie-breaks (mirror of grader.py _canon): suit S,H,D,C then\n// rank high->low. Keys are \"rank.suit\" strings (e.g. \"10.D\",\"A.S\"). Without this, best/dd_best/equiv order\n// (hence needs_clairvoyance) would depend on the DDS card-ENUMERATION order, which differs between endplay\n// (offline) and a WASM DDS (on-phone). Ties are true EV ties; this only fixes which equal card is named.\nconst _RANKI = { \"2\":0,\"3\":1,\"4\":2,\"5\":3,\"6\":4,\"7\":5,\"8\":6,\"9\":7,\"10\":8,\"J\":9,\"Q\":10,\"K\":11,\"A\":12 };\nconst _SUITI = { S:0, H:1, D:2, C:3 };\nfunction _canonKey(k) { const i = k.lastIndexOf(\".\"); return _SUITI[k.slice(i + 1)] * 13 + (12 - _RANKI[k.slice(0, i)]); }\nfunction _canonLess(a, b) { return _canonKey(a) < _canonKey(b); }\n\n// Python round(x, 1): correctly-rounded round-HALF-TO-EVEN on the TRUE value of the double.\n// We take the EXACT decimal expansion of the double (toFixed(80): for |x| in [0,100] the expansion is\n// <= ~56 digits, so there is no cutoff rounding \u2014 the string is exact), then round the tenths digit with\n// half-to-even. This reproduces CPython's dtoa-based rounding, including traps like round(0.05,1)==0.1\n// (0.05's double is slightly ABOVE 0.05) and round(0.25,1)==0.2 (exact half -> to even).\nfunction pyRound1(x) {\n  if (!isFinite(x)) return x;\n  const neg = x < 0;\n  const a = Math.abs(x);\n  const str = a.toFixed(80);                  // exact decimal expansion for our magnitudes\n  const dot = str.indexOf(\".\");\n  const intPart = str.slice(0, dot);\n  const frac = str.slice(dot + 1);\n  const d1 = frac.charCodeAt(0) - 48;         // tenths digit\n  const firstRest = frac.length > 1 ? frac.charCodeAt(1) - 48 : 0;  // hundredths\n  const nonZeroBeyond = /[1-9]/.test(frac.slice(2));                // anything past hundredths\n  let roundUp;\n  if (firstRest > 5 || (firstRest === 5 && nonZeroBeyond)) roundUp = true;\n  else if (firstRest < 5) roundUp = false;\n  else roundUp = (d1 % 2) === 1;              // exact .?5 with nothing beyond -> half to even\n  let tenths = d1 + (roundUp ? 1 : 0);\n  let carry = 0;\n  if (tenths === 10) { tenths = 0; carry = 1; }\n  const newInt = (BigInt(intPart) + BigInt(carry)).toString();\n  const val = Number(`${newInt}.${tenths}`);\n  return neg ? -val : val;\n}\n\n/* pure scoring (portable). Mirrors grader.grade() exactly.\n * per, truth : plain objects (insertion order == the order the DDS sampler produced the cards).\n * returns the same fields as the Python grade() dict. */\nfunction grade(per, truth, playedKey, need, level, trump, vul, payoff = \"make\", eps = null, maximize = true) {\n  const fn = PAYOFFS[payoff];\n  if (eps === null || eps === undefined) eps = DEFAULT_EPS[payoff];\n\n  const keys = Object.keys(per);              // insertion order (matches Python dict order)\n  const ev = Object.create(null);\n  for (const k of keys) ev[k] = fn(per[k], need, level, trump, vul);\n\n  // best_ev = optimal value for the side being graded: MAX declarer payoff (declarer) or MIN (defender).\n  let bestEv = ev[keys[0]];\n  for (const k of keys) if (maximize ? ev[k] > bestEv : ev[k] < bestEv) bestEv = ev[k];\n  let best = null;\n  for (const k of keys) if (ev[k] === bestEv && (best === null || _canonLess(k, best))) best = k;\n\n  // equiv = every key within eps on the WORSE side of best, sorted by (toward-best EV, canonical order).\n  const equiv = keys.filter(k => maximize ? (bestEv - ev[k] <= eps) : (ev[k] - bestEv <= eps));\n  equiv.sort((a, b) => (maximize ? (ev[b] - ev[a]) : (ev[a] - ev[b])) || (_canonKey(a) - _canonKey(b)));\n\n  // played_ev: value of the played card, else the worst EV for the graded side (Python's dict.get fallback)\n  let fallbackEv = ev[keys[0]];\n  for (const k of keys) if (maximize ? ev[k] < fallbackEv : ev[k] > fallbackEv) fallbackEv = ev[k];\n  const playedEv = (playedKey in ev) ? ev[playedKey] : fallbackEv;\n\n  const gap = maximize ? (bestEv - playedEv) : (playedEv - bestEv);\n  const scale = _SCALE[payoff];\n  const pointsRaw = gap <= eps ? 100.0 : Math.max(0.0, 100.0 * (1 - (gap - eps) / scale));\n  const points = pyRound1(pointsRaw);\n\n  // SD-vs-DD divergence: DD-best card on the TRUE layout vs the SD-sound best (canonical tie-break).\n  const tkeys = Object.keys(truth);\n  let ddVal = truth[tkeys[0]];\n  for (const k of tkeys) if (maximize ? truth[k] > ddVal : truth[k] < ddVal) ddVal = truth[k];\n  let ddBest = null;\n  for (const k of tkeys) if (truth[k] === ddVal && (ddBest === null || _canonLess(k, ddBest))) ddBest = k;\n\n  const equivSet = new Set(equiv);\n  return {\n    payoff, best, best_ev: bestEv, equiv, n_equiv: equiv.length,\n    played: playedKey, played_ev: playedEv, gap, points, points_raw: pointsRaw,\n    dd_best: ddBest, sd_is_dd: best === ddBest,\n    played_in_equiv: equivSet.has(playedKey),\n    needs_clairvoyance: !equivSet.has(ddBest),  // DD-best isn't even SD-sound -> luck only\n  };\n}\n\nreturn {\n  _IMP, _imps, _contractScore, payoffTricks, payoffMake, payoffImp,\n  PAYOFFS, DEFAULT_EPS, pyRound1, grade,\n};\n\n  })();\n  const EC = (function(){\n/* evalcards.js \u2014 the DDS-backed per-card EV sampler (JS port of grader.eval_card_evs).\n *\n * This is the seam A2 fills: it belief-samples the hidden defender hands (sampler.js), double-dummy-solves\n * each sampled world (dds.js \u2014 swap for a WASM DDS for full-hand speed), and returns, for every candidate\n * card the leader can play, the list of FINAL DECLARER trick counts across sampled worlds (`per`) plus the\n * true-layout finals (`truth`). grader.js then reduces `per`/`truth` to scores. Together:\n *\n *     sampler.js  +  dds.js  +  grader.js   ==   belief.py + endplay + grader.py\n *\n * proven bit-for-bit for the endgame regime by evalcards_parity.js (shared mulberry32 RNG).\n *\n * Signature mirrors grader.eval_card_evs:\n *   hands    : [seat0..3] remaining cards per seat ([{rank,suit}])\n *   trump    : \"S\"|\"H\"|\"D\"|\"C\"|\"NT\"\n *   declarer : seat ; leader : seat on lead ; defs : [defSeat0, defSeat1]\n *   voids    : [set per seat x4] showout voids ; played : [list per seat x4] cards already played\n *   won_decl : tricks the declaring side has already won ; completed : tricks played so far\n *   N        : number of belief samples ; rng : () -> float in [0,1)\n *\n * NOTE: like grader.eval_card_evs, the belief sampler is called with NO auction constraints (cons=[null,\n * null]) \u2014 only voids bind here. (Auction constraints live in the Tier-1 offline path.)\n *\n * The double-dummy solver is INJECTED (opts.solveLead) so the same code runs against either backend:\n *   - pure-JS dds.js (default): exact, synchronous, near-instant for the endgame regime + offline oracle;\n *   - bridge-dds WASM (solveLeadWasm): the full C++ DDS, needed for full-hand (trick 1-5) speed.\n * Both satisfy the same contract (solveLead(hands,trump,leader) -> {cardKey: tricks for leader's side}),\n * proven equivalent to endplay, so evalCardEvs is identical whichever is supplied.\n */\nconst { sampleSplit } = SAMP;\nconst ddsDefault = DDS.solveLead;\nfunction evalCardEvs(hands, trump, declarer, leader, defs, voids, played, won_decl, completed, N, rng, opts) {\n  opts = opts || {};\n  const solveLead = opts.solveLead || ddsDefault;\n  const dummy = (declarer + 2) % 4;\n  const declSide = (leader === declarer || leader === dummy);\n  const totalRemaining = 13 - completed;\n  // Perspective = which two seats are KNOWN (fixed) vs HIDDEN (sampled). Default: declarer perspective\n  // (known = declarer+dummy, hidden = the defenders). Defender perspective passes known=[leader,dummy],\n  // hidden=[declarer, partner]. `one()` normalizes to DECLARER tricks regardless, so orientation is fixed.\n  const hidden = opts.hidden || defs;\n  const known = opts.known || [declarer, dummy];\n  const pool = hands[hidden[0]].concat(hands[hidden[1]]);\n  const n0 = hands[hidden[0]].length;\n\n  // _one(rem): DD-solve the on-lead position, normalize each candidate to FINAL DECLARER tricks.\n  const one = (rem) => {\n    const raw = solveLead(rem, trump, leader);   // {cardKey: tricks for leader's SIDE}\n    const out = {};\n    for (const k of Object.keys(raw)) {\n      const sideTricks = declSide ? raw[k] : (totalRemaining - raw[k]);\n      out[k] = won_decl + sideTricks;\n    }\n    return out;\n  };\n\n  const per = {};\n  for (let i = 0; i < N; i++) {\n    const [d0, d1] = sampleSplit(pool, n0, [null, null], rng, {\n      voids: [voids[hidden[0]], voids[hidden[1]]],\n      played: [played[hidden[0]], played[hidden[1]]],\n    });\n    const rem = [null, null, null, null];\n    rem[known[0]] = hands[known[0]];\n    rem[known[1]] = hands[known[1]];\n    rem[hidden[0]] = d0;\n    rem[hidden[1]] = d1;\n    const finals = one(rem);\n    for (const k of Object.keys(finals)) {\n      (per[k] || (per[k] = [])).push(finals[k]);\n    }\n  }\n  const truth = one(hands);   // clairvoyant true-layout finals\n  return { per, truth };\n}\n\nreturn { evalCardEvs };\n\n  })();\n  const TB = (function(){\n/* tiebreak.js  (A5) \u2014 name the expert pick among EV-equal cards, with role-aware phrasing.\n *\n * grade().equiv is the set of cards that share the top EV under the chosen payoff \u2014 every one of them is,\n * by the double-dummy oracle, equally good. Which one a strong player actually leads is decided by\n * card-play PRINCIPLES the payoff can't see: lead the top of a sequence, keep your high cards, don't break\n * a tenace. This module applies those principles to pick a representative and say WHY, reusing the app's\n * play vocabulary (LEAD_SEQ / LEAD_LOW / \u2026). It is pure, dependency-free, and never changes any EV or the\n * equivalence set \u2014 it only chooses and explains a representative, with a deterministic canonical fallback.\n *\n * The PICK is role-independent (the principle is the same whoever leads); only the WHY is phrased for the\n * role \u2014 declarer conserves winners/entries and avoids broaching a tenace; a defender keeps honours back to\n * capture declarer's, doesn't lead away from a tenace, and makes declarer break suits.\n *\n * nameBest(equiv, ctx) -> { pick, code, why, ranked }\n *   equiv : array of card keys \"rank.suit\" (e.g. [\"Q.S\",\"J.S\",\"4.H\"]) \u2014 the EV-equal set from grade().\n *   ctx   : { hand:[{rank,suit}], trump, role:\"declarer\"|\"defender\", onlyLegal?:bool }\n *           hand is the LEADER's remaining cards; role defaults to \"declarer\".\n *   pick  : the chosen key.  code: a PLAY_TAG-compatible code.  why: one-line teaching reason.\n *   ranked: equiv re-ordered best-first (deterministic), so callers can show runners-up.\n */\n\nconst RANKS = [\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\",\"J\",\"Q\",\"K\",\"A\"];\nconst RIDX = Object.fromEntries(RANKS.map((r, i) => [r, i]));\nconst SUITS = [\"S\",\"H\",\"D\",\"C\"];\nconst SIDX = { S:0, H:1, D:2, C:3 };\nconst GLYPH = { S:\"\\u2660\", H:\"\\u2665\", D:\"\\u2666\", C:\"\\u2663\" };\n\nfunction parseKey(k){ const i = k.lastIndexOf(\".\"); return { rank:k.slice(0,i), suit:k.slice(i+1), key:k }; }\nconst label = (c) => `${c.rank}${GLYPH[c.suit]}`;\n\n// canonical order (matches the grader's _canon): suit S,H,D,C ; rank descending. Deterministic fallback.\nfunction canonCmp(a, b){\n  if (SIDX[a.suit] !== SIDX[b.suit]) return SIDX[a.suit] - SIDX[b.suit];\n  return RIDX[b.rank] - RIDX[a.rank];\n}\n\n// contiguous run detection: are these ranks (within one suit) mutually touching, using the LEADER'S holding\n// so that e.g. Q,J with 10 also in hand still reads as part of the QJ10 sequence.\nfunction isTouchingRun(cardsInSuit, handRanksInSuit){\n  if (cardsInSuit.length < 2) return false;\n  const idx = cardsInSuit.map(c => RIDX[c.rank]).sort((x,y)=>x-y);\n  for (let i = 1; i < idx.length; i++) if (idx[i] !== idx[i-1] + 1) return false;\n  return true;\n}\n\n// does the leader's holding in `suit` contain a tenace (broken high cards that a lead would broach)?\nfunction hasTenace(handRanksInSuit){\n  const has = (r) => handRanksInSuit.includes(r);\n  return (has(\"A\") && has(\"Q\") && !has(\"K\"))          // AQ\n      || (has(\"K\") && has(\"J\") && !has(\"Q\"))          // KJ\n      || (has(\"A\") && has(\"J\") && has(\"10\") && !has(\"K\") && !has(\"Q\")); // AJ10\n}\n\n/* Role-aware phrasing. Each entry is { declarer, defender }; when a role lacks its own line it falls back to\n * declarer. `p` carries the pieces a line needs (pick label already resolved, plus rule-specific extras). */\nconst PHRASE = {\n  ONLY: {\n    declarer: (p) => `Forced \u2014 ${p.pick} is the only legal card.`,\n    defender: (p) => `Forced \u2014 ${p.pick} is the only legal card.`,\n  },\n  GENERIC: {\n    declarer: (p) => `${p.pick} is the standout play here.`,\n    defender: (p) => `${p.pick} is the clear defensive card here.`,\n  },\n  LEAD_SEQ: {\n    declarer: (p) => `These tie, but ${p.pick} leads the top of a sequence \u2014 the standard card from touching honours.`,\n    defender: (p) => `Lead the top of your sequence: ${p.pick} is the standard defensive card from touching honours and can't cost a trick.`,\n  },\n  LEAD_LOW: {\n    declarer: (p) => `Equally good, so lead low: ${p.pick} keeps your ${p.keep} for later.`,\n    defender: (p) => `Equally good, so lead low and keep your ${p.keep} back \u2014 save the honour to capture one of declarer's or take a trick later.`,\n  },\n  KEEP_TENACE: {\n    declarer: (p) => `All equal in EV; lead ${p.pick} rather than broaching your tenace in ${p.suits}.`,\n    defender: (p) => `All equal; lead ${p.pick} and don't lead away from your tenace in ${p.suits} \u2014 make declarer break that suit so your honours score.`,\n  },\n  SAFE: {\n    declarer: (p) => `${p.count} cards are equally good here (${p.list}); by convention take ${p.pick}.`,\n    defender: (p) => `${p.count} cards are equally good on defence (${p.list}); by convention take ${p.pick}.`,\n  },\n};\nfunction phrase(code, role, p){\n  const e = PHRASE[code] || PHRASE.SAFE;\n  return (e[role] || e.declarer)(p);\n}\n\nfunction nameBest(equiv, ctx){\n  ctx = ctx || {};\n  const role = ctx.role === \"defender\" ? \"defender\" : \"declarer\";\n  const hand = ctx.hand || [];\n  const cards = equiv.map(parseKey);\n  const handBySuit = {}; for (const c of hand) (handBySuit[c.suit] = handBySuit[c.suit] || []).push(c.rank);\n\n  const ranked = cards.slice().sort(canonCmp);        // deterministic baseline ordering\n  const bySuit = {}; for (const c of cards) (bySuit[c.suit] = bySuit[c.suit] || []).push(c);\n\n  // pick + code chosen role-independently; why is phrased for the role.\n  const result = (pick, code, params) => ({\n    pick: pick.key, code,\n    why: phrase(code, role, Object.assign({ pick: label(pick) }, params || {})),\n    ranked: [pick.key, ...ranked.filter(c => c.key !== pick.key).map(c => c.key)],\n  });\n\n  // R1 \u2014 nothing to choose.\n  if (cards.length === 1){\n    const c = cards[0];\n    return result(c, ctx.onlyLegal ? \"ONLY\" : \"GENERIC\");\n  }\n\n  // R2 \u2014 TOP OF A SEQUENCE. If two-or-more equal cards in a suit are mutually touching, lead the highest:\n  // the textbook card from touching honours. Pick the highest such run-top across suits (canonical tiebreak).\n  let seqPick = null;\n  for (const suit of SUITS){\n    const inSuit = bySuit[suit]; if (!inSuit || inSuit.length < 2) continue;\n    if (!isTouchingRun(inSuit, handBySuit[suit] || [])) continue;\n    const top = inSuit.slice().sort((a,b)=>RIDX[b.rank]-RIDX[a.rank])[0];\n    if (!seqPick || canonCmp(top, seqPick) < 0) seqPick = top;\n  }\n  if (seqPick) return result(seqPick, \"LEAD_SEQ\");\n\n  // R3 \u2014 CONSERVE THE HIGH CARD. If a suit holds two-or-more equal cards that are NOT a run (a gap between\n  // them), lead the LOWEST: keep the higher card as a later winner / entry. Choose the suit whose retained\n  // card is highest (most worth keeping); canonical tiebreak.\n  let lowPick = null, keepRank = -1, keepHigh = null;\n  for (const suit of SUITS){\n    const inSuit = bySuit[suit]; if (!inSuit || inSuit.length < 2) continue;\n    if (isTouchingRun(inSuit, handBySuit[suit] || [])) continue;   // runs handled by R2\n    const sorted = inSuit.slice().sort((a,b)=>RIDX[a.rank]-RIDX[b.rank]);\n    const low = sorted[0], high = sorted[sorted.length-1];\n    if (RIDX[high.rank] > keepRank || (RIDX[high.rank] === keepRank && lowPick && canonCmp(low, lowPick) < 0)){\n      keepRank = RIDX[high.rank]; lowPick = low; keepHigh = high;\n    }\n  }\n  if (lowPick) return result(lowPick, \"LEAD_LOW\", { keep: label(keepHigh) });\n\n  // R4 \u2014 DON'T BREAK A TENACE. One equal card per suit (a suit CHOICE). Prefer a suit where the leader holds\n  // no tenace, so an AQ/KJ isn't broached; among the safe suits, canonical order.\n  const oneEach = Object.values(bySuit).every(a => a.length === 1);\n  if (oneEach){\n    const safe = ranked.filter(c => !hasTenace(handBySuit[c.suit] || []));\n    const broached = ranked.filter(c => hasTenace(handBySuit[c.suit] || []));\n    if (safe.length && broached.length){\n      return result(safe[0], \"KEEP_TENACE\", { suits: broached.map(c => GLYPH[c.suit]).join(\"/\") });\n    }\n  }\n\n  // R5 \u2014 canonical fallback: defined, deterministic, honest.\n  const pick = ranked[0];\n  return result(pick, \"SAFE\", { count: cards.length, list: ranked.map(label).join(\", \") });\n}\n\n// PLAY_TAG-compatible labels for any new codes this module introduces (the LEAD_*/etc. codes already exist\n// in bridge.jsx's PLAY_TAG; these fill the gaps so a caller can render a short tag). Role-aware where useful.\nconst TIEBREAK_TAG = {\n  ONLY: \"forced\", GENERIC: \"clear best\", LEAD_SEQ: \"top of a sequence\",\n  LEAD_LOW: \"conserve the high card\", KEEP_TENACE: \"keep the tenace\", SAFE: \"conventional pick\",\n};\nconst TIEBREAK_TAG_DEF = {\n  ONLY: \"forced\", GENERIC: \"clear defence\", LEAD_SEQ: \"top of a sequence\",\n  LEAD_LOW: \"keep the honour back\", KEEP_TENACE: \"don't lead from a tenace\", SAFE: \"conventional pick\",\n};\n\nreturn { nameBest, TIEBREAK_TAG, TIEBREAK_TAG_DEF, canonCmp, parseKey, isTouchingRun, hasTenace };\n\n  })();\n  return Object.assign({}, SAMP, DDS, GR, EC, TB);\n})();\n\n/* PBN adapter for bridge-dds SolveBoardPBN (seat 0=S,1=W,2=N,3=E -> DDS dir N0,E1,S2,W3). */\nconst _T = { S:0, H:1, D:2, C:3, NT:4 };\nconst _SEAT2DIR = {0:2,1:3,2:0,3:1};\nconst _DIR2SEAT = {0:2,1:3,2:0,3:1};\nconst _LETTER = ['N','E','S','W'];\nconst _RO = {\"2\":0,\"3\":1,\"4\":2,\"5\":3,\"6\":4,\"7\":5,\"8\":6,\"9\":7,\"10\":8,\"J\":9,\"Q\":10,\"K\":11,\"A\":12};\nconst _N2R = {2:'2',3:'3',4:'4',5:'5',6:'6',7:'7',8:'8',9:'9',10:'10',11:'J',12:'Q',13:'K',14:'A'};\nconst _SL = ['S','H','D','C'];\nfunction _handStr(cards){\n  const by={S:[],H:[],D:[],C:[]}; for(const c of cards) by[c.suit].push(c.rank);\n  return ['S','H','D','C'].map(s=> by[s].sort((a,b)=>_RO[b]-_RO[a]).map(r=> r==='10'?'T':r).join('')).join('.');\n}\nfunction _toPBN(hands, leaderDir){\n  const order=[0,1,2,3].map(i=>(leaderDir+i)%4);\n  return _LETTER[leaderDir]+':'+order.map(d=>_handStr(hands[_DIR2SEAT[d]])).join(' ');\n}\n// Build a solveLead(hands,trump,leader) backed by a loaded bridge-dds Dds instance.\nfunction makeWasmSolver(dds){\n  return function(hands, trump, leader){\n    const deal={ trump:_T[trump], first:_SEAT2DIR[leader], currentTrickSuit:[], currentTrickRank:[], remainCards:_toPBN(hands,_SEAT2DIR[leader]) };\n    const ft=dds.SolveBoardPBN(deal, -1, 3, 0);\n    const out={};\n    for(let i=0;i<ft.cards;i++){ const s=_SL[ft.suit[i]], v=ft.score[i];\n      out[_N2R[ft.rank[i]]+'.'+s]=v;\n      let eq=ft.equals[i]; while(eq){ const b=eq&-eq; const r=31-Math.clz32(b); out[_N2R[r]+'.'+s]=v; eq^=b; } }\n    return out;\n  };\n}\n\n/* Pure grade computation. pos carries a full on-lead snapshot (see graderClient for the schema).\n * solveLead is injected (wasm or GRD.solveLead). Returns a compact, display-ready grade or {skipped}. */\nfunction computeGrade(pos, solveLead){\n  const cardsPerHand = 13 - pos.completed;\n  if(!solveLead){\n    if(cardsPerHand > 7) return { skipped:'no-wasm-hand-too-large' };  // pure-JS too slow past ~7\n    solveLead = GRD.solveLead;\n  }\n  const hands  = pos.hands.map(h=>h.map(c=>({rank:c.rank,suit:c.suit})));\n  const voids  = pos.voids.map(v=>new Set(v));\n  const played = pos.played.map(p=>p.map(c=>({rank:c.rank,suit:c.suit})));\n  const rng    = GRD.mulberry32(pos.seed >>> 0);\n  // Perspective from who's on lead: declaring side (declarer/dummy) knows declarer+dummy and MAXimises;\n  // a defender knows own hand + dummy and MINimises the declarer's payoff.\n  const dummy    = (pos.declarer + 2) % 4;\n  const declSide = (pos.leader === pos.declarer || pos.leader === dummy);\n  const defenders= [0,1,2,3].filter(x => x !== pos.declarer && x !== dummy);\n  const known    = declSide ? [pos.declarer, dummy] : [pos.leader, dummy];\n  const hidden   = declSide ? defenders : [pos.declarer, (pos.leader + 2) % 4];\n  const { per, truth } = GRD.evalCardEvs(hands, pos.trump, pos.declarer, pos.leader, pos.defs,\n                          voids, played, pos.won_decl, pos.completed, pos.N||16, rng, { solveLead, known, hidden });\n  const g = GRD.grade(per, truth, pos.played_key, pos.need, pos.level, pos.trump, !!pos.vul,\n                      pos.payoff||'make', null, declSide /* maximize: declarer max, defender min */);\n  // A5: name the expert pick among the EV-equal set, from the leader's holding. Additive.\n  let named = null;\n  try{ named = GRD.nameBest(g.equiv, { hand: hands[pos.leader], trump: pos.trump, role: declSide ? 'declarer' : 'defender' }); }catch(_){ named = null; }\n  const _tagMap = declSide ? GRD.TIEBREAK_TAG : GRD.TIEBREAK_TAG_DEF;\n  const best_tag = (named && _tagMap) ? (_tagMap[named.code] || null) : null;\n  // ranked runner-ups (best-first) with a per-card tag, for a richer read-out\n  let ranked = null;\n  try{ ranked = (named ? named.ranked : g.equiv).slice(0, 5); }catch(_){ ranked = null; }\n  return {\n    role: declSide ? 'declarer' : 'defender',\n    payoff:g.payoff, best:g.best, best_ev:g.best_ev, equiv:g.equiv, n_equiv:g.n_equiv,\n    played:g.played, played_ev:g.played_ev, gap:g.gap, points:g.points,\n    dd_best:g.dd_best, sd_is_dd:g.sd_is_dd, played_in_equiv:g.played_in_equiv,\n    needs_clairvoyance:g.needs_clairvoyance,\n    best_named: named ? named.pick : g.best,\n    best_code:  named ? named.code : null,\n    best_why:   named ? named.why  : null,\n    best_tag,\n    ranked,\n  };\n}\n\n\nlet _solve = null, _ready = false;\nasync function ensureDds(){\n  if(_ready) return; _ready = true;\n  try{\n    const mod = await import('https://esm.sh/bridge-dds@1.4.0');\n    const m = await mod.loadDds();\n    _solve = makeWasmSolver(new mod.Dds(m));\n  }catch(e){ _solve = null; }   // no CDN/WASM -> pure-JS endgame fallback inside computeGrade\n}\nself.onmessage = async (ev) => {\n  const { id, pos } = ev.data || {};\n  try{ await ensureDds(); self.postMessage({ id, grade: computeGrade(pos, _solve) }); }\n  catch(err){ self.postMessage({ id, error: String(err && err.message || err) }); }\n};\n";
+
 export default function App(){
   const [s,dispatch]=useReducer(reducer,SETUP);
   const [theme,setTheme]=React.useState(()=>loadTheme());
@@ -3832,6 +5319,9 @@ export default function App(){
   const [showRules,setShowRules]=React.useState(false);
   const [revealSeat,setRevealSeat]=React.useState(0);
   const [hint,setHint]=React.useState(false);
+  const [alwaysOn,setAlwaysOn]=React.useState(()=>{ try{ return localStorage.getItem("bridge.suggest.always")==="on"; }catch(_){ return false; } });
+  React.useEffect(()=>{ try{ localStorage.setItem("bridge.suggest.always", alwaysOn?"on":"off"); }catch(_){} },[alwaysOn]);
+  const showHint = hint || alwaysOn;
   const [teach,setTeach]=React.useState(()=>{ try{ return localStorage.getItem("bridge.teach.v1")!=="off"; }catch(_){ return true; } });
   const [teachVer,setTeachVer]=React.useState(0);
   const [showGloss,setShowGloss]=React.useState(false);
@@ -3856,6 +5346,32 @@ export default function App(){
   const focusRef=useRef(0);
   const recordedRef=useRef(null);
   const netRef=useRef(null);
+
+  // Off-thread declarer-play grader (bridge-dds WASM in a worker; endgame pure-JS fallback inside it).
+  // Purely additive: results arrive as PLAY_GRADE and only annotate the Table Talk log.
+  const gradeWorkerRef=useRef(null);
+  const gradeReqRef=useRef(null);
+  if(gradeReqRef.current===null) gradeReqRef.current=new Set();
+  useEffect(()=>{
+    if(typeof window==="undefined"||typeof Worker==="undefined") return;
+    let w=null;
+    try{
+      const _blob=new Blob([GRADER_WORKER_SRC],{type:"text/javascript"});
+      const _url=URL.createObjectURL(_blob);
+      w=new Worker(_url,{type:"module"});
+    }catch(_){ w=null; }
+    gradeWorkerRef.current=w;
+    if(w) w.onmessage=(ev)=>{ const d=ev.data||{}; if(d && d.id!=null) dispatch({type:"PLAY_GRADE", moveId:d.id, grade:d.grade}); };
+    return ()=>{ try{ if(w) w.terminate(); }catch(_){} gradeWorkerRef.current=null; };
+  },[]);
+  useEffect(()=>{
+    const w=gradeWorkerRef.current; if(!w) return;
+    for(const pos of (s.gradeQueue||[])){
+      if(gradeReqRef.current.has(pos.moveId)) continue;
+      gradeReqRef.current.add(pos.moveId);
+      try{ w.postMessage({id:pos.moveId, pos}); }catch(_){}
+    }
+  },[s.gradeQueue]);
 
   useEffect(()=>{ saveTheme(theme); },[theme]);
   useEffect(()=>{ try{ localStorage.setItem("bridge.teach.v1", teach?"on":"off"); }catch(_){} },[teach]);
@@ -3969,8 +5485,8 @@ export default function App(){
   const playableSeat = (s.phase==="play" && isHumanActing && !needReveal) ? s.turn : null;
   const legalForPlayable = playableSeat!=null ? new Set(ENG.legalPlays(s.hands[playableSeat], s.trick.length?s.ledSuit:null).map(c=>c.id)) : null;
 
-  const sugBidB  = (s.phase==="auction" && isHumanActing && hint && !needReveal) ? suggestBidWhy(s, s.turn) : null;
-  const sugPlayB = (s.phase==="play" && isHumanActing && hint && !needReveal) ? suggestPlayWhy(s, s.turn) : null;
+  const sugBidB  = (s.phase==="auction" && isHumanActing && showHint && !needReveal) ? suggestBidWhy(s, s.turn) : null;
+  const sugPlayB = (s.phase==="play" && isHumanActing && showHint && !needReveal) ? suggestPlayWhy(s, s.turn) : null;
   const sugBid  = sugBidB ? sugBidB.call : null;
   const sugPlay = sugPlayB ? sugPlayB.card : null;
   const sugPlayId = sugPlay ? sugPlay.id : null;
@@ -3984,7 +5500,7 @@ export default function App(){
     return `${ct.level}${STRAIN_GLYPH[ct.strain]}${dbl} by ${who(s,ct.declarer)} — ${role}`;
   })() : "";
 
-  const doPlay=(card)=>{ if(playableSeat==null) return; apply({type:"PLAY", player:playableSeat, cardId:card.id}); };
+  const doPlay=(card)=>{ if(playableSeat==null) return; setHint(false); apply({type:"PLAY", player:playableSeat, cardId:card.id}); };
   const rubberWon = s.rubberDone;
 
   return (
@@ -4027,6 +5543,7 @@ export default function App(){
             {s.phase==="play" && showDummy && (
               <HandRow hand={s.hands[dummySeat]} label={`Dummy · ${who(s,dummySeat)}`}
                 selectable={playableSeat===dummySeat} legalIds={playableSeat===dummySeat?legalForPlayable:null}
+                sugId={playableSeat===dummySeat?sugPlayId:null}
                 onPlay={doPlay}/>
             )}
 
@@ -4053,8 +5570,9 @@ export default function App(){
                 <HandRow hand={s.hands[focus]} label="You"
                   selectable={playableSeat===focus}
                   legalIds={playableSeat===focus?legalForPlayable:null}
+                  sugId={playableSeat===focus?sugPlayId:null}
                   onPlay={doPlay}/>
-                {sugPlayId && <div className="hint">Suggested: <b>{(()=>{const c=(s.hands[focus]||[]).find(x=>x.id===sugPlayId)||(showDummy&&(s.hands[dummySeat]||[]).find(x=>x.id===sugPlayId)); return c?`${c.rank}${SUIT_GLYPH[c.suit]}`:"—";})()}</b>{playableSeat===dummySeat?" (from dummy)":""}</div>}
+                {sugPlayId && <div className="hint">Suggested: <b>{(()=>{const c=(s.hands[focus]||[]).find(x=>x.id===sugPlayId)||(showDummy&&(s.hands[dummySeat]||[]).find(x=>x.id===sugPlayId)); return c?<span className={suitColorClass(c.suit)}>{c.rank}{SUIT_GLYPH[c.suit]}</span>:"—";})()}</b>{playableSeat===dummySeat?" (from dummy)":""}</div>}
               </div>
             )}
 
@@ -4062,7 +5580,7 @@ export default function App(){
               <BiddingBox s={s} seat={s.turn} dispatch={apply} suggestion={sugBid}/>
             )}
 
-            {hint && teach && sugText && (
+            {showHint && teach && sugText && (
               <div className="teachbox">
                 <div className="tb-tag">Why</div>
                 <div className="tb-body">
@@ -4073,8 +5591,11 @@ export default function App(){
             )}
 
             <div className="bar">
-              {isHumanActing && s.phase!=="scored" && (
+              {isHumanActing && s.phase!=="scored" && !alwaysOn && (
                 <button className="btn gold" onClick={()=>setHint(h=>!h)}>{hint?"Hide hint":"Suggest"}</button>
+              )}
+              {isHumanActing && s.phase!=="scored" && (
+                <button className={"btn ghost"+(alwaysOn?" on":"")} onClick={()=>setAlwaysOn(a=>!a)}>{alwaysOn?"Auto-hint \u2713":"Auto-hint"}</button>
               )}
               {isHumanActing && s.phase!=="scored" && (
                 <button className={"btn ghost"+(teach?" on":"")} onClick={()=>setTeach(t=>!t)}>{teach?"Teaching \u2713":"Teaching"}</button>
