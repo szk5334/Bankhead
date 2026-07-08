@@ -4978,6 +4978,33 @@ function MiniTrick({t, focus}){
     </div>
   );
 }
+/* One grade block, rendered inline BENEATH the trick it grades so all the pedagogy for a decision
+ * sits with that decision (A5). Pure display: reads the grade object produced by the worker. */
+function GradeNote({g, link}){
+  if(!g) return null;
+  const gl=(k)=>{ if(!k) return ""; const i=k.lastIndexOf("."); return k.slice(0,i)+(SUIT_GLYPH[k.slice(i+1)]||k.slice(i+1)); };
+  const role=g.role==="defender"?"Defence":"Declarer";
+  const accent=g.points>=95?"#3aa657":(g.points>=70?"#c79a2e":"#c0503f");
+  const runners=(g.ranked||[]).slice(0,4);
+  const pct=(x)=>Math.round((x||0)*100);
+  return (
+    <div className="dl-grade" style={{margin:"5px 0 1px",padding:"6px 9px",borderRadius:8,background:"rgba(127,127,127,0.08)",borderLeft:"3px solid "+accent}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:11,opacity:0.85}}>
+        <span>{role} lead{g.best_tag?<span style={{marginLeft:6,padding:"1px 6px",borderRadius:10,background:"rgba(127,127,127,0.20)",fontSize:10}}>{g.best_tag}</span>:null}</span><b style={{color:accent}}>{g.points}/100</b>
+      </div>
+      <div style={{fontSize:12,marginTop:3,lineHeight:1.45}}>
+        {g.played_in_equiv
+          ? <span>Led {gl(g.played)} — <b>sound</b>.</span>
+          : <span>Led {gl(g.played)}; best {gl(g.best_named||g.best)}.</span>}
+        {g.best_why ? <div style={{opacity:0.78,marginTop:2}}>{link(g.best_why)}</div> : null}
+        {g.payoff==="make" ? <div style={{opacity:0.6,marginTop:2}}>Declarer {pct(g.played_ev)}% to make{g.played_in_equiv?null:<> · best {pct(g.best_ev)}% · cost {pct(g.gap)}%</>}</div> : null}
+        {runners.length>1 ? <div style={{opacity:0.6,marginTop:2}}>Equal options: {runners.map(gl).join("  ")}</div> : null}
+        {g.needs_clairvoyance ? <div style={{opacity:0.55,marginTop:2,fontStyle:"italic"}}>double-dummy best needs clairvoyance</div> : null}
+      </div>
+    </div>
+  );
+}
+
 function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
   const gloss=getGlossary();
   const link=(text)=>linkifyGlossary(text, gloss, onTapTerm);
@@ -5021,6 +5048,7 @@ function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
           <div className="dl-trick-body">
             {lines.map((r,j)=><div key={j} className={"dl-play "+sideCls(r.who)+(r.win?" win":"")}><span className="dl-seat sm">{SEAT_ABBR[r.who]}</span>{link(r.text)}</div>)}
             <div className="dl-trick-sum">{SEAT_NAME[t.winner]} wins trick {t.num}.</div>
+            <GradeNote g={(s.grades||{})[`${s.rubberNo||1}.${s.dealNo||1}.${t.num-1}`]} link={link}/>
           </div>
         </div>
       );
@@ -5047,34 +5075,7 @@ function HelpDrawer({s, focus, open, onToggle, onTapTerm, sug}){
       </div>
     );
   }
-  const grades=s.grades||{};
-  const gkeys=Object.keys(grades).sort((a,b)=>(+a.split(".").pop())-(+b.split(".").pop()));
-  if(gkeys.length){
-    const gl=(k)=>{ if(!k) return ""; const i=k.lastIndexOf("."); return k.slice(0,i)+(SUIT_GLYPH[k.slice(i+1)]||k.slice(i+1)); };
-    rows.push(<div key="gh" className="dl-head">Card-play grades</div>);
-    for(const mk of gkeys){
-      const g=grades[mk]; if(!g) continue;
-      const trickNo=(+mk.split(".").pop())+1;
-      const role=g.role==="defender"?"Defence":"Declarer";
-      const accent=g.points>=95?"#3aa657":(g.points>=70?"#c79a2e":"#c0503f");
-      const runners=(g.ranked||[]).slice(0,4);
-      rows.push(
-        <div key={"g"+mk} style={{margin:"6px 0",padding:"7px 9px",borderRadius:8,background:"rgba(127,127,127,0.08)",borderLeft:"3px solid "+accent}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:11,opacity:0.8}}>
-            <span>{role} · trick {trickNo}{g.best_tag?<span style={{marginLeft:6,padding:"1px 6px",borderRadius:10,background:"rgba(127,127,127,0.20)",fontSize:10}}>{g.best_tag}</span>:null}</span><b style={{color:accent}}>{g.points}/100</b>
-          </div>
-          <div style={{fontSize:12,marginTop:3,lineHeight:1.45}}>
-            {g.played_in_equiv
-              ? <span>Led {gl(g.played)} — <b>sound</b>.</span>
-              : <span>Led {gl(g.played)}; best {gl(g.best_named||g.best)}.</span>}
-            {g.best_why ? <div style={{opacity:0.78,marginTop:2}}>{link(g.best_why)}</div> : null}
-            {runners.length>1 ? <div style={{opacity:0.6,marginTop:2}}>Equal options: {runners.map(gl).join("  ")}</div> : null}
-            {g.needs_clairvoyance ? <div style={{opacity:0.55,marginTop:2,fontStyle:"italic"}}>double-dummy best needs clairvoyance</div> : null}
-          </div>
-        </div>
-      );
-    }
-  }
+  /* Card-play grades now render inline beneath each trick (see GradeNote in the play loop above). */
   if(!rows.length) rows.push(<div key="empty" className="dl-empty">The running commentary appears here as the deal unfolds — every call and card, what it shows, and what we can deduce about partner's hand.</div>);
   return (
     <>
