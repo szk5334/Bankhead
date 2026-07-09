@@ -1,0 +1,47 @@
+# .github/workflows/deploy-pages.yml
+# Unpacks bridge-modular-site.tar.gz (if present) and publishes the repo to GitHub Pages.
+# One-time setup: repo Settings > Pages > "Build and deployment" > Source = "GitHub Actions".
+# After that: commit an updated bridge-modular-site.tar.gz (and/or index.html) and push — done.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]        # <-- change to your default branch if it isn't "main" (e.g. master)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unpack modular bridge tarball (if present)
+        run: |
+          if [ -f bridge-modular-site.tar.gz ]; then
+            echo "Extracting bridge-modular-site.tar.gz ..."
+            tar xzf bridge-modular-site.tar.gz -C .
+            rm -f bridge-modular-site.tar.gz      # don't publish the archive itself
+          fi
+          touch .nojekyll                          # serve files as-is (no Jekyll processing)
+          ls -R . | head -60
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .                                  # publish the whole repo (existing games + extracted bridge/)
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
