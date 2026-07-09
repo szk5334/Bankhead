@@ -1,13 +1,20 @@
 # .github/workflows/deploy-pages.yml
-# Unpacks bridge-modular-site.tar.gz (if present) and publishes the repo to GitHub Pages.
-# One-time setup: repo Settings > Pages > "Build and deployment" > Source = "GitHub Actions".
-# After that: commit an updated bridge-modular-site.tar.gz (and/or index.html) and push — done.
+# Card Table — GitHub Pages deploy that unpacks EVERY tarball committed beside index.html.
+#
+# Model: you commit one or more `*.tar.gz` archives to the repo root (e.g. bridge-modular-site.tar.gz +
+# bridge-dds-engine.tar.gz). This workflow copies the repo (minus git/CI/archives) into a staging dir,
+# then extracts each archive on top — overlaying their files — and publishes the result. Adding another
+# tarball later (a new game, an asset pack, a bigger engine) needs NO change here: it's globbed in.
+#
+# One-time setup: Repo → Settings → Pages → Source = "GitHub Actions".
+# If your default branch isn't `main`, change `branches:` below.
+# If you keep the tarballs in a subfolder instead of the repo root, set ARCHIVE_DIR to that folder.
 
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]        # <-- change to your default branch if it isn't "main" (e.g. master)
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,28 +27,71 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ARCHIVE_DIR: .          # where the *.tar.gz live (repo root by default)
+      SITE_DIR: _site         # staging dir that gets published
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble site from repo + tarballs
+        run: |
+          set -euo pipefail
+          rm -rf "$SITE_DIR"
+          mkdir -p "$SITE_DIR"
+
+          # 1) carry over the repo's own files (other games, legacy monolith, assets), EXCLUDING
+          #    version control, this workflow, and the archives themselves. (tar-copy = no rsync dep.)
+          tar cf - \
+            --exclude='./.git' \
+            --exclude='./.github' \
+            --exclude='./*.tar.gz' \
+            --exclude="./$SITE_DIR" \
+            . | tar xf - -C "$SITE_DIR"
+
+          # 2) overlay every archive (sorted, so overlap is deterministic — last wins).
+          shopt -s nullglob
+          archives=( $(ls -1 "$ARCHIVE_DIR"/*.tar.gz 2>/dev/null | sort) )
+          if [ ${#archives[@]} -eq 0 ]; then
+            echo "::error::no *.tar.gz found in '$ARCHIVE_DIR' — nothing to unpack."
+            exit 1
+          fi
+          for a in "${archives[@]}"; do
+            echo "unpacking $a"
+            tar xzf "$a" -C "$SITE_DIR"
+          done
+
+          # 3) strip internal files that ride along in the archives (never meant to be served).
+          find "$SITE_DIR" -type f \( \
+                -name 'HANDOFF.md' -o -name 'MODULE_MAP.md' -o -name '*.tar.gz' \
+             \) -delete
+
+          # 4) GitHub Pages: don't run Jekyll (we serve files as-is, incl. leading-underscore paths).
+          touch "$SITE_DIR/.nojekyll"
+
+          echo "== published tree (top 2 levels) =="
+          find "$SITE_DIR" -maxdepth 2 -type f | sort | head -80
+          echo "== sanity =="
+          test -f "$SITE_DIR/index.html" || { echo "::error::index.html missing from published site"; exit 1; }
+          if [ -f "$SITE_DIR/bridge/grader/workerSrc.js" ]; then
+            test -f "$SITE_DIR/bridge/grader/dds_engine.inline.js" \
+              || echo "::warning::bridge deployed WITHOUT dds_engine.inline.js — grader will run pure-JS endgame-only. Did you commit bridge-dds-engine.tar.gz?"
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Unpack modular bridge tarball (if present)
-        run: |
-          if [ -f bridge-modular-site.tar.gz ]; then
-            echo "Extracting bridge-modular-site.tar.gz ..."
-            tar xzf bridge-modular-site.tar.gz -C .
-            rm -f bridge-modular-site.tar.gz      # don't publish the archive itself
-          fi
-          touch .nojekyll                          # serve files as-is (no Jekyll processing)
-          ls -R . | head -60
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .                                  # publish the whole repo (existing games + extracted bridge/)
-
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
